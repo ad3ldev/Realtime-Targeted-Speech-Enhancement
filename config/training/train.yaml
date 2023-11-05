@@ -1,0 +1,34 @@
+train:
+  ema_decay: 0
+  max_epochs: 120
+  gradient_accumulation: 1
+  optim:
+    _target_: torch.optim.Adam
+    lr: 0.001
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.MultiStepLR
+    milestones: [50, 100, 150]
+    gamma: 0.5
+
+  losses:
+    - l1:
+        _target_: torch.nn.L1Loss
+        reduction: mean
+      
+    - l2:
+        _target_: torch.nn.MSELoss
+        reduction: mean
+
+
+  losses_weights: [1, 1]
+
+val:
+  metrics:
+    - l1:
+        _target_: torch.nn.L1Loss
+        reduction: mean
+      
+    - l2:
+        _target_: torch.nn.MSELoss
+        reduction: mean

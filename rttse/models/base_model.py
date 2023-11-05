@@ -11,30 +11,40 @@ class BaseModel(pl.LightningModule):
         super().__init__()
         self.net = net
 
+    def get_bare_net(self):
+        return self.net
+
     def network_to_string(self):
-        return str(self.net)
+        return str(self.get_bare_net())
 
     def setup_training(self, cfg):
         print(cfg)
         self.cfg = cfg
         self.save_hyperparameters(cfg)
         # self.net = hydra.utils.instantiate(cfg['net'])
-        # self.losses = hydra.utils.instantiate(cfg['train']['losses'])
-        # self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
+        self.loss_weight = cfg['train']['losses_weights']    
+        self.losses = hydra.utils.instantiate(cfg['train']['losses'])
+        print(self.losses)
+
+        assert len(self.losses) == len(self.loss_weight), "size mismatch between losses and their weights"
+
+        self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
     def calculate_loss(self, y_hat, y, phase):
         loss_dict = OrderedDict()
         l_total = 0
-        for loss_name, loss_fn in self.losses.items():
-            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y)
-            l_total += loss_dict[loss_name]
+        for idx, loss in enumerate(self.losses):
+            loss_name, loss_fn = list(loss.items())[0]
+            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weight[idx]
+            l_total += loss_dict[f'{phase}/{loss_name}']
 
         loss_dict['l_total'] = l_total
         return loss_dict
 
     def calculate_metrics(self, y_hat, y, phase):
         metrics_dict = OrderedDict()
-        for metric_name, metric_fn in self.metrics.items():
+        for metric in self.metrics:
+            metric_name, metric_fn = list(metric.items())[0]
             metrics_dict[f'{phase}/{metric_name}'] = metric_fn(y_hat, y)
 
         return metrics_dict
@@ -50,32 +60,26 @@ class BaseModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
+
         y_hat = self.net(x)
 
-        loss_dict = self.calculate_loss(y_hat, y, 'val')
+        metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
-        metrics_dict = self.calculate_metrics(y_hat, y)
-
-        logs_dict = {**loss_dict, **metrics_dict}
-
-        self.log_dict(logs_dict)
+        self.log_dict(metrics_dict)
 
 
     def test_step(self,  batch, batch_idx):
         x, y = batch
         y_hat = self.net(x)
 
-        loss_dict = self.calculate_loss(y_hat, y, 'test')
+        metrics_dict = self.calculate_metrics(y_hat, y, 'test')
 
-        metrics_dict = self.calculate_metrics(y_hat, y)
 
-        logs_dict = {**loss_dict, **metrics_dict}
-
-        self.log_dict(logs_dict)
+        self.log_dict(metrics_dict)
 
 
     def configure_optimizers(self):
-        optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.parameters())
+        optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_net().parameters())
         scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
         return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
 

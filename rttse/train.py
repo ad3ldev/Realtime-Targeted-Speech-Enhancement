@@ -46,12 +46,17 @@ def train_pipeline(cfg):
 
     model_2 = hydra.utils.instantiate(cfg.model)
     model_2.setup_training(cfg.training)
+    # x = DictConfig()
+    # x.
     # print(model)
     # model_2 = hydra.utils.instantiate(cfg.model.net)
     print(model_2.network_to_string)
+    model_2.configure_optimizers()
+
     test = torch.randn(size=(1, 3, 64, 64))
-    yhat = model_2(test)
-    print(torch.nn.functional.l1_loss(test, yhat))
+    # yhat = model_2(test)
+    # print(torch.nn.functional.l1_loss(test, yhat))
+    model_2.validation_step((test, test), 0)
 
     # tb_logger = init_tb_loggers(cfg)
     # logger = get_root_logger()
