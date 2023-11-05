@@ -17,14 +17,16 @@ def init_tb_loggers(cfg):
     opt = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
 
     # initialize wandb logger before tensorboard logger to allow proper sync
-    if (opt['logger'].get('wandb') is not None) and (opt['logger']['wandb'].get('project')
-                                                     is not None) and ('debug' not in opt['name']):
-        assert opt['logger'].get(
-            'use_tb_logger') is True, ('should turn on tensorboard when using wandb')
+    if (opt.get('wandb') is not None) \
+        and (opt['wandb'].get('project') is not None) \
+        and ('debug' not in opt['name']):
+
+        assert opt.get('use_tb_logger') is True, ('should turn on tensorboard when using wandb')
+
         init_wandb_logger(opt)
 
     tb_logger = None
-    if opt['logger'].get('use_tb_logger') and 'debug' not in opt['name']:
+    if opt.get('use_tb_logger') and 'debug' not in opt['name']:
         tb_logger = init_tb_logger()
 
     return tb_logger
@@ -43,6 +45,10 @@ def training_loop(cfg, model, dataset, logger, msg_logger):
 @hydra.main(version_base=None, config_path="../config", config_name="config")
 def train_pipeline(cfg):
     print(OmegaConf.to_yaml(cfg))
+    # tb_logger = init_tb_loggers(cfg.logger)
+    # logger = get_root_logger()
+
+
 
     model_2 = hydra.utils.instantiate(cfg.model)
     model_2.setup_training(cfg.training)
@@ -59,7 +65,6 @@ def train_pipeline(cfg):
     model_2.validation_step((test, test), 0)
 
     # tb_logger = init_tb_loggers(cfg)
-    # logger = get_root_logger()
 
     # train_dataset, val_datasets = setup_datasets(cfg['dataset'], logger)
     # model = setup_model(cfg['model'], logger)

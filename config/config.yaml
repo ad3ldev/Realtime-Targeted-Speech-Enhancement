@@ -19,6 +19,16 @@
 #         project: RTTSE
 #         resume_id:
 
+trainer:
+  max_epochs: 120
+  accumulate_grad_batches: 1
+
+logger:
+  use_tb_logger: True
+  wandb:
+    project:
+    resume_id:
+
 defaults:
 - model: simpleAE
 - training: train

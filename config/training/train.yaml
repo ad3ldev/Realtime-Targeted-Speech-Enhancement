@@ -1,7 +1,7 @@
 train:
+
   ema_decay: 0
-  max_epochs: 120
-  gradient_accumulation: 1
+  
   optim:
     _target_: torch.optim.Adam
     lr: 0.001
