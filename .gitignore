@@ -9,6 +9,7 @@ results/*
 tb_logger/*
 wandb/*
 tmp/*
+outputs/*
 
 docs/api
 scripts/__init__.py
