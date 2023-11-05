@@ -1,0 +1,8 @@
+model:
+  _target_: models.base_model.BaseModel
+  net:
+    _target_: archs.SimpleAE.SimpleAE
+    channels: 3
+    embeding: 16
+    num_layers: 3
+training: {}

@@ -3,15 +3,24 @@ import pytorch_lightning as pl
 import hydra
 
 class BaseModel(pl.LightningModule):
-    def __init__(self, cfg) -> None:
+    # def __init__(self) -> None:
+    #     super().__init__()
+
+
+    def __init__(self, net) -> None:
         super().__init__()
-        # self.cfg = cfg
+        self.net = net
+
+    def network_to_string(self):
+        return str(self.net)
+
+    def setup_training(self, cfg):
+        print(cfg)
+        self.cfg = cfg
         self.save_hyperparameters(cfg)
-        self.net = hydra.utils.instantiate(cfg['net'])
-        self.losses = hydra.utils.instantiate(cfg['train']['losses'])
-        self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
-
-
+        # self.net = hydra.utils.instantiate(cfg['net'])
+        # self.losses = hydra.utils.instantiate(cfg['train']['losses'])
+        # self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
     def calculate_loss(self, y_hat, y, phase):
         loss_dict = OrderedDict()

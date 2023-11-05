@@ -1,6 +1,9 @@
 from time import sleep
 import hydra
 from omegaconf import DictConfig, OmegaConf
+from archs.SimpleAE import SimpleAE
+from models.base_model import BaseModel
+import torch
 
 
 from utils.logger import MessageLogger
@@ -41,24 +44,33 @@ def training_loop(cfg, model, dataset, logger, msg_logger):
 def train_pipeline(cfg):
     print(OmegaConf.to_yaml(cfg))
 
-    tb_logger = init_tb_loggers(cfg)
-    logger = get_root_logger()
+    model_2 = hydra.utils.instantiate(cfg.model)
+    model_2.setup_training(cfg.training)
+    # print(model)
+    # model_2 = hydra.utils.instantiate(cfg.model.net)
+    print(model_2.network_to_string)
+    test = torch.randn(size=(1, 3, 64, 64))
+    yhat = model_2(test)
+    print(torch.nn.functional.l1_loss(test, yhat))
 
-    train_dataset, val_datasets = setup_datasets(cfg['dataset'], logger)
-    model = setup_model(cfg['model'], logger)
+    # tb_logger = init_tb_loggers(cfg)
+    # logger = get_root_logger()
+
+    # train_dataset, val_datasets = setup_datasets(cfg['dataset'], logger)
+    # model = setup_model(cfg['model'], logger)
 
 
 
 
-    msg_logger = MessageLogger()
+    # msg_logger = MessageLogger()
 
 
-    training_loop(cfg, model, train_dataset, val_datasets, logger, msg_logger)
+    # training_loop(cfg, model, train_dataset, val_datasets, logger, msg_logger)
 
-    for i in range(50):
-        sleep(1)
-        tb_logger.add_scalar("loss", i, i)
-        logger.info(f'loss: {i}')
+    # for i in range(50):
+    #     sleep(1)
+    #     tb_logger.add_scalar("loss", i, i)
+    #     logger.info(f'loss: {i}')
 
 
 if __name__ == "__main__":

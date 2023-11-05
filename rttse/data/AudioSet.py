@@ -15,7 +15,7 @@ import sys
 import torchaudio
 from torch.nn import functional as F
 
-from .dsp import convert_audio
+from utils.dsp import convert_audio
 
 Info = namedtuple("Info", ["length", "sample_rate", "channels"])
 

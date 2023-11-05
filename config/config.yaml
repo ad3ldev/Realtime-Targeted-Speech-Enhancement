@@ -1,21 +1,25 @@
-name: test_123
-hydra:
-  job:
-    name: ${name}
-  run:
-    dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
+# name: test_123
+# hydra:
+#   job:
+#     name: ${name}
+#   run:
+#     dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
-project:
-  db:
-    name: mysql
-    host: localhost
+# project:
+#   db:
+#     name: mysql
+#     host: localhost
 
 
 
-logger:
-    print_freq: 
-    use_tb_logger: True
-    wandb: 
-        project: RTTSE
-        resume_id:
+# logger:
+#     print_freq: 
+#     use_tb_logger: True
+#     wandb: 
+#         project: RTTSE
+#         resume_id:
+
+defaults:
+- model: simpleAE
+- training: train
 
