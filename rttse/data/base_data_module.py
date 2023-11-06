@@ -1,6 +1,5 @@
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
-from hydra.utils import instantiate
 
 from utils.logger import get_root_logger
 
@@ -17,10 +16,10 @@ class BaseDataModule(pl.LightningDataModule):
         self.train_dataset = self.opt['train']['dataset']
         self.val_dataset = self.opt['val']['dataset']
         logger = get_root_logger()
-        logger.info("\n\nTraining Statistics:\n--------------------"
-                f"\n# Number of Training Samples: {len(self.train_dataset)}"
-                f"\n# Number of Validation Samples: {len(self.val_dataset)}"
-                f"\n# Training Batch Size: {self.opt['train']['dataloader']['batch_size']}\n\n")
+        logger.info("\nTraining Statistics:\n--------------------"
+                f"\n\t# Number of Training Samples: {len(self.train_dataset)}"
+                f"\n\t# Number of Validation Samples: {len(self.val_dataset)}"
+                f"\n\t# Training Batch Size: {self.opt['train']['dataloader']['batch_size']}\n\n")
 
 
     def train_dataloader(self):

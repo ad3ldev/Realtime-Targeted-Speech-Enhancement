@@ -28,7 +28,7 @@ class BaseModel(pl.LightningModule):
     def setup(self, stage=None):
         logger = get_root_logger()
 
-        logger.info(f"\n\n{self.network_to_string()}\n\n")
+        logger.info(f"\n\t{self.network_to_string()}\n")
 
     
 
@@ -85,7 +85,3 @@ class BaseModel(pl.LightningModule):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
         scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
         return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
-
-    # def on_train_start(self):
-    #     # Proper logging of hyperparams and metrics in TB
-    #     self.logger.log_hyperparams(self.hparams, {"loss/val": 0, "accuracy/val": 0, "accuracy/test": 0})

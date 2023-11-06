@@ -1,9 +1,7 @@
 from pytorch_lightning.callbacks import Callback
-from pytorch_lightning.utilities import rank_zero_only
 from utils.logger import get_root_logger
 from timm.utils.model import get_state_dict, unwrap_model
 from timm.utils.model_ema import ModelEmaV2
-
 
 class EMACallback(Callback):
     """
