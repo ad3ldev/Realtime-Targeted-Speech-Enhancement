@@ -4,7 +4,9 @@
 
 # ignored folders
 datasets/*
+!datasets/readme.md
 experiments/*
+!experiments/readme.md
 results/*
 tb_logger/*
 wandb/*
