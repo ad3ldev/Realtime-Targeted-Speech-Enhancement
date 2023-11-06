@@ -52,15 +52,15 @@ def setup_trainer(cfg, tb_logger):
 
 @hydra.main(version_base=None, config_path="../config", config_name="config")
 def train_pipeline(cfg):
-
-    seed_everything(cfg.manual_seed)
-
-    tb_logger = init_tb_loggers(cfg)
     logger = get_root_logger()
 
     logger.info(get_env_info())
 
     logger.info(f"\n{OmegaConf.to_yaml(cfg)}")
+
+    tb_logger = init_tb_loggers(cfg)
+
+    seed_everything(cfg.manual_seed)
 
     data_loader = setup_datasets(cfg)
 
