@@ -53,7 +53,7 @@ class EMACallback(Callback):
         if self.ema is not None:
             return {"state_dict_ema": get_state_dict(self.ema, unwrap_model)}
 
-    def on_load_checkpoint(self, callback_state):
+    def on_load_checkpoint(self, trainer, pl_module, callback_state):
         if self.ema is not None:
             self.ema.module.load_state_dict(callback_state["state_dict_ema"])
 

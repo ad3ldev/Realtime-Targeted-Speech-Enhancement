@@ -28,7 +28,7 @@ class BaseModel(pl.LightningModule):
     def setup(self, stage=None):
         logger = get_root_logger()
 
-        logger.info(f"\n\t{self.network_to_string()}\n")
+        logger.info(f"\n{self.network_to_string()}\n")
 
     
 

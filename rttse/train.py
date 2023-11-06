@@ -3,7 +3,7 @@ import hydra
 from omegaconf import OmegaConf
 
 from pytorch_lightning import Trainer, seed_everything
-from utils.logger import init_wandb_logger, init_tb_logger
+from utils.logger import get_env_info, init_wandb_logger, init_tb_logger
 from utils.logger import get_root_logger
 
 
@@ -57,6 +57,8 @@ def train_pipeline(cfg):
 
     tb_logger = init_tb_loggers(cfg)
     logger = get_root_logger()
+
+    logger.info(get_env_info())
 
     logger.info(f"\n{OmegaConf.to_yaml(cfg)}")
 

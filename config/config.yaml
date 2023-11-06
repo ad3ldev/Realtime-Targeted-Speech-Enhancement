@@ -3,12 +3,12 @@ hydra:
   job:
     name: ${name}
   run:
-    dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
+    dir: experiments/${name}
 
 
 manual_seed: 0
 
-checkpoint_path:
+checkpoint_path: experiments\SimpleAE\version_0\checkpoints\epoch=2-step=300.ckpt
 
 trainer: 
   max_epochs: 120
