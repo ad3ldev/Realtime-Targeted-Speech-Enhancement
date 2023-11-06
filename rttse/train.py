@@ -1,16 +1,8 @@
 from time import sleep
 import hydra
-from omegaconf import DictConfig, OmegaConf
-from archs.SimpleAE import SimpleAE
-from models.base_model import BaseModel
-import torch
-# from pytorch_lightning.utilities.seed import seed_everything
+from omegaconf import OmegaConf
 
 from pytorch_lightning import Trainer, seed_everything
-from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
-# from utils.callbacks import EMACallback
-
-# from utils.logger import MessageLogger
 from utils.logger import init_wandb_logger, init_tb_logger
 from utils.logger import get_root_logger
 
@@ -51,7 +43,6 @@ def setup_model(cfg):
     return model
 
 def setup_trainer(cfg, tb_logger):
-    # EMACallback()
     callbacks = hydra.utils.instantiate(cfg.callbacks)
     callbacks = [list(cb.values())[0] for cb in callbacks]
     trainer = Trainer(**cfg['trainer'], logger=tb_logger, callbacks=callbacks)
