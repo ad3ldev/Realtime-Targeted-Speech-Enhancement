@@ -10,6 +10,7 @@ tb_logger/*
 wandb/*
 tmp/*
 outputs/*
+lightning_logs/*
 
 docs/api
 scripts/__init__.py

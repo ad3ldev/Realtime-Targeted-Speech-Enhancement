@@ -24,7 +24,8 @@ class BaseModel(pl.LightningModule):
         # self.net = hydra.utils.instantiate(cfg['net'])
         self.loss_weight = cfg['train']['losses_weights']    
         self.losses = hydra.utils.instantiate(cfg['train']['losses'])
-        print(self.losses)
+        # print(self.losses)
+        self.ema_decay = cfg['train']['ema_decay']
 
         assert len(self.losses) == len(self.loss_weight), "size mismatch between losses and their weights"
 

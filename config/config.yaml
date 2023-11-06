@@ -1,9 +1,9 @@
-# name: test_123
-# hydra:
-#   job:
-#     name: ${name}
-#   run:
-#     dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
+name: SimpleAE
+hydra:
+  job:
+    name: ${name}
+  run:
+    dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
 # project:
 #   db:
@@ -18,18 +18,21 @@
 #     wandb: 
 #         project: RTTSE
 #         resume_id:
+manual_seed: 0
 
-trainer:
+
+trainer: 
   max_epochs: 120
   accumulate_grad_batches: 1
 
 logger:
   use_tb_logger: True
   wandb:
-    project:
+    project: RTTSE
     resume_id:
 
 defaults:
 - model: simpleAE
 - training: train
+- data: random_data
 

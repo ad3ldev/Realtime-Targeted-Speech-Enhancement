@@ -118,8 +118,9 @@ class MessageLogger():
 
 
 def init_tb_logger():
-    from torch.utils.tensorboard import SummaryWriter
-    tb_logger = SummaryWriter(log_dir='tb_logger')
+    # from torch.utils.tensorboard import SummaryWriter
+    from pytorch_lightning.loggers import TensorBoardLogger
+    tb_logger = TensorBoardLogger(save_dir='tb_logger')
     return tb_logger
 
 
