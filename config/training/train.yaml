@@ -1,14 +1,11 @@
-train:
-
-  ema_decay: 0
-  
+train:  
   optim:
     _target_: torch.optim.Adam
     lr: 0.001
 
   scheduler:
     _target_: torch.optim.lr_scheduler.MultiStepLR
-    milestones: [50, 100, 150]
+    milestones: [5, 10, 15]
     gamma: 0.5
 
   losses:

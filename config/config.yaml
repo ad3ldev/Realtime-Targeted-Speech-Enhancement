@@ -5,25 +5,29 @@ hydra:
   run:
     dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
-# project:
-#   db:
-#     name: mysql
-#     host: localhost
 
-
-
-# logger:
-#     print_freq: 
-#     use_tb_logger: True
-#     wandb: 
-#         project: RTTSE
-#         resume_id:
 manual_seed: 0
 
+checkpoint_path:
 
 trainer: 
   max_epochs: 120
   accumulate_grad_batches: 1
+
+callbacks:
+  - ModelCheckpoint:
+      _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      every_n_epochs: 1
+
+  - EMACallback:
+      _target_: utils.callbacks.EMACallback
+      decay: 0.999
+  
+  - LearningRateMonitor:
+      _target_: pytorch_lightning.callbacks.LearningRateMonitor
+      logging_interval: epoch
+
+
 
 logger:
   use_tb_logger: True
