@@ -3,6 +3,8 @@ Code from BasicSR
 """
 
 import logging
+from omegaconf import OmegaConf
+import hydra
 
 def init_tb_logger(save_dir):
     from pytorch_lightning.loggers import TensorBoardLogger
@@ -52,6 +54,25 @@ def get_env_info():
             f'\n\tPyTorch-Lightning: {pl.__version__}'
             f'\n\tHydra: {hydra.__version__}')
     return msg
+
+
+def init_logging(cfg):
+
+    opt = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
+
+    # initialize wandb logger before tensorboard logger to allow proper sync
+    if (opt['logger'].get('wandb') is not None) \
+        and (opt['logger']['wandb'].get('project') is not None) \
+        and ('debug' not in opt['name']):
+
+        assert opt['logger'].get('use_tb_logger') is True, ('should turn on tensorboard when using wandb')
+
+        init_wandb_logger(opt)
+
+
+    tb_logger = init_tb_logger(save_dir=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir)
+
+    return tb_logger
 
 
 

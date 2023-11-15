@@ -17,11 +17,10 @@ class BaseModel(pl.LightningModule):
 
     def setup_training(self, cfg):
         self.cfg = cfg
-        self.save_hyperparameters(cfg)
-        self.loss_weight = cfg['train']['losses_weights']    
-        self.losses = hydra.utils.instantiate(cfg['train']['losses'])
+        self.save_hyperparameters(cfg, logger=False)
 
-        assert len(self.losses) == len(self.loss_weight), "size mismatch between losses and their weights"
+        self.loss_weights = cfg['train']['losses_weights']    
+        self.losses = hydra.utils.instantiate(cfg['train']['losses'])
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
@@ -35,9 +34,9 @@ class BaseModel(pl.LightningModule):
     def calculate_loss(self, y_hat, y, phase):
         loss_dict = OrderedDict()
         l_total = 0
-        for idx, loss in enumerate(self.losses):
-            loss_name, loss_fn = list(loss.items())[0]
-            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weight[idx]
+        for loss_name, loss_fn in self.losses.items():
+            # loss_name, loss_fn = list(loss.items())[0]
+            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weights.get(loss_name, 1)
             l_total += loss_dict[f'{phase}/{loss_name}']
 
         if len(self.losses) > 1: loss_dict[f'{phase}/l_total'] = l_total
@@ -45,8 +44,8 @@ class BaseModel(pl.LightningModule):
 
     def calculate_metrics(self, y_hat, y, phase):
         metrics_dict = OrderedDict()
-        for metric in self.metrics:
-            metric_name, metric_fn = list(metric.items())[0]
+        for metric_name, metric_fn in self.metrics.items():
+            # metric_name, metric_fn = list(metric.items())[0]
             metrics_dict[f'{phase}/{metric_name}'] = metric_fn(y_hat, y)
 
         return metrics_dict

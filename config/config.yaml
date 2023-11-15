@@ -3,40 +3,18 @@ hydra:
   job:
     name: ${name}
   run:
-    dir: experiments/${name}
-
-
-manual_seed: 0
-
-checkpoint_path: experiments\SimpleAE\version_0\checkpoints\epoch=2-step=300.ckpt
-
-trainer: 
-  max_epochs: 120
-  accumulate_grad_batches: 1
-
-callbacks:
-  - ModelCheckpoint:
-      _target_: pytorch_lightning.callbacks.ModelCheckpoint
-      every_n_epochs: 1
-
-  - EMACallback:
-      _target_: utils.callbacks.EMACallback
-      decay: 0.999
-  
-  - LearningRateMonitor:
-      _target_: pytorch_lightning.callbacks.LearningRateMonitor
-      logging_interval: epoch
-
-
+    dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
 logger:
-  use_tb_logger: True
   wandb:
-    project: RTTSE
+    project: 
     resume_id:
 
 defaults:
-- model: simpleAE
-- training: train
 - data: random_data
+- model: simpleAE
+- training: training
+- trainer: trainer
+
+
 
