@@ -1,4 +1,4 @@
-name: SimpleAE
+name: CleanUNet
 hydra:
   job:
     name: ${name}
@@ -11,8 +11,8 @@ logger:
     resume_id:
 
 defaults:
-- data: random_data
-- model: simpleAE
+- data: CleanUNetDataSet
+- model: CleanUNet
 - training: training
 - trainer: trainer
 

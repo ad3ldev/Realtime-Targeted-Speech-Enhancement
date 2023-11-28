@@ -1,0 +1,30 @@
+_target_: data.base_data_module.BaseDataModule
+
+opt:
+  data_dir:
+  train:
+    dataset:
+      _target_: data.CleanUNetDataSet.CleanNoisyPairDataset
+      root: D:\CSED2024\Graduation Project\code\Realtime-Targeted-Speech-Enhancement\datasets\debug
+      subset: training
+      crop_length_sec: 0
+
+
+    dataloader:
+      batch_size: 1
+      num_workers: 2
+      shuffle: True
+      pin_memory: True
+
+  val:
+    dataset:
+      _target_: data.CleanUNetDataSet.CleanNoisyPairDataset
+      root: D:\CSED2024\Graduation Project\code\Realtime-Targeted-Speech-Enhancement\datasets\debug
+      subset: training
+      crop_length_sec: 0
+  
+    dataloader:
+      batch_size: 1
+      num_workers: 2
+      # shuffle: True
+      # pin_memory: True
