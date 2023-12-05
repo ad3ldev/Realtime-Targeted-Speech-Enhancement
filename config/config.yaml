@@ -13,8 +13,8 @@ logger:
 defaults:
 - data: CleanUNetDataSet
 - model: CleanUNet
-- training: training
-- trainer: trainer
+- training: CleanUNet_training
+- trainer: CleanUNet_trainer
 
 
 
