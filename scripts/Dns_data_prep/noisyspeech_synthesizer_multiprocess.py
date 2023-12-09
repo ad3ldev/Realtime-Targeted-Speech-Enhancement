@@ -193,10 +193,9 @@ def main_gen(params, filenum):
     noise_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in noise_source_files]
     noise_files_joined = hyphen.join(noise_source_filenamesonly)[:MAXFILELEN]
 
-    noisyfilename = clean_files_joined + '_' + noise_files_joined + '_snr' + \
-                    str(snr) + '_fileid_' + str(filenum) + '.wav'
-    cleanfilename = 'clean_fileid_'+str(filenum)+'.wav'
-    noisefilename = 'noise_fileid_'+str(filenum)+'.wav'
+    noisyfilename = 'fileid_' + str(file_num) + '.wav'
+    cleanfilename = 'fileid_' + str(file_num) + '.wav'
+    noisefilename = 'fileid_' + str(file_num) + '.wav'
 
     noisypath = os.path.join(params['noisyspeech_dir'], noisyfilename)
     cleanpath = os.path.join(params['clean_proc_dir'], cleanfilename)
