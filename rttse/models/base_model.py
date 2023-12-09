@@ -19,7 +19,7 @@ class BaseModel(pl.LightningModule):
         self.cfg = cfg
         self.save_hyperparameters(cfg, logger=False)
 
-        self.loss_weights = cfg['train']['losses_weights']    
+        self.loss_weights = cfg['train'].get('loss_weights', {})    
         self.losses = hydra.utils.instantiate(cfg['train']['losses'])
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
