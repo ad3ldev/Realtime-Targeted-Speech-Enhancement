@@ -11,7 +11,7 @@ opt:
 
 
     dataloader:
-      batch_size: 64
+      batch_size: 6
       num_workers: 2
       shuffle: True
       pin_memory: True
