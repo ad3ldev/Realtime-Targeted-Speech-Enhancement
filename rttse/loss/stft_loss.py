@@ -111,8 +111,9 @@ class STFTLoss(torch.nn.Module):
             Tensor: Log STFT magnitude loss value.
 
         """
-        x_mag = stft(x, self.fft_size, self.shift_size, self.win_length, self.window)
-        y_mag = stft(y, self.fft_size, self.shift_size, self.win_length, self.window)
+        window = self.window.to(x.device)
+        x_mag = stft(x, self.fft_size, self.shift_size, self.win_length, window)
+        y_mag = stft(y, self.fft_size, self.shift_size, self.win_length, window)
 
         if self.band == "high":
             freq_mask_ind = x_mag.shape[1] // 2  # only select high frequency bands
