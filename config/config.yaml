@@ -10,6 +10,7 @@ logger:
   wandb:
     project: 
     resume_id:
+    group:
 
 defaults:
 - data: CleanUNetDataSet
