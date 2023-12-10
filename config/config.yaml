@@ -6,6 +6,7 @@ hydra:
     dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
 logger:
+  use_tb_logger:
   wandb:
     project: 
     resume_id:
