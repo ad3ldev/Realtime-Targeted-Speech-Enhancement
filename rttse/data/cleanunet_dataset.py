@@ -32,8 +32,8 @@ class CleanNoisyPairDataset(Dataset):
         assert N_clean == N_noisy
 
         if subset == "training":
-            self.files = [(os.path.join(root, 'training_set', 'clean', 'fileid_{}.wav'.format(i+1)),
-                           os.path.join(root, 'training_set', 'noisy', 'fileid_{}.wav'.format(i+1))) for i in range(N_clean)]
+            self.files = [(os.path.join(root, 'training_set', 'clean', 'fileid_{}.wav'.format(i)),
+                           os.path.join(root, 'training_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
         
         elif subset == "testing":
             sortkey = lambda name: '_'.join(name.split('_')[-2:])  # specific for dns due to test sample names
