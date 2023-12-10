@@ -28,7 +28,7 @@ def init_wandb_logger(opt):
         resume = 'never'
 
 
-    wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True, group=opt['group'])
+    wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True, group=['logger']['wandb']['group'])
 
     logger.info(f'Use wandb logger with id={wandb_id}; project={project}.')
 
