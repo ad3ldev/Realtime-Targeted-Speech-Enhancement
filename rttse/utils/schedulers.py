@@ -1,4 +1,5 @@
 from math import cos, pi
+from torch.optim import lr_scheduler
 
 ####################### lr scheduler: Linear Warmup then Cosine Decay #############################
 
@@ -37,7 +38,7 @@ class Phase:
         return self.n >= self.n_iter
 
 
-class LinearWarmupCosineDecay:
+class LinearWarmupCosineDecay(lr_scheduler.LRScheduler):
     def __init__(
         self,
         optimizer,

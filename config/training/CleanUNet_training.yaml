@@ -4,13 +4,13 @@ train:
     lr: 2e-4
 
   scheduler:
-    _target_: utils.scheduler.CosineAnnealingWarmRestarts
+    _target_: utils.schedulers.LinearWarmupCosineDecay
     lr_max: 2e-4
     n_iter: 250000
     iteration: 10001
     divider: 25
     warmup_proportion: 0.05
-    phase: ('linear', 'cosine')
+    phase: ['linear', 'cosine']
 
   losses:
     l1:
@@ -33,15 +33,15 @@ train:
 val:
   metrics:
     pesq_wb:
-      _target_: metrics.pesq.PESQ
-      sample_rate: 16000
+      _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
+      fs: 16000
       mode: wb
 
     pesq_nb:
-      _target_: metrics.pesq.PESQ
-      sample_rate: 16000
+      _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
+      fs: 16000
       mode: nb
       
     stoi:
-      _target_: metrics.stoi.STOI
-      sample_rate: 16000
+      _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
+      fs: 16000
