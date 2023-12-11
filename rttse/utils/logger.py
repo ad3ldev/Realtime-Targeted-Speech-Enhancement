@@ -5,13 +5,15 @@ Code from BasicSR
 import logging
 from omegaconf import OmegaConf
 import hydra
+from .dist_utils import master_only
 
+@master_only
 def init_tb_logger(save_dir):
     from pytorch_lightning.loggers import TensorBoardLogger
     tb_logger = TensorBoardLogger(save_dir, name='')
     return tb_logger
 
-
+@master_only
 def init_wandb_logger(opt):
     """We now only use wandb to sync tensorboard log."""
     import wandb
@@ -28,7 +30,7 @@ def init_wandb_logger(opt):
         resume = 'never'
 
 
-    wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True, group=opt['logger']['wandb']['group'])
+    wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True)
 
     logger.info(f'Use wandb logger with id={wandb_id}; project={project}.')
 

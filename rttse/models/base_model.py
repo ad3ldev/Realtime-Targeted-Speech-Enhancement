@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import pytorch_lightning as pl
 import hydra
+from utils.dist_utils import master_only
 
 from utils.logger import get_root_logger
 
@@ -24,7 +25,8 @@ class BaseModel(pl.LightningModule):
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
-    def setup(self, stage=None):
+    @master_only
+    def print_netowrk(self, stage=None):
         logger = get_root_logger()
 
         logger.info(f"\n{self.network_to_string()}\n")

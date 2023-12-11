@@ -17,6 +17,8 @@ def setup_model(model_cfg, training_cfg):
     model = hydra.utils.instantiate(model_cfg)
     model.setup_training(training_cfg)
 
+    model.print_netowrk()
+
     model.configure_optimizers()
 
     return model
@@ -35,6 +37,7 @@ def train_pipeline(cfg):
     logger = get_root_logger()
 
     logger.info(get_env_info())
+
 
     logger.info(f"\n{OmegaConf.to_yaml(cfg)}")
 
