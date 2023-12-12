@@ -1,0 +1,13 @@
+hydra-core
+numpy
+pytorch-lightning
+tensorboard
+timm
+torch
+torchaudio
+torchmetrics
+torchvision
+tqdm
+pesq
+pystoi
+wandb

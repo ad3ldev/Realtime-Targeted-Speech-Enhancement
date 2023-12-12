@@ -1,0 +1,32 @@
+train:  
+  optim:
+    _target_: torch.optim.Adam
+    lr: 0.001
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.MultiStepLR
+    milestones: [5, 10, 15]
+    gamma: 0.5
+
+  losses:
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
+      
+    l2:
+      _target_: torch.nn.MSELoss
+      reduction: mean
+
+
+  losses_weights:
+    l1: 0.5
+
+val:
+  metrics:
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
+      
+    l2:
+      _target_: torch.nn.MSELoss
+      reduction: mean

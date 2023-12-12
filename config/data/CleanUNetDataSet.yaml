@@ -1,0 +1,30 @@
+_target_: data.base_data_module.BaseDataModule
+
+opt:
+  data_dir:
+  train:
+    dataset:
+      _target_: data.cleanunet_dataset.CleanNoisyPairDataset
+      root: /kaggle/working/dns
+      subset: training
+      crop_length_sec: 0
+
+
+    dataloader:
+      batch_size: 32
+      num_workers: 2
+      shuffle: True
+      pin_memory: True
+
+  val:
+    dataset:
+      _target_: data.cleanunet_dataset.CleanNoisyPairDataset
+      root: /kaggle/working/dns
+      subset: training
+      crop_length_sec: 0
+  
+    dataloader:
+      batch_size: 1
+      num_workers: 2
+      # shuffle: True
+      # pin_memory: True

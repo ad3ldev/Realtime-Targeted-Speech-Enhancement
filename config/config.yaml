@@ -1,0 +1,22 @@
+name: CleanUNet
+hydra:
+  job:
+    name: ${name}
+  run:
+    dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}
+
+logger:
+  use_tb_logger:
+  wandb:
+    project: 
+    resume_id:
+    group:
+
+defaults:
+- data: CleanUNetDataSet
+- model: CleanUNet
+- training: CleanUNet_training
+- trainer: CleanUNet_trainer
+
+
+
