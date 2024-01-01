@@ -138,3 +138,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Allow images in document folder
+!document/**/*.png
+!document/**/*.jpg
+!document/**/*.jpeg
+!document/**/*.gif
+!document/**/*.svg

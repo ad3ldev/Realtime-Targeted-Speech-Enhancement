@@ -1,0 +1,38 @@
+\usepackage[margin=1in]{geometry}
+\usepackage[toc,page]{appendix}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{titlesec}
+% \usepackage{natbib}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{parskip}
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{svg}
+\usepackage[style=ieee]{biblatex}
+\addbibresource{mybibliography.bib}
+
+\urlstyle{same}
+\newcommand{\sectionbreak}{\clearpage}
+
+\titleformat{\section}[display]
+  {\normalfont\bfseries}{}{0pt}{\huge}
+  
+\captionsetup[figure]{margin=1.5cm,font=small,labelfont={bf},name={Figure},labelsep=colon,textfont={it}}
+\captionsetup[table]{margin=1.5cm,font=small,labelfont={bf},name={Table},labelsep=colon,textfont={it}}
+% \setlipsumdefault{1}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+% \tolerance=10
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Real-time Targeted Speech Enhancement}
+\rfoot{Page \thepage}

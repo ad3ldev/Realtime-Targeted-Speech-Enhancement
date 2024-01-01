@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper,oneside]{article}
+
+\input{preamble/setup}
+
+\begin{document}
+
+
+% -------------------------------------------------------------------
+% Edit these details!
+% -------------------------------------------------------------------
+% \newcommand{\moduleCode}{CMP2802M}
+% \newcommand{\moduleTitle}{Internet of Things}
+% \newcommand{\yourName}{Joe Pitts}
+% \newcommand{\yourID}{PIT16657094}
+
+\input{preamble/title}
+
+
+% -------------------------------------------------------------------
+% Contents
+% -------------------------------------------------------------------
+
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+
+
+% -------------------------------------------------------------------
+% Main sections (as required)
+% -------------------------------------------------------------------
+
+\input{sections/intro/intro.tex}
+\input{sections/problem-def/problem-def.tex}
+\input{sections/background/background.tex}
+\input{sections/datasets/datasets.tex}
+\input{sections/metrics/metrics.tex}
+\input{sections/related-work/related-work.tex}
+\input{sections/progress/progress.tex}
+\input{sections/next-steps/next-steps.tex}
+
+% -------------------------------------------------------------------
+% Bibliography
+% -------------------------------------------------------------------
+\renewcommand*{\bibfont}{\raggedright}
+% \bibliographystyle{ieeetr} 
+% \bibliography{mybibliography} 
+\printbibliography[heading=bibintoc,title={References}]
+% \nocite{*}
+
+
+\end{document}
