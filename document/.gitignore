@@ -10,6 +10,8 @@
 *.toc
 *.lot
 *.lof
+*.bcf
+*.run.xml
 
 # Compiled LaTeX documents
 *.pdf
