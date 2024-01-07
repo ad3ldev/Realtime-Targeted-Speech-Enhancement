@@ -14,9 +14,9 @@ logger:
 
 defaults:
 - data: CleanUNetDataSet
-- model: CleanUNet
-- training: CleanUNet_training
-- trainer: CleanUNet_trainer
+- model: Demucs
+- training: Demucs_training
+- trainer: Demucs_trainer
 
 
 
