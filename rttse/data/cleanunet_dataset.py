@@ -23,7 +23,7 @@ class CleanNoisyPairDataset(Dataset):
     def __init__(self, root='./', subset='training', crop_length_sec=0):
         super(CleanNoisyPairDataset).__init__()
 
-        assert subset is None or subset in ["training", "testing"]
+        assert subset is None or subset in ["training", "testing", "validation"]
         self.crop_length_sec = crop_length_sec
         self.subset = subset
 
@@ -31,9 +31,9 @@ class CleanNoisyPairDataset(Dataset):
         N_noisy = len(os.listdir(os.path.join(root, 'training_set', 'noisy')))
         assert N_clean == N_noisy
 
-        if subset == "training":
-            self.files = [(os.path.join(root, 'training_set', 'clean', 'fileid_{}.wav'.format(i)),
-                           os.path.join(root, 'training_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
+        if subset == "training" or subset == "validation": # Assume validation is a subset of training
+            self.files = [(os.path.join(root, f'{subset}_set', 'clean', 'fileid_{}.wav'.format(i)),
+                           os.path.join(root, f'{subset}_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
         
         elif subset == "testing":
             sortkey = lambda name: '_'.join(name.split('_')[-2:])  # specific for dns due to test sample names
