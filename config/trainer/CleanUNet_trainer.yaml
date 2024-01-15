@@ -8,7 +8,7 @@ trainer_args:
 callbacks:
   - ModelCheckpoint:
       _target_: pytorch_lightning.callbacks.ModelCheckpoint
-      every_n_epochs: 20
+      every_n_epochs: 2
 
   
   - LearningRateMonitor:
