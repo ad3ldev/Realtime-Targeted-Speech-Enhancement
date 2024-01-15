@@ -79,7 +79,8 @@ class CleanNoisyPairDataset(Dataset):
             noisy_audio = noisy_audio.repeat(int(np.ceil(length / actual_length)))
             clean_audio = clean_audio[:length]
             noisy_audio = noisy_audio[:length]
-            
+        
+        print("Loaded file: ", fileid, " with shape: ", clean_audio.shape, noisy_audio.shape)
         clean_audio, noisy_audio = clean_audio.unsqueeze(0), noisy_audio.unsqueeze(0)
         return (noisy_audio, clean_audio)
 
