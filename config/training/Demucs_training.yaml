@@ -47,3 +47,8 @@ val:
     stoi:
       _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
       fs: 16000
+    
+    DNSMOS:
+      _target_: metrics.dnsmos_local.DNSMOSScore
+      fs: 16000
+
