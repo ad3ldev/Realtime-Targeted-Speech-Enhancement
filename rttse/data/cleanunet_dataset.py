@@ -23,7 +23,7 @@ class CleanNoisyPairDataset(Dataset):
     def __init__(self, root='./', subset='training', crop_length_sec=0):
         super(CleanNoisyPairDataset).__init__()
 
-        assert subset is None or subset in ["training", "testing", "validation"]
+        assert subset is None or subset in ["training", "testing", "val"]
         self.crop_length_sec = crop_length_sec
         self.subset = subset
         
