@@ -20,11 +20,11 @@ class CleanNoisyPairDataset(Dataset):
     Each element is a tuple of the form (clean waveform, noisy waveform, file_id)
     """
     
-    def __init__(self, root='./', subset='training', crop_length_sec=0):
+    def __init__(self, root='./', subset='training', length_sec=30):
         super(CleanNoisyPairDataset).__init__()
 
         assert subset is None or subset in ["training", "testing", "val"]
-        self.crop_length_sec = crop_length_sec
+        self.length_sec = length_sec
         self.subset = subset
         
         N_clean = len(os.listdir(os.path.join(root, 'training_set','clean')))
@@ -62,17 +62,24 @@ class CleanNoisyPairDataset(Dataset):
         clean_audio, noisy_audio = clean_audio.squeeze(0), noisy_audio.squeeze(0)
         assert len(clean_audio) == len(noisy_audio)
         
-        print(f"Loaded {fileid[0]} and {fileid[1]} with lengths {len(clean_audio)} and {len(noisy_audio)}")
-
-        crop_length = int(self.crop_length_sec * sample_rate)
-        assert crop_length < len(clean_audio)
+        length = int(self.length_sec * sample_rate)
+        actual_length = len(clean_audio)
+        
+        # assert crop_length < len(clean_audio)
 
         # random crop
-        if self.subset != 'testing' and crop_length > 0:
-            start = np.random.randint(low=0, high=len(clean_audio) - crop_length + 1)
-            clean_audio = clean_audio[start:(start + crop_length)]
-            noisy_audio = noisy_audio[start:(start + crop_length)]
+        if length < actual_length:
+            start = np.random.randint(low=0, high=len(clean_audio) - length + 1)
+            clean_audio = clean_audio[start:(start + length)]
+            noisy_audio = noisy_audio[start:(start + length)]
         
+        # repeat if length is shorter than desired
+        elif length > actual_length:
+            clean_audio = clean_audio.repeat(int(np.ceil(length / actual_length)))
+            noisy_audio = noisy_audio.repeat(int(np.ceil(length / actual_length)))
+            clean_audio = clean_audio[:length]
+            noisy_audio = noisy_audio[:length]
+            
         clean_audio, noisy_audio = clean_audio.unsqueeze(0), noisy_audio.unsqueeze(0)
         return (noisy_audio, clean_audio)
 
