@@ -1,0 +1,133 @@
+\section{CleanUNet \cite{kong2022}}
+CleanUNet tackles the task of \textbf{speech denoising}, aiming to enhance recorded speech by eliminating background noise without compromising perceptual quality and intelligibility. Unlike approaches relying on the frequency domain, CleanUNet operates in the time domain, directly analyzing and manipulating the raw waveform samples. This enables real-time processing and avoids potential distortions introduced by domain transformations. Utilizing a U-Net structure with self-attention blocks, CleanUNet achieves superior performance in removing background noise while preserving speech intelligibility. This comprehensive analysis dissects the model's architecture, training procedure, and results, demonstrating its effectiveness across various datasets and metrics.
+
+\subsection{Datasets and Data Augmentation}
+The model is trained on three datasets: Deep Noise Suppression (DNS), Valentini, and an internal dataset. Each dataset provides aligned pairs of clean and noisy speech ($x_{\text{noisy}}$,$x$), with specific augmentation techniques employed for data enrichment. 
+
+\subsubsection{DNS}
+It contains recordings of more than 10k speakers, reading 10k books with a sampling rate = 16kHz. 500 hours of clean and noisy speech pairs were synthesized. The length of each sample was 10 seconds.
+
+The augmentation technique was RevEcho, which adds decaying echoes to the training data.
+
+\subsubsection{Valentini}
+It contains 28.4 hours of clean and noisy speech pairs, collected from 84 speakers, with a sampling rate = 48kHz. The length was between 1.33 and 1.5 seconds, randomly chosen. The augmentation techniques were: 
+\begin{itemize}
+    \item \textbf{Remix :} shuffles noises within a local batch.
+    \item \textbf{BandMask :} removes a fraction of frequencies.
+\end{itemize}
+
+\subsubsection{Internal Dataset}
+It contains 100 hours of clean and noisy speech pairs with sampling rate = 48kHz. The length of each sample was 10 seconds. The augmentation technique was RevEcho, similar to DNS.
+
+\subsection{Model Architecture}
+The baseline is a U-net architecture, which is composed of an encode, a decoder, and a bottleneck between them. Both encoder and decoder have the same number of layers, D (Depth of the encoder). Encoder and decoder are connected by skip connections.
+
+Each encoder layer consists of:
+\begin{itemize}
+    \item Strided 1-d convolution (Conv1d): to down-sample the length of the input and increase the number of channels. Each Conv1d has kernel size K and stride S = K/2. First layer's conv1d outputs H channels, while next layers double the number of input channels.
+    \item ReLU (rectified linear unit).
+    \item 1x1 convolution (Conv1×1): to double the number of channels.
+    \item Gated linear unit (GLU): given 2 inputs a and b, it outputs: a * sigmoid(b). The number of channels is doubled by the Conv1×1 because it's halved by the GLU then.
+\end{itemize}
+
+Each decoder layer consists of:
+\begin{itemize}
+    \item 1×1 convolution (Conv1×1).
+    \item GLU.
+    \item Transposed 1-d convolution (ConvTranspose1d).
+\end{itemize}
+
+Each layer of the decoder is paired with the corresponding encoder layer in reversed order (via skip channels). The bottleneck consists of N self-attention blocks.
+
+Each self-attention block consists of:
+\begin{itemize}
+    \item Multi-head self-attention layer: contains 8 heads.
+    \item Position-wise fully connected layer.
+\end{itemize}
+
+Each of these layers has a skip connection around it, then the layer is normalized.
+
+Model dimension is 512. The attention map is masker, which means that during self-attention, each position in the sequence can only attend to positions earlier in the sequence, to ensure causality.
+
+\subsection{Training Procedure}
+Given 2 inputs, $x$ and $x_{\text{noisy}} = x + x_{\text{noise}}$, this model should calculate $\hat{x} = f(x_{\text{noisy}}) \approx x$.
+
+The loss function has 2 terms:
+\begin{itemize}
+    \item $L_1$ loss on waveform.
+    \item STFT loss: Short-time Fourier transform loss between $x$ (clean speech) and $\hat{x}$ (denoised speech).
+\end{itemize}
+
+Before displaying these 2 terms, we must know some terms used in these 2 losses, which are: Frobenius norm, $L_1$ norm and M-STFT loss.
+
+\textbf{Frobenius norm $\lVert A \rVert_F$} is a matrix norm defined as the square root of the sum of the absolute squares of its elements, which is equivalent to the square root of the trace of $A^*A$.
+
+\textbf{$L_1$ norm $\lVert A \rVert_1$} is a matrix norm defined as the sum of the absolute values of its elements.
+
+The STFT hyperparameters include the hop size, the window length and the FFT bin. These hyperparameters are represented by '$\theta$'. Now, we will assume that $s(x,\theta) = \vert STFT(x) \vert$.
+
+\textbf{Multi-Resultion STFT loss (M-STFT)} can be calculated as follows:
+\begin{equation}
+    \text{M-STFT}(x,\hat{x}) = \sum_{i = 1}^{m} \frac{\lVert s(x;\theta_i) - s(\hat{x};\theta_i) \rVert_F}{\lVert s(x;\theta_i) \rVert_F} + \frac{1}{T} \lVert \log{\frac{s(x;\theta_i)}{s(\hat{x};\theta_i)}} \rVert_1 
+\end{equation} 
+
+Then, after summing our 2 terms of loss, the whole loss function becomes:
+
+\begin{equation}
+    \text{Loss} = \frac{1}{2} \text{M-STFT}(x,\hat{x}) + \lVert x - \hat{x} \rVert_1
+\end{equation}
+
+Using only the first term (full-band M-STFT) leads to low-frequency noises on the silence part, while using the $L_1$ loss only conducts to less accurate results for the high-frequency bands.
+To resolve this problem, the full-band M-STFT was replaced a high-band multi-resolution STFT loss $s_h(x)$ which contains only the second half number of rows of $s(x)$.
+Both full and high band STFT losses are used in testing and comparing results.
+
+\subsection{Results}
+The proposed CleanUNet architecture is compared with multiple state-of-the-art models for each of the explained three datasets above.
+
+\subsubsection{DNS}
+Hyperparameters:
+\begin{itemize}
+    \item H (output of the first Conv1d layer) = 64.
+    \item Hop sizes = 50, 120 and 240.
+    \item Window lengths tested = 240, 600 and 1200.
+    \item FFT bins tested = 512, 1024 and 2048.
+    \item Batch size = 16.
+    \item Number of iterations: 1M.
+\end{itemize}
+Results:
+\begin{itemize}
+    \item CleanUNet beats all baseline architectures in all metrics.
+    \item CleanUNet got the highest scores in the MOS evaluations concerning SIG, OVRL and BAKG.
+\end{itemize}
+
+\subsubsection{Valentini}
+CleanUNet results are compared with FAIR-denoiser as the baseline.
+
+Hyperparameters:
+\begin{itemize}
+    \item H = 48.
+    \item Hop sizes, window lengths and FFT bins: same values as DNS.
+    \item Batch size = 64.
+    \item Number of iterations: 1M.
+\end{itemize}
+Results:
+\begin{itemize}
+    \item CleanUNet beats FAIR-denoiser in all metrics.
+\end{itemize}
+
+\subsubsection{Internal Dataset}
+CleanUNet results are compared with FAIR-denoiser and FullSubNet models.
+
+Hyperparameters:
+\begin{itemize}
+    \item H = 64.
+    \item Hop sizes, window lengths and FFT bins: same values as DNS.
+    \item N (number of self-attention blocks) = 5.
+    \item D (depth of encoder and decoder) = 8.
+    \item K (kernel size of each conv1d layer) = 8.
+    \item S (stride of the conv1d layer) = 2.
+\end{itemize}
+Results:
+\begin{itemize}
+    \item CleanUNet beats both FullSubNet and FAIR-denoiser in all metrics.
+\end{itemize}

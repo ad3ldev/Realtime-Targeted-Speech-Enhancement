@@ -1,0 +1,100 @@
+\section{Inter-Subnet}
+Chen et al. \cite{chen2023intersubnet} took the subband approach to solve the single channel speech enhancement problem,
+building upon the work of Hao et al.\cite{fullsubnet}.
+The authors of the paper proposed a subband interaction moddule to capture the inter-subband dependencies with lower number of parameters.
+InterSubNet is a novel, lightweight framework for speech enhancement. It alternates between a SubInter module and a Long Short-Term Memory (LSTM) layer.
+This design allows it to grasp the overall spectral information while maintaining its capacity to concentrate on local spectral patterns.
+
+\subsection{Model Architecture}
+Considering the short-time fourier transform STFT of a single-channel signal with 16 kHz sampling rate:
+\begin{equation}
+     X_{t,f} =  S_{t,f} + N_{t,f}
+\end{equation}
+where $S_{t,f}$ is the clean speech and $N_{t,f}$ is the noise. The network is trained to estimate the clean speech $S_{t,f}$ from the noisy speech $X_{t,f}$.
+
+The complete structure of Inter-SubNet $G_{is}$ is illustrated in Figure \ref{fig:inter-subnet}. It takes as input a magnitude spectrogram $X \in \mathbb{R}^{F \times T} $.
+Here, $F$ and $T$ denote the total count of frequency bins and frames, respectively. The first step transforms the spectrogram into subband units $\{\text{{\textbf{b}}}_i\}_{i=1}^{F}$ using an "unfold" operation.
+These subband units are then input into the $G_{is}$ model, which generates the final outputs cIRM $M^r$ and $M^i$. The main structure of $G_is$ includes two stacked SubInter-LSTM (SIL) blocks, followed by a single fully-connected layer.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/related_work/intersubnet/arch.png}
+    \caption{The general schematic of the proposed Inter-SubNet, where "SIL block 1" and "SIL block 2" refer to the first and second SubInterLSTM block respectively.
+             The "G-norm" denotes group normalization \cite{wu2018group}. The Inter-SubNet $G_{is}$ mainly consists of two stacked SIL blocks and one fully-connected layer.
+             Taking the subband units $\text{{\textbf{b}}}_{i=1}^{F}$ as input, the model $G_{is}$ generates the final output cIRM $M^r$ and $M^i$.}
+    \label{fig:inter-subnet}
+\end{figure}
+
+
+\subsubsection{Subband units}
+Subband units are derived from the magnitude spectrogram $X$ using the "unfold" operation and are used as the input for the Inter-SubNet.
+Specifically, for each frequency $i$ from the magnitude spectrogram $X$, a frequency bin vector $X_i \in \mathbb{R}^T$ is taken,
+along with the $2n$ frequency bin vectors adjacent to it, to form a subband unit $b_i$. This can be represented as:
+
+\begin{equation}
+    b_i = [X_{i-n}, ..., X_i, ..., X_{i+n}] \in \mathbb{R}^{Fs \times T}
+\end{equation}
+
+Here, "[, ]" signifies the concatenation operation and $Fs = 2n + 1$. Additionally, for boundary frequencies where $i + n > F - 1$ or $i - n < 0$,
+circular Fourier frequencies are assigned. Through this process, $F$ subband units are obtained, each with a dimension of $(Fs, T)$.
+These are denoted as $\{\textbf{b}_i\}_{i=1}^{F} \in \mathbb{R}^{F \times Fs}$.
+
+\subsubsection{SubInter module}
+Inspired by \cite{luo2020endtoend}, The SubInter module is designed to extract global spectral information, which includes dependencies across different bands and overall spectral patterns.
+This is achieved through the interaction among the parallel subband units. Additionally, this module integrates the extracted global spectral information back into these subband units.
+Having a collection of $F$ subband units $\{b_i\}_{i=1}^{F}$, where each $b_i \in \mathbb{R}^{Fs \times T}$ and $Fs$ denotes the number of frequency bins in a subband unit.
+The SubInter module operates on these subband units to incorporate complementary global spectral information:
+
+\begin{equation}
+    \{\hat{\textbf{b}}_i\}_{i=1}^{F} = H(\{\textbf{b}_i\}_{i=1}^{F})
+\end{equation}
+
+Here, $\hat{\textbf{b}}_i \in \mathbb{R}^{Fs \times T}$ is the subband feature that encapsulates both global spectral information and local spectral patterns,
+and $H(\cdot)$ is the mapping function that characterizes the SubInter module.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/related_work/intersubnet/subinter.png}
+    \caption{The details of the SubInter Module. The “Hidden” indicates
+    the hidden representations. The “Global” denotes the output of the
+    second linear layer containing global spectral information.}
+    \label{fig:subinter}
+\end{figure}
+
+\subsection{Experimental Setup}
+\subsubsection{Dataset}
+The authors used a subset of the DNS Challenge - Interspeech 2021 dataset for training. Room impulse repsonses were randomly sampled and added to 75\% of the clean speech.
+Afterwards, the noisy speeches were mixed with the clean or reverberant speeches at a randomly selected SNR varying from -5 to 20 db.
+
+\subsubsection{Training}
+STFT with a Hanning window with length of 32 ms and a hop size of 16 ms was used to obtain the magnitude spectrogram.
+The model was trained for 1000 epochs with the Adam optimizer with a learning rate $1e^{-3}$, a batch size of 40 (2 gpus with 20 samples each) and $MSE$ loss.
+The authors used subband units with $n = 15$ (i.e, 15 neighbor frequencies are taken on each side of each input frequency bin).
+In the training procedure, the input-target sequence pairs were generated into a constant length sequence of $T = 192$ frames (approximately 3 s).
+
+
+% \subsection{Results}
+% With only 2.29m parameters Inter-Subnet achieves state-of-the-art performance on the test set of the DNS Challenge - Interspeech 2021 dataset,
+% with and without reverb, results are reported in Table \ref{tab:inter-subnet-results}.
+
+% \begin{table}[h]
+%     \centering
+%     \caption{Results of Inter-Subnet model with and without reverb on test set of DNS 2021 dataset.}
+%     \begin{tabular}{|l|c|c|}
+%     \hline
+%     \textbf{Metric} & \textbf{With Reverb} & \textbf{Without Reverb} \\
+%     \hline
+%     \textbf{WB-PESQ (MOS)} & 3.207 & 2.997 \\
+%     \textbf{NB-PESQ (MOS)} & 3.659 & 3.504 \\
+%     \textbf{STOI (\%)} & 93.98 & 96.61 \\
+%     \textbf{SI-SDR (dB)} & 16.76 & 18.05 \\
+%     \hline
+%     \end{tabular}
+%     \label{tab:inter-subnet-results}
+% \end{table}
+
+\subsection{Conclusion}
+This paper presents Subband Interaction (SubInter) module, a novel approach to modeling global spectral information for speech enhancement, and introduces a new framework called Inter-SubNet. This innovative,
+lightweight framework for speech enhancement is engineered to leverage global spectral information while maintaining its capacity to concentrate on local spectral patterns.
+% The effectiveness of the proposed SubInter module is demonstrated through experimental results.
+% A comparison of Inter-SubNet with other leading methods on the DNS Challenge dataset reveals the superior performance of the proposed Inter-SubNet.
+    

@@ -20,3 +20,5 @@
 *.swp
 *.bak
 *~
+
+svg-inkscape/**
