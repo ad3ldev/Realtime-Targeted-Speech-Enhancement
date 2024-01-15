@@ -11,3 +11,5 @@ tqdm
 pesq
 pystoi
 wandb
+onnxruntime
+librosa
