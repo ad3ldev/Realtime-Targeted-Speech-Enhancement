@@ -1,6 +1,6 @@
 manual_seed: 0
 
-checkpoint_path: 
+checkpoint_path:
 
 trainer_args: 
   max_epochs: 500
@@ -8,7 +8,7 @@ trainer_args:
 callbacks:
   - ModelCheckpoint:
       _target_: pytorch_lightning.callbacks.ModelCheckpoint
-      every_n_epochs: 2
+      every_n_epochs: 5
 
   
   - LearningRateMonitor:
