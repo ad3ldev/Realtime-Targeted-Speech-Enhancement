@@ -62,7 +62,7 @@ class CleanNoisyPairDataset(Dataset):
         clean_audio, noisy_audio = clean_audio.squeeze(0), noisy_audio.squeeze(0)
         assert len(clean_audio) == len(noisy_audio)
         
-        print(f"Loaded {fileid[0]} and {fileid[1]} with lengths {len(clean_audio)} and {len(noisy_audio)}")
+        # print(f"Loaded {fileid[0]} and {fileid[1]} with lengths {len(clean_audio)} and {len(noisy_audio)}")
 
         crop_length = int(self.crop_length_sec * sample_rate)
         assert crop_length < len(clean_audio)
