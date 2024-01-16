@@ -7,7 +7,7 @@ opt:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
       root: /kaggle/input/rttse-dataset
       subset: training
-      length_sec: 30
+      crop_length_sec: 0
 
 
     dataloader:
@@ -21,7 +21,7 @@ opt:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
       root: /kaggle/input/rttse-dataset
       subset: val
-      length_sec: 30
+      crop_length_sec: 0
   
     dataloader:
       batch_size: 32
