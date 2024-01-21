@@ -26,7 +26,7 @@ def setup_model(model_cfg, training_cfg):
 def setup_trainer(trainer_cfg, tb_logger):
     seed_everything(trainer_cfg.manual_seed)
     callbacks = hydra.utils.instantiate(trainer_cfg.callbacks)
-    callbacks = list(callbacks.values())
+    callbacks = list(callbacks.values()) if callbacks else []
     trainer = Trainer(**trainer_cfg['trainer_args'], logger=tb_logger, callbacks=callbacks)
     return trainer, trainer_cfg.get('checkpoint_path')
 
