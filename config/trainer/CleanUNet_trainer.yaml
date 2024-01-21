@@ -3,8 +3,8 @@ manual_seed: 0
 checkpoint_path: 
 
 trainer_args: 
-  max_epochs: 500
-  accelerator: "gpu"
+  max_steps: 250000
+  accelerator: auto
 
 callbacks:
   ModelCheckpoint:
