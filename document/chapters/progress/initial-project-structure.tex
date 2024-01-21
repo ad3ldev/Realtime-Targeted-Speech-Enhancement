@@ -1,0 +1,92 @@
+\section{Initial Project Structure}
+This section provide an overview of the initial project structure. The project structure is designed to be modular and extensible, allowing for easy experimentation and development.
+
+\subsection{Project Stack}
+Different tools and libraries were considered for the project. The following is a list of the tools and libraries that were chosen for the project.
+
+\subsubsection{Pytorch}
+PyTorch is an open-source machine learning library based on the Torch library. It's primarily developed by Facebook's artificial intelligence research group and is used for applications such as computer vision and natural language processing.
+
+It is a popular choice for deep learning and AI projects due to several reasons:
+\begin{enumerate}
+    \item \textbf{Dynamic Computation Graphs}: Unlike other libraries that have static computation graphs, PyTorch allows you to change the way your graph behaves on-the-fly. This is particularly useful for models where you need to change the structure during training.
+    \item \textbf{Pythonic Nature}: PyTorch's design embraces the Python philosophy, making it more intuitive and easier to use for Python developers. It integrates well with the Python data science stack, including libraries like NumPy and Matplotlib.
+    \item \textbf{Strong GPU Support}: PyTorch provides seamless CUDA integration for tensor computations, allowing you to easily compute on GPUs.
+    \item \textbf{Active Community and Good Documentation}: PyTorch has a very active community that contributes to a rapidly expanding ecosystem of tools and libraries. It also has excellent documentation and tutorials, making it accessible for beginners.
+    \item \textbf{Research and Production}: PyTorch is not only good for prototyping and research due to its flexibility, but it also has strong support for model deployment in production. This makes it a comprehensive tool for machine learning projects.
+    \item \textbf{Debugging}: As PyTorch is deeply integrated into Python, you can use any Python debugger with it. This makes debugging your models and training loops much easier compared to other libraries.
+\end{enumerate}
+
+\subsubsection{PyTorch Lightning}
+PyTorch Lightning is a lightweight PyTorch wrapper for high-performance AI research. It structures your code so it's decoupled into four sections: Research code (the LightningModule), Engineering code (Trainer), Non-essential research code (callbacks), and Data (DataLoaders). This allows each part to be testable, reusable and scalable independently.
+
+It offers some key features:
+\begin{enumerate}
+    \item \textbf{Simplicity}: PyTorch Lightning reorganizes your PyTorch code and decouples the science code from the engineering code which makes your code much cleaner and easier to understand.
+    \item \textbf{Compatibility}: PyTorch Lightning is just organized PyTorch. You can use all the PyTorch functions and modules you're familiar with transparently directly within PyTorch Lightning.
+    \item \textbf{Scalability}: PyTorch Lightning has built-in support for multi-GPUs, TPUs, and even scaling across clusters of machines.
+    \item \textbf{Advanced features}: PyTorch Lightning also provides advanced features like 16-bit precision, gradient accumulation, and more.
+    \item \textbf{Community and Ecosystem}: PyTorch Lightning has a growing community and ecosystem, with a variety of projects, tools, and libraries built around it.
+\end{enumerate}
+
+\subsubsection{Hydra}
+Hydra is an open-source Python framework that simplifies the development of research and complex applications. The key feature of Hydra is the ability to dynamically create a hierarchical configuration by composition and override it through config files and the command line. The name "Hydra" refers to its ability to manage complex, multi-headed systems.
+
+Hydra provides the following features:
+\begin{enumerate}
+    \item \textbf{Configuration Composition}: Hydra allows you to combine multiple configuration files, enabling you to easily compose configurations for your different use cases.
+    \item \textbf{Configuration Override}: You can override your configuration through the command line, making experimentation easy.
+    \item \textbf{Plug-ability}: Hydra is designed to be easy to extend and to integrate with other systems. You can develop plugins to extend Hydra's capabilities.
+    \item \textbf{Applications}: Hydra can help manage complex applications and systems, making it easier to handle multi-step workflows, manage environments, and more.
+\end{enumerate}
+Hydra is commonly used in machine learning research, where managing complex experiments and workflows is a common task.
+
+\subsubsection{Weights and Biases}
+Weights \& Biases (wandb) is a tool designed to help track experiments in machine learning. It helps to log and visualize metrics from your runs, organize your experiments, and share findings with colleagues.
+
+wandb is useful in:
+\begin{enumerate}
+    \item \textbf{Experiment Tracking}: You can track and visualize all the pieces of your machine learning model — hyperparameters, metrics, model weights, and more.
+    \item \textbf{Reproducibility}: Weights \& Biases helps ensure your models are reproducible by automatically capturing all the relevant information needed to replicate a run.
+    \item \textbf{Collaboration}: You can share your findings, models, and raw data with your team, enabling better collaboration.
+    \item \textbf{Integration}: Weights \& Biases integrates seamlessly with popular machine learning frameworks like TensorFlow, PyTorch, Keras, and others.
+    \item \textbf{Dashboard}: It provides a flexible and intuitive dashboard to visualize your metrics, compare different runs, and see your model's performance over time.
+\end{enumerate}
+
+\subsubsection{TensorBoard}
+TensorBoard helps in logging and visualizing various types of data, such as scalars, images, audio, histograms, text, and more. This is particularly useful in machine learning experiments where tracking and visualizing metrics, model performance, and other data can help in model development and debugging.
+
+Here's a brief introduction to some key aspects of TensorBoard logging:
+\begin{enumerate}
+    \item \textbf{Scalars}: Scalars like loss, accuracy, learning rate, or other metrics can be logged and visualized over training steps or epochs.
+    \item \textbf{Images}: If you're working with image data or image-based models, you can log and visualize images, which can include input data, model predictions, or even model weights visualized as images.
+    \item \textbf{Audio}: Audio data can be logged and played back in the TensorBoard interface.
+    \item \textbf{Histograms}: Histograms allow you to visualize the distribution of values in a tensor over time. This can be useful for understanding how weights or other data are changing over the course of training.
+    \item \textbf{Graphs}: You can visualize your model's computational graph, which can help understand and debug the model.
+    \item \textbf{Embeddings}: High-dimensional data like embeddings can be visualized and explored interactively.
+    \item \textbf{Text}: Text data can be logged and visualized, which can be useful for tasks like natural language processing.
+\end{enumerate}
+
+\subsection{Folder Structure}
+A brief overview of the project's folder structure is provided below.
+
+\subsubsection{Code}
+\begin{itemize}
+    \item \textbf{archs}: for plain Pytorch nn models.
+    \item \textbf{data}: for plain Pytorch datasets.
+    \item \textbf{loss}: for custom loss functions.
+    \item \textbf{models}: pytorch lightning models.
+    \item \textbf{metrics}: for custom metrics.
+    \item \textbf{utils}: for misc. utilities (LR schedulers, processing functions, logging, callbacks, etc..).
+\end{itemize}
+
+\subsubsection{Configuration}
+\begin{itemize}
+    \item \textbf{data}: for datasets configurations(train/val/test datasets and dataloaders) with its correspongding lightning data module.
+    \item \textbf{model}: for pytorch netowrks configuration with its corresponding lightning model.
+    \item \textbf{trainer}: for seed, ckpt path, trainer args, callbacks.
+    \item \textbf{training}: for optimizer, losses, metrics.
+\end{itemize}
+
+
+
