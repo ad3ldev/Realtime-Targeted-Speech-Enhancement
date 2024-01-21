@@ -19,7 +19,7 @@ opt:
   val:
     dataset:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
-      root: /kaggle/input/deep-noise-suppression-challenge-interspeech-2020/datasets
+      root: /kaggle/input/deep-noise-suppression-challenge-interspeech-2020
       subset: testing
       crop_length_sec: 0
   
