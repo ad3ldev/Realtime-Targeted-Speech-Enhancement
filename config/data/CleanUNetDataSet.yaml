@@ -5,7 +5,7 @@ opt:
   train:
     dataset:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
-      root: /kaggle/input/dns-2020-100hrs/training_set
+      root: /kaggle/input/dns-2020-100hrs
       subset: training
       crop_length_sec: 0
 
