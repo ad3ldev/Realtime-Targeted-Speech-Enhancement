@@ -85,4 +85,4 @@ class BaseModel(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
         scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
-        return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
+        return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
