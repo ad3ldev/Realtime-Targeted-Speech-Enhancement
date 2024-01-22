@@ -1,4 +1,4 @@
-\section{Initial Project Structure}
+\section{Progress}
 This section provide an overview of the initial project structure. The project structure is designed to be modular and extensible, allowing for easy experimentation and development.
 
 \subsection{Project Stack}
@@ -66,27 +66,3 @@ Here's a brief introduction to some key aspects of TensorBoard logging:
     \item \textbf{Embeddings}: High-dimensional data like embeddings can be visualized and explored interactively.
     \item \textbf{Text}: Text data can be logged and visualized, which can be useful for tasks like natural language processing.
 \end{enumerate}
-
-\subsection{Folder Structure}
-A brief overview of the project's folder structure is provided below.
-
-\subsubsection{Code}
-\begin{itemize}
-    \item \textbf{archs}: for plain Pytorch nn models.
-    \item \textbf{data}: for plain Pytorch datasets.
-    \item \textbf{loss}: for custom loss functions.
-    \item \textbf{models}: pytorch lightning models.
-    \item \textbf{metrics}: for custom metrics.
-    \item \textbf{utils}: for misc. utilities (LR schedulers, processing functions, logging, callbacks, etc..).
-\end{itemize}
-
-\subsubsection{Configuration}
-\begin{itemize}
-    \item \textbf{data}: for datasets configurations(train/val/test datasets and dataloaders) with its correspongding lightning data module.
-    \item \textbf{model}: for pytorch netowrks configuration with its corresponding lightning model.
-    \item \textbf{trainer}: for seed, ckpt path, trainer args, callbacks.
-    \item \textbf{training}: for optimizer, losses, metrics.
-\end{itemize}
-
-
-
