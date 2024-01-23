@@ -1,7 +1,7 @@
 \section{Inter-Subnet}
 Chen et al. \cite{chen2023intersubnet} took the subband approach to solve the single channel speech enhancement problem,
 building upon the work of Hao et al.\cite{fullsubnet}.
-The authors of the paper proposed a subband interaction moddule to capture the inter-subband dependencies with lower number of parameters.
+The authors of the paper proposed a subband interaction module to capture the inter-subband dependencies with lower number of parameters.
 InterSubNet is a novel, lightweight framework for speech enhancement. It alternates between a SubInter module and a Long Short-Term Memory (LSTM) layer.
 This design allows it to grasp the overall spectral information while maintaining its capacity to concentrate on local spectral patterns.
 
@@ -62,7 +62,7 @@ and $H(\cdot)$ is the mapping function that characterizes the SubInter module.
 
 \subsection{Experimental Setup}
 \subsubsection{Dataset}
-The authors used a subset of the DNS Challenge - Interspeech 2021 dataset for training. Room impulse repsonses were randomly sampled and added to 75\% of the clean speech.
+The authors used a subset of the DNS Challenge - Interspeech 2021 dataset for training. Room impulse responses were randomly sampled and added to 75\% of the clean speech.
 Afterwards, the noisy speeches were mixed with the clean or reverberant speeches at a randomly selected SNR varying from -5 to 20 db.
 
 \subsubsection{Training}
