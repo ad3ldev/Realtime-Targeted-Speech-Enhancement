@@ -40,7 +40,11 @@ class BaseModel(pl.LightningModule):
         for loss_name, loss_fn in self.losses.items():
             # loss_name, loss_fn = list(loss.items())[0]
             loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weights.get(loss_name, 1)
-            l_total += loss_dict[f'{phase}/{loss_name}']
+            # Check if the result is an iterable
+            if hasattr(loss_dict[f'{phase}/{loss_name}'], '__iter__'):
+                l_total += sum(loss_dict[f'{phase}/{loss_name}'])
+            else:
+                l_total += loss_dict[f'{phase}/{loss_name}']
 
         if len(self.losses) > 1: loss_dict[f'{phase}/l_total'] = l_total
         return loss_dict

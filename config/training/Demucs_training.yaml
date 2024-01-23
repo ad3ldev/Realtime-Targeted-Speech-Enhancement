@@ -19,7 +19,7 @@ train:
       _target_: torch.nn.L1Loss
       reduction: mean
       
-    stft:
+    mrstft:
       _target_: loss.stft_loss.MultiResolutionSTFTLoss
       sc_lambda: 0.5
       mag_lambda: 0.5
