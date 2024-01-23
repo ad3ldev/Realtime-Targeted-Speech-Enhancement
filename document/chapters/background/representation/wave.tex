@@ -7,16 +7,8 @@
     \label{fig:waveform}
 \end{figure}
 
-Ever wonder what that squiggly line on your music player represents? That's a waveform, a digital picture of sound! Picture sound waves like ripples in a pond: a microphone captures these air pressure changes and turns them into an electrical signal. This signal is then chopped up and packaged into bite-sized pieces (sampled) and given labels (quantized) before ending up as the waveform you see. Don't worry about the fancy terms just yet, remember continuous sound gets turned into tiny, numbered points to play on your computer.
+Waveforms is the graphical representations of sound. Similar to ripples in a pond, sound waves are captured by a microphone and converted into an electrical signal. This signal undergoes segmentation (sampling) and quantization processes before materializing as the waveform visible on audio visualization platforms. The distinction between mono and stereo waveforms lies in the number of channels: a singular line for mono and dual lines for stereo.
 
-There's just one channel (mono) if it's like a single line, but two channels (stereo) if it's like two squiggly lines stacked together. That's all you need to know for now!
+Considering the recreation of an image by tracing outlines with dots, an analogy with audio recordings may be established to highlight the importance of sampling rate. The complexities of sample rate relate to the frequency of sound wave sampling each second, measured as Hertz (Hz). Higher sample rates allow for more detailed capture, particularly of high-pitched sounds. The Nyquist frequency, which represents half the sample rate, defines the highest limit for reliably recorded frequencies. Frequencies above the Nyquist frequency, sometimes known as the "sound ceiling," may cause distortion.
 
-Imagine you're trying to recreate a picture by tracing its outlines with dots. The more dots you use, the smoother and more accurate your picture will be. That's the essence of sample rate in audio recordings like speech.
-
-There are some important definitions related to this representation: 
-\begin{itemize}
-    \item \textbf{Sample rate:} How often we "sample" or capture sound waves per second, measured in Hertz (Hz). Higher rates capture more detail, especially high-pitched sounds.
-    \item \textbf{Nyquist frequency:} The highest frequency a sample rate can accurately represent. It's half the sample rate. Think of it as the "sound ceiling" – anything higher gets distorted.
-    \item \textbf{Downsampling:} Reducing the sample rate, sacrificing detail for efficiency. Like using fewer dots for your picture, it can save processing power while still conveying the main idea.
-\end{itemize}
-While downsampling can be helpful for faster model training, it's important to choose wisely. Dropping the rate too much can "throw away" important high-frequency sounds, impacting the clarity and quality of the enhanced speech.
+Additionally, downsampling, which involves reducing the sample rate to improve computational efficiency, is analogous to utilising fewer dots in an image trace. While downsampling can speed up model training, careful consideration is required. An excessive reduction in sample rate risks deleting critical high-frequency components, thereby compromising the clarity and integrity of the enhanced speech output. As a result, choosing an optimal downsampling rate is critical for achieving a balance between computing efficiency and the preservation of critical audio data.
