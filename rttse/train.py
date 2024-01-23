@@ -23,11 +23,11 @@ def setup_model(model_cfg, training_cfg):
 
     return model
 
-def setup_trainer(trainer_cfg, tb_logger):
+def setup_trainer(trainer_cfg, loggers):
     seed_everything(trainer_cfg.manual_seed)
     callbacks = hydra.utils.instantiate(trainer_cfg.callbacks)
     callbacks = [list(cb.values())[0] for cb in callbacks]
-    trainer = Trainer(**trainer_cfg['trainer_args'], logger=tb_logger, callbacks=callbacks)
+    trainer = Trainer(**trainer_cfg['trainer_args'], logger=loggers, callbacks=callbacks)
     return trainer, trainer_cfg.get('checkpoint_path')
 
 
@@ -41,9 +41,9 @@ def train_pipeline(cfg):
 
     logger.info(f"\n{OmegaConf.to_yaml(cfg)}")
 
-    tb_logger = init_logging(cfg)
+    loggers = init_logging(cfg)
 
-    trainer, ckpt_path = setup_trainer(cfg.trainer, tb_logger)
+    trainer, ckpt_path = setup_trainer(cfg.trainer, loggers)
 
     data_loader = setup_datasets(cfg.data)
 
