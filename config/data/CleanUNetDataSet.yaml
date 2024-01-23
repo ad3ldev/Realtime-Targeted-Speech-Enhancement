@@ -5,13 +5,13 @@ opt:
   train:
     dataset:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
-      root: /kaggle/input/rttse-dataset
+      root: /kaggle/input/dns-2020-100hrs
       subset: training
-      length_sec: 10
+      crop_length_sec: 0
 
 
     dataloader:
-      batch_size: 32
+      batch_size: 2
       num_workers: 2
       shuffle: True
       pin_memory: True
@@ -19,12 +19,12 @@ opt:
   val:
     dataset:
       _target_: data.cleanunet_dataset.CleanNoisyPairDataset
-      root: /kaggle/input/rttse-dataset
-      subset: val
-      length_sec: 10
+      root: /kaggle/input/deep-noise-suppression-challenge-interspeech-2020
+      subset: testing
+      crop_length_sec: 0
   
     dataloader:
-      batch_size: 32
+      batch_size: 2
       num_workers: 2
       # shuffle: True
       # pin_memory: True
