@@ -21,21 +21,21 @@ The output of a convolutional layer is influenced by four key parameters:
     \item \textbf{Dilation:} Introduces spaces between the input nodes within the kernel's receptive field (Figure \ref{fig:cnn-dilation}). This allows convolutional nodes to perceive larger contexts without increasing kernel size.
 \end{itemize}
 
-\begin{figure} 
+\begin{figure} [ht]
     \centering
     \includegraphics[width=0.25\linewidth]{images/dl/cnn-kernel.png}
     \caption{Convolution with 2D 3x3 filter (kernel) applied on 4x4 input and the output is 2x2. \cite{dumoulin2016guide}}
     \label{fig:cnn-kernel}
 \end{figure}
 
-\begin{figure} [h]
+\begin{figure} [ht]
     \centering
     \includegraphics[width=0.25\linewidth]{images/dl/cnn-padding.png}
     \caption{Convolution with 2D 3x3 filter (kernel) applied on 5x5 input with padding 1 and the output is 5x5. \cite{dumoulin2016guide}}
     \label{fig:cnn-padding}
 \end{figure}
 
-\begin{figure} [h]
+\begin{figure} [ht]
     \centering
     \includegraphics[width=0.25\linewidth]{images/dl/cnn-dilation.png}
     \caption{Dilated Convolution with 2D 3x3 filter (kernel) with dilation factor of 1 applied on 7x7 input  and the output is 3x3. \cite{dumoulin2016guide}}

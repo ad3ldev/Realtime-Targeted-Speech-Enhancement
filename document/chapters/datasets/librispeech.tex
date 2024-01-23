@@ -2,7 +2,7 @@
 LibriSpeech \cite{librispeech} is a corpus of approximately 1000 hours of 16kHz read English speech, prepared by Vassil Panayotov with the assistance of Daniel Povey. The data is derived from read audiobooks from the LibriVox project, and has been carefully segmented and aligned.
 
 The majority of the recordings are based on publicly available texts from Project Gutenberg.
-While the use of audio books to create synthetic voices has been studied in the past, as far as we know, there isn't a read speech corpus as large as the one we present here that is freely accessible in English and sufficient for training and testing speech recognition systems.
+While the use of audiobooks to create synthetic voices has been studied in the past, as far as we know, there isn't a read speech corpus as large as the one we present here that is freely accessible in English and sufficient for training and testing speech recognition systems.
 
 The read speech data set LibriSpeech, which is derived from LibriVox's audiobooks, is presented in this study. The highly permissive CC BY 4.0 license makes the corpus freely available, and the open source Kaldi ASR toolbox has example scripts that show how well-performing acoustic models can be trained using this data.
 
@@ -37,7 +37,8 @@ Where “clean” resembles a clean speech audio and “other” can have clean 
     \centering
     \begin{tabular}{|c|c|c|c|c|c|}
       \hline
-      Subset & Hours & Per-spk Minutes & Female Spkrs & Male Spkrs & Total Spkrs \\
+      Subset & Hours & Per-speaker & Female   & Male     & Total \\
+             &       & Minutes     & Speakers & Speakers & Speakers \\
       \hline
       dev-clean & 5.4 & 8 & 20 & 20 & 40 \\
       \hline

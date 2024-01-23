@@ -2,7 +2,7 @@
 Introduced in \cite{vaswani2017}. MSA based networks have shown to be very effective in NLP tasks, such as machine translation, language modeling, and text classification.
 
 \subsubsection{Attention}
-The attention function can be understood as a method that takes a query and a collection of key-value pairs, and produces an output. All of these elements - the query, keys, values, and output - are vector forms. The output is determined by a weighted sum of the values. Each value's weight is calculated using a compatibility function that matches the query with its associated key.\\
+The attention function can be understood as a method that takes a query and a collection of key-value pairs, and produces an output. All of these elements - the query, keys, values, and output - are vector forms. The output is determined by a weighted sum of the values. Each value's weight is calculated using a compatibility function that matches the query with its associated key.
 
 We can break down the concept of an attention function to:
 \begin{itemize}
@@ -28,7 +28,7 @@ The scaled dot-product attention function can be expressed as:
 where $Q$ is the query vector, $K$ is the matrix of key vectors, $V$ is the matrix of value vectors, and $d_k$ is the dimension of the query vector.
 
 \subsubsection{Multi-Head Attention}
-Instead of using a single attention function with keys, values, and queries all having a dimension of $d_{model}$, it's found to be advantageous to project the queries, keys, and values h times linearly with different learned linear projections to dimensions $d_k$, $d_k$, and $d_v$ respectively. The attention function is then performed in parallel on each of these projected versions of queries, keys, and values, producing $d_v$-dimensional output values. These outputs are then concatenated and projected again to yield the final values.\\
+Instead of using a single attention function with keys, values, and queries all having a dimension of $d_{model}$, it's found to be advantageous to project the queries, keys, and values h times linearly with different learned linear projections to dimensions $d_k$, $d_k$, and $d_v$ respectively. The attention function is then performed in parallel on each of these projected versions of queries, keys, and values, producing $d_v$-dimensional output values. These outputs are then concatenated and projected again to yield the final values.
 
 This approach, known as multi-head attention, allows the model to attend to information from different representation subspaces at different positions simultaneously. This is something that can't be achieved with a single attention head due to averaging.
 
@@ -42,7 +42,7 @@ Where $\text{head}_i = \text{Attention}(QW^Q_i, KW^K_i, VW^V_i)$.
 
 Here, the projections are parameter matrices  $W^Q_i \in \mathbb{R}^{d_{model} \times d_k}, W^K_i \in \mathbb{R}^{d_{model} \times d_k}, W^V_i \in \mathbb{R}^{d_{model} \times d_v}, \text{ and } W^O \in \mathbb{R}^{hd_v \times d_{model}}$.
 
-\begin{figure} [h]
+\begin{figure} [ht]
     \centering
     \includegraphics[width=0.75\linewidth]{images/dl/dotproduct.png}
     \caption{(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several
