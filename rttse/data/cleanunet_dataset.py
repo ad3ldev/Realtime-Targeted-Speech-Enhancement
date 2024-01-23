@@ -20,20 +20,21 @@ class CleanNoisyPairDataset(Dataset):
     Each element is a tuple of the form (clean waveform, noisy waveform, file_id)
     """
     
-    def __init__(self, root='./', subset='training', length_sec=10):
+    def __init__(self, root='./', subset='training', crop_length_sec=0):
         super(CleanNoisyPairDataset).__init__()
 
-        assert subset is None or subset in ["training", "testing", "val"]
-        self.length_sec = length_sec
+        assert subset is None or subset in ["training", "testing"]
+        self.crop_length_sec = crop_length_sec
         self.subset = subset
-        
-        N_clean = len(os.listdir(os.path.join(root, 'training_set','clean')))
-        N_noisy = len(os.listdir(os.path.join(root, 'training_set', 'noisy')))
-        assert N_clean == N_noisy
-        
-        if subset == "training" or subset == "val": # Assume validation is a subset of training
-            self.files = [(os.path.join(root, f'{subset}_set', 'clean', 'fileid_{}.wav'.format(i)),
-                           os.path.join(root, f'{subset}_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
+
+
+
+        if subset == "training":
+            N_clean = len(os.listdir(os.path.join(root, 'training_set','clean')))
+            N_noisy = len(os.listdir(os.path.join(root, 'training_set', 'noisy')))
+            assert N_clean == N_noisy
+            self.files = [(os.path.join(root, 'training_set', 'clean', 'fileid_{}.wav'.format(i)),
+                           os.path.join(root, 'training_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
         
         elif subset == "testing":
             sortkey = lambda name: '_'.join(name.split('_')[-2:])  # specific for dns due to test sample names
@@ -50,7 +51,7 @@ class CleanNoisyPairDataset(Dataset):
                 assert sortkey(_c) == sortkey(_n)
                 self.files.append((os.path.join(_p, 'clean', _c), 
                                    os.path.join(_p, 'noisy', _n)))
-            self.length_sec = 0
+            self.crop_length_sec = 0
 
         else:
             raise NotImplementedError
@@ -61,23 +62,15 @@ class CleanNoisyPairDataset(Dataset):
         noisy_audio, sample_rate = torchaudio.load(fileid[1])
         clean_audio, noisy_audio = clean_audio.squeeze(0), noisy_audio.squeeze(0)
         assert len(clean_audio) == len(noisy_audio)
-        
-        # print(f"Loaded {fileid[0]} and {fileid[1]} with lengths {len(clean_audio)} and {len(noisy_audio)}")
 
-        target_length = int(self.length_sec * sample_rate)
-        actual_length = len(clean_audio)
+        crop_length = int(self.crop_length_sec * sample_rate)
+        assert crop_length < len(clean_audio)
 
-        if self.subset != 'testing':
-            # random crop
-            if actual_length > target_length:
-                start = np.random.randint(low=0, high=actual_length - target_length + 1)
-                clean_audio = clean_audio[start:(start + target_length)]
-                noisy_audio = noisy_audio[start:(start + target_length)]
-            
-            # zero pad
-            elif actual_length < target_length:
-                clean_audio = torch.cat([clean_audio, torch.zeros(target_length - actual_length)])
-                noisy_audio = torch.cat([noisy_audio, torch.zeros(target_length - actual_length)])
+        # random crop
+        if self.subset != 'testing' and crop_length > 0:
+            start = np.random.randint(low=0, high=len(clean_audio) - crop_length + 1)
+            clean_audio = clean_audio[start:(start + crop_length)]
+            noisy_audio = noisy_audio[start:(start + crop_length)]
         
         clean_audio, noisy_audio = clean_audio.unsqueeze(0), noisy_audio.unsqueeze(0)
         return (noisy_audio, clean_audio)
@@ -90,7 +83,7 @@ def load_CleanNoisyPairDataset(root, subset, crop_length_sec, batch_size, sample
     """
     Get dataloader with distributed sampling
     """
-    dataset = CleanNoisyPairDataset(root=root, subset=subset, length_sec=crop_length_sec)                                                       
+    dataset = CleanNoisyPairDataset(root=root, subset=subset, crop_length_sec=crop_length_sec)                                                       
     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False}
 
     if num_gpus > 1:
