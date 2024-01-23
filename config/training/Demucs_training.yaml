@@ -20,16 +20,13 @@ train:
       reduction: mean
       
     stft:
-      _target_: loss.cleanunet_loss.CleanUNetSTFTLoss
-      stft_lambda: 1
-      mrstftloss:
-        _target_: loss.stft_loss.MultiResolutionSTFTLoss
-        sc_lambda: 0.5
-        mag_lambda: 0.5
-        band: full
-        hop_sizes: [50, 120, 240]
-        win_lengths: [240, 600, 1200]
-        fft_sizes: [512, 1024, 2048]
+      _target_: loss.stft_loss.MultiResolutionSTFTLoss
+      sc_lambda: 0.5
+      mag_lambda: 0.5
+      band: full
+      hop_sizes: [50, 120, 240]
+      win_lengths: [240, 600, 1200]
+      fft_sizes: [512, 1024, 2048]
 
 
 val:
