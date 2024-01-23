@@ -16,6 +16,7 @@ def init_tb_logger(save_dir):
 @master_only
 def init_wandb_logger(opt):
     """We now only use wandb to sync tensorboard log."""
+    import wandb
     from pytorch_lightning.loggers import WandbLogger
     logger = get_root_logger()
 
