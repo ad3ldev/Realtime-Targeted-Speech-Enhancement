@@ -3,7 +3,7 @@ We tried to replicate the training procedure stated in \cite{defossez2020} for t
 
 \textbf{Architecture:} The depth of the encoder or the decoder is D = 5. Each encoder/decoder layer has hidden dimension H = 48, stride S = 4, and kernel size K = 8. These parameters were adapted from the original paper.
 
-\textbf{Optimization:} The model was trained for 28K steps with a batch size of 7. The Adam \cite{kingma2017adam} optimizer was used with a learning rate of $3\times 10^{-4}$ with a Linear Warmup Cosine Decay and beta values of 0.9 and 0.999. The loss functions used were L1 loss and Multi Resolution STFT loss.
+\textbf{Optimization:} The model was trained for 28K steps with a batch size of 14. The Adam \cite{kingma2017adam} optimizer was used with a learning rate of $3\times 10^{-4}$ with a Linear Warmup Cosine Decay and beta values of 0.9 and 0.999. The loss functions used were L1 loss and Multi Resolution STFT loss.
 The model was trained on a 2 NVIDIA Tesla T4 GPUs. The training took 24 hours to complete. The training loss is shown in Figure \ref{fig:denoiser-training} and metrics on the test set are shown in Table \ref{tab:denoiser-test}.
 
 \begin{figure}[h]
