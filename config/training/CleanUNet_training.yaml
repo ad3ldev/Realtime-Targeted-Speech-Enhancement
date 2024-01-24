@@ -1,3 +1,6 @@
+# compile:
+  # torch.compile args
+
 train:  
   optim:
     _target_: torch.optim.Adam

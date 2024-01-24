@@ -4,6 +4,7 @@ import hydra
 from utils.dist_utils import master_only
 
 from utils.logger import get_root_logger
+import torch
 
 class BaseModel(pl.LightningModule):
     def __init__(self, net) -> None:
@@ -24,6 +25,9 @@ class BaseModel(pl.LightningModule):
         self.losses = hydra.utils.instantiate(cfg['train']['losses'])
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
+
+        if cfg.compile:
+            torch.compile(self, **cfg.compile)
 
     @master_only
     def print_netowrk(self, stage=None):
