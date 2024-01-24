@@ -29,7 +29,7 @@ Each self-attention block consists of:
 
 Each of these layers has a skip connection around it, then the layer is normalized.
 
-Model dimension is 512. The attention map is masker, which means that during self-attention, each position in the sequence can only attend to positions earlier in the sequence, to ensure causality.
+Model dimension is 512. The attention map is masked, which means that during self-attention, each position in the sequence can only attend to positions earlier in the sequence, to ensure causality.
 
 \begin{figure} [h]
     \centering
