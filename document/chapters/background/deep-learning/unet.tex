@@ -15,10 +15,12 @@ The key feature of U-Net is the skip connections between the encoder and decoder
 
 U-Net can be used for audio enhancement tasks in both the time and frequency domains. The general approach is similar in both cases: the U-Net learns to map from noisy signals to clean signals. However, the specifics of how the input and output are represented, and how the U-Net is trained, can vary depending on whether you're working in the time domain or the frequency domain.
 
-\subsubsection{Time Domain}
+\subsubsection{Speech Enhancement with U-Net}
+
+
 In the time domain, the input to the U-Net would be a noisy audio signal, and the target would be the clean audio signal. During training, the U-Net learns to map from the noisy signal to the clean signal by minimizing a loss function that measures the difference between the U-Net's output and the clean signal. After training, you can use the U-Net to enhance new audio signals by inputting a noisy signal and getting out an enhanced signal.
 
-\subsubsection{Frequency Domain}
+% \subsubsection{Frequency Domain}
 In the frequency domain, the input to the U-Net would be a spectrogram of a noisy audio signal, and the target would be the spectrogram of the clean audio signal. A spectrogram is a 2D representation of an audio signal that shows how the frequencies present in the signal change over time. During training, the U-Net learns to map from the noisy spectrogram to the clean spectrogram by minimizing a loss function that measures the difference between the U-Net's output and the clean spectrogram. After training, you can use the U-Net to enhance new audio signals by inputting a spectrogram of a noisy signal and getting out a spectrogram of an enhanced signal. The output spectrogram can then be transformed back into the time domain to get the enhanced audio signal.
 
 \begin{figure} [h]
