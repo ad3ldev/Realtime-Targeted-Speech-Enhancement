@@ -56,14 +56,15 @@ class BaseModel(pl.LightningModule):
 
         return metrics_dict
     
-
     def training_step(self, batch, batch_idx):
         x, y = batch
         
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
+
         self.log_dict(loss_dict, on_step=True, on_epoch=True, prog_bar=True)
+
         return loss_dict['train/l_total']
 
     def validation_step(self, batch, batch_idx):
@@ -82,11 +83,13 @@ class BaseModel(pl.LightningModule):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
 
-
         self.log_dict(metrics_dict)
 
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
+        if self.hparams.train.scheduler is None:
+            return [optimizer]
+        
         scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
         return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
