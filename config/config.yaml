@@ -15,8 +15,8 @@ logger:
 
 defaults:
 - data: CleanUNetDataSet
-- model: CleanUNet
-- training: CleanUNet_training
+- model: InterSubNet
+- training: InterSubNet_training
 - trainer: CleanUNet_trainer
 
 
