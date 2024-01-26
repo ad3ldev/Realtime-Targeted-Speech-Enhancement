@@ -40,7 +40,7 @@ In the experiments, the VoiceFilter-Lite model has 3 LSTM layers, each with 512 
     \item The LibriSpeech \cite{librispeech} training set.
     \item A vendor collected a dataset of realistic speech queries.
 \end{enumerate}
-The study evaluates data using various noise sources and room configurations. The original non-noisified data is referred to as "Clean", while the speech noise source is a distinct development set. The evaluations are conducted under two room conditions: "Additive" which adds noise waveforms to the clean waveform, and "Reverb" which generates 3 million convolutional room impulse responses (RIR) from a room simulator. The SNR is drawn from a uniform distribution from 1dB to 10dB for both additive and reverberant conditions.
+The study evaluates data using various noise sources and room configurations. The original non-modified data is referred to as "Clean", while the speech noise source is a distinct development set. The evaluations are conducted under two room conditions: "Additive" which adds noise waveforms to the clean waveform, and "Reverb" which generates 3 million convolutional room impulse responses (RIR) from a room simulator. The SNR is drawn from a uniform distribution from 1dB to 10dB for both additive and reverberant conditions.
 
 \subsection{Conclusion}
 VoiceFilter-Lite is a fast, tiny model that performs targeted voice separation in a streaming fashion for on-device ASR systems. It ensures ASR performance without affecting non-speech noise and reverberant room conditions. The model is trained with an asymmetric loss function and adaptive suppression strength at run-time. The 2.2 MB model has no WER degradation on clean and non-speech noise conditions while improving ASR performance on overlapped speech.

@@ -24,7 +24,7 @@ An LSTM employs three distinct gates to safeguard and manage the cell state:
 \end{figure}
 
 \subsubsection{LSTM's Internal Mechanism}
-The first stage involves determining which information to discard from the previous cell state $C_{t-1}$. This critical decision is facilitated by a "forget gate" implemented as a sigmoid layer. This layer analyzes both the previous hidden state $h_{t-1}$ and the current input $x_t$ to generate a forget vector $f_t$ with values between 0 and 1 for each element of $C_{t-1}$ as illustrated in Equation \ref{eq:lstm-forget}. An $f_t$ value of 1 indicates complete retention, while 0 signifies absolute removal.
+The first stage involves determining which information to discard from the previous cell state $C_{t-1}$. This critical decision is facilitated by a "forget gate" implemented as a sigmoid layer. This layer analyzes both the previous hidden state $h_{t-1}$ and the current input $x_t$ to generate a forget vector $f_t$ with values between 0 and 1 for each element of $C_{t-1}$ as illustrated in Equation \ref{eq:lstm-forget}. A $f_t$ value of 1 indicates complete retention, while 0 signifies absolute removal.
 The following equation describes the forget gate's operation:
 \begin{equation} \label{eq:lstm-forget}
     f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
@@ -48,7 +48,7 @@ By meticulously managing the information flow within the cell state, LSTMs retai
 \subsubsection{Bidirectional LSTM}
 Bidirectional LSTMs (BiLSTMs) are an extension of traditional LSTMs that can improve model performance on sequence classification problems. They work by processing the input sequence in both directions with two separate hidden layers which are then fed forwards to the same output layer.
 The motivation behind BiLSTMs is that the output at time $t$ may not only depend on the previous elements in the sequence, but also future elements. For example, to predict a missing word in a sequence you want to look at both the left and the right context.
-The two separate hidden layers of a BiLSTM are typically referred to as the forward and backward layers. The forward layer passes over the sequence from left to right and the backward layer passes over the sequence from right to left. The outputs of these two layers are usually concatenated at each time step, although there are other options, e.g. summation.
+The two separate hidden layers of a BiLSTM are typically referred to as the forward and backward layers. The forward layer passes over the sequence from left to right and the backward layer passes over the sequence from right to left. The outputs of these two layers are usually concatenated at each time step, although there are other options, e.g., summation.
 The output of a BiLSTM at time $t$ is a concatenation of the forward hidden state $h_t^f$ and the backward hidden state $h_t^b$:
 \begin{equation}
     h_t = [h_t^f, h_t^b]
