@@ -488,15 +488,8 @@ def metrics(mixed, output, gt):
     return metrics
 
 def load_model(model, state_dict):
-    new_state_dict = {}
-
-    for k, v in state_dict.items():
-        if "label_embedding.0.weight" in k:
-            continue
-        new_state_dict[k] = v
-
-    model.load_state_dict(new_state_dict, strict=False)
-
+    state_dict.pop("label_embedding.0.weight")
+    model.load_state_dict(state_dict, strict=False)
     return model
 
 if __name__ == "__main__":
