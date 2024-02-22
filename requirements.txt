@@ -11,3 +11,5 @@ tqdm
 pesq
 pystoi
 wandb
+nemo_toolkit[asr]
+speechbrain
