@@ -15,6 +15,8 @@ from torchmetrics.functional import(
 
 from speechbrain.lobes.models.transformer.Transformer import PositionalEncoding
 
+import nemo.collections.asr as nemo_asr
+
 def mod_pad(x, chunk_size, pad):
     # Mod pad the input to perform integer number of
     # inferences
@@ -498,7 +500,6 @@ def load_model(model, state_dict):
     return model
 
 if __name__ == "__main__":
-
     if torch.cuda.is_available():
         device = torch.device("cuda")
     else:
@@ -524,6 +525,9 @@ if __name__ == "__main__":
     model.to(device).eval()
 
     mixture = torch.randn(1, 1, 264600) # sampling rate should be 44100
+
+    # speaker_model = nemo_asr.models.EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large')
+    # query = speaker_model.get_embedding('/Sample.wav') returns: [1, 192] embedding for the speaker
 
     query_length = 192
     query = torch.ones(1, query_length)
