@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="jkG4cZ" name="SimpleEQ" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="ES1VoM" name="TrialApp" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
-  <MAINGROUP id="rb9ylf" name="SimpleEQ">
-    <GROUP id="{06A99ED4-7CA1-F6C3-E8EA-E07290A01FA2}" name="Source">
-      <FILE id="IQBIwM" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="oZqzmc" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="SpGCCE" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="uRpGmy" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+  <MAINGROUP id="mYGD2q" name="TrialApp">
+    <GROUP id="{F33F8CFA-D3AA-2421-0EA3-B06A788F9B2B}" name="Source">
+      <FILE id="Kze243" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="dGn0A4" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="mNKTI9" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
-            useGlobalPath="1"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -28,18 +23,17 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="SimpleEQ" osxArchitecture="64BitIntel"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="SimpleEQ" osxArchitecture="64BitIntel"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="TrialApp"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="TrialApp"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../JUCE/macos/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE/macos/modules"/>
         <MODULEPATH id="juce_audio_formats" path="../JUCE/macos/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE/macos/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE/macos/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE/macos/modules"/>
         <MODULEPATH id="juce_core" path="../JUCE/macos/modules"/>
