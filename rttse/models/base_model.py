@@ -1,10 +1,8 @@
 from collections import OrderedDict
 from datetime import datetime
-from typing import Any
 import pytorch_lightning as pl
 import hydra
 from utils.time import format_seconds
-from utils.dist_utils import master_only
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from utils.logger import get_root_logger
 
