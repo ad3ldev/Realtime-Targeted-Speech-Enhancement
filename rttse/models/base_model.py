@@ -121,9 +121,11 @@ class BaseModel(pl.LightningModule):
         return losses_str
 
     def estimate_remaining_time(self):
-        duration = (datetime.now() - self.train_tic).seconds / self.trainer.log_every_n_steps
-        eta = format_seconds(duration * (self.trainer.max_steps - self.trainer.global_step))
-        self.train_tic = datetime.now()
+        eta = "N/A"
+        if self.trainer.max_steps > -1:
+            duration = (datetime.now() - self.train_tic).seconds / self.trainer.log_every_n_steps
+            eta = format_seconds(duration * (self.trainer.max_steps - self.trainer.global_step))
+            self.train_tic = datetime.now()
         return eta
 
     def on_validation_epoch_start(self):
