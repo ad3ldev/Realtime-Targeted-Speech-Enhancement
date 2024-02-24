@@ -60,7 +60,7 @@ class BaseModel(pl.LightningModule):
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
-        self.log_dict(loss_dict, on_step=True, on_epoch=True, logger=True)
+        self.log_dict(loss_dict, on_step=True, on_epoch=True)
         return loss_dict['train/l_total']
 
     def validation_step(self, batch, batch_idx):
@@ -70,7 +70,7 @@ class BaseModel(pl.LightningModule):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
-        self.log_dict(metrics_dict, logger=True)
+        self.log_dict(metrics_dict)
 
 
     def test_step(self,  batch, batch_idx):
@@ -80,7 +80,7 @@ class BaseModel(pl.LightningModule):
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
 
 
-        self.log_dict(metrics_dict, logger=True)
+        self.log_dict(metrics_dict)
 
 
     def configure_optimizers(self):
