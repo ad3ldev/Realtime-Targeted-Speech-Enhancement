@@ -340,11 +340,11 @@ def gen_audio3(is_clean, params, spk_index, audio_samples_length=-1):
     chosen_audio=[]
     chosen_files=[]
 
-    for audio, file in zip(audios_all, files_used):
+    for i, audio in enumerate(audios_all):
         percactive = activitydetector(audio=audio)
         if activity_threshold == 0.0 or percactive > activity_threshold:
             chosen_audio.append(audio)
-            files_used.append(file)
+            chosen_files.append(files_used[i])
     
     return chosen_audio, chosen_files
 
@@ -394,7 +394,7 @@ def main_gen(params):
         chosen_clean_reverb=[]
         chosen_clean_files_reverb=[]
 
-        for clean, clean_file in zip(chosen_clean, chosen_clean_files):
+        for i, clean in enumerate(chosen_clean):
             myrir= random.sample(rirfilenames, num_to_select1)
             (fs_rir,samples_rir) = wavfile.read(myrir[0])
 
@@ -406,7 +406,7 @@ def main_gen(params):
             
             clean_reverb = add_pyreverb(clean, samples_rir_ch)
             chosen_clean_reverb.append(clean_reverb)
-            chosen_clean_files_reverb.append(clean_file)
+            chosen_clean_files_reverb.append(chosen_clean_files[i])
 
         # add secondary speech and/or noise for each chunck of primary speech
         for chose_primary, chose_primary_sf in zip(chosen_clean_reverb, chosen_clean_files_reverb):
