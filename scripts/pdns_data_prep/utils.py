@@ -30,6 +30,7 @@ def write_log_file(log_dir, log_filename, data):
         csvwriter = csv.writer(csvfile, delimiter=',')
         for row in data:
             csvwriter.writerow([row])
+            print([row])
 
 
 def str2bool(string):
