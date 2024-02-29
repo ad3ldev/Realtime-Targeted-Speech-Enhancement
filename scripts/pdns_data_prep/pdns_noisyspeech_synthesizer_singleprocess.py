@@ -338,13 +338,15 @@ def gen_audio3(is_clean, params, spk_index, audio_samples_length=-1):
     audios_all, files_used, clipped_files  = build_audio3(is_clean, params, spk_index)
 
     chosen_audio=[]
+    chosen_files=[]
 
-    for audio in audios_all:
+    for audio, file in zip(audios_all, files_used):
         percactive = activitydetector(audio=audio)
         if activity_threshold == 0.0 or percactive > activity_threshold:
             chosen_audio.append(audio)
-
-    return chosen_audio
+            files_used.append(file)
+    
+    return chosen_audio, chosen_files
 
 def main_gen(params):
     '''Calls gen_audio() to generate the audio signals, verifies that they meet
@@ -362,7 +364,7 @@ def main_gen(params):
     noise_clipped_files = []
     noise_low_activity_files = []
 
-    clean_index = 0
+    clean2_index = 0
     clean_index2 = 0
     noise_index = 0
 
@@ -379,7 +381,7 @@ def main_gen(params):
         #    gen_audio(True, params, clean_index)
         spk_index = random.randint(0,len(params['cleanfilenames'])-1)   
 
-        chosen_clean= gen_audio3(True, params, spk_index)
+        chosen_clean, chosen_clean_files = gen_audio3(True, params, spk_index)
         num_clips= int(len(chosen_clean))
 
         #(True, params, clean_index) 
@@ -390,8 +392,9 @@ def main_gen(params):
         rirfilenames = params['myrir']
 
         chosen_clean_reverb=[]
+        chosen_clean_files_reverb=[]
 
-        for clean in chosen_clean:
+        for clean, clean_file in zip(chosen_clean, chosen_clean_files):
             myrir= random.sample(rirfilenames, num_to_select1)
             (fs_rir,samples_rir) = wavfile.read(myrir[0])
 
@@ -403,12 +406,13 @@ def main_gen(params):
             
             clean_reverb = add_pyreverb(clean, samples_rir_ch)
             chosen_clean_reverb.append(clean_reverb)
+            chosen_clean_files_reverb.append(clean_file)
 
         # add secondary speech and/or noise for each chunck of primary speech
-        for chose_primary in chosen_clean_reverb:
+        for chose_primary, chose_primary_sf in zip(chosen_clean_reverb, chosen_clean_files_reverb):
             index2 = random.randint(0,len(params['cleanfilenames2'])-1)  
 
-            clean2, clean_sf, clean_cf, clean_laf, clean_index = \
+            clean2, clean2_sf, clean2_cf, clean2_laf, clean2_index = \
                 gen_audio2(True, params, index2, chose_primary.shape[0])
             
             noise_index = random.randint(0,len(params['noisefilenames'])-1)
@@ -458,13 +462,14 @@ def main_gen(params):
                 print("Warning: File #" + str(file_num) + " has unexpected clipping, " + \
                     "returning without writing audio to disk")
                 continue
-
-            clean_source_files += clean_sf
-            noise_source_files += noise_sf
+            
+            clean_clipped_files.append(chose_primary_sf)
+            clean_source_files2 += clean2_sf
+            noise_source_files += (noise_sf)
 
             # write resultant audio streams to files
             hyphen = '-'
-            clean_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in clean_sf]
+            clean_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in clean2_sf]
             clean_files_joined = hyphen.join(clean_source_filenamesonly)[:MAXFILELEN]
             noise_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in noise_sf]
             noise_files_joined = hyphen.join(noise_source_filenamesonly)[:MAXFILELEN]
@@ -472,8 +477,8 @@ def main_gen(params):
             noisyfilename = 'primary_noisy_fileid_' + str(file_num) + '_' + clean_files_joined + '_' + noise_files_joined + '_snr' + \
                             str(snr) + '_tl' + str(target_level) + '.wav'
 
-            cleanfilename = 'clean_fileid_'+str(file_num)+'.wav'
-            noisefilename = 'noise_fileid_'+str(file_num)+'.wav'
+            cleanfilename = 'clean_fileid_'+str(file_num)+'_'+chose_primary_sf+'.wav'
+            noisefilename = 'noise_fileid_'+str(file_num)+'_'+noise_sf+'.wav'
 
             noisypath = os.path.join(params['noisyspeech_dir'], noisyfilename)
             cleanpath = os.path.join(params['clean_proc_dir'], cleanfilename)
@@ -510,9 +515,9 @@ def main_gen(params):
 
             for i in range(len(audio_signals)):
                 try:
-                    # audiowrite(file_paths[i], audio_signals[i], params['fs'])
-                    # audiowrite(file_paths2[i], audio_signals2[i], params['fs'])
-                    # audiowrite(file_paths3[i], audio_signals3[i], params['fs'])
+                    audiowrite(file_paths[i], audio_signals[i], params['fs'])
+                    audiowrite(file_paths2[i], audio_signals2[i], params['fs'])
+                    audiowrite(file_paths3[i], audio_signals3[i], params['fs'])
                     print("File #" + str(file_num) + " written to disk")
                 except Exception as e:
                     print(str(e))
@@ -528,7 +533,7 @@ def main_gen(params):
             #     except Exception as e:
             #         print(str(e))
 
-    return clean_source_files, clean_clipped_files, clean_low_activity_files, \
+    return clean_source_files, clean_clipped_files, clean_low_activity_files, clean_source_files2, \
                 noise_source_files, noise_clipped_files, noise_low_activity_files
 
 def main_body():
@@ -695,19 +700,19 @@ def main_body():
         params['noisedirs'] = noisedirs
 
     # Call main_gen() to generate audio
-    clean_source_files, clean_clipped_files, clean_low_activity_files, \
+    clean_primary_source_files, clean_clipped_files, clean_low_activity_files, clean_secondary_source_files,\
     noise_source_files, noise_clipped_files, noise_low_activity_files = main_gen(params)
 
     # Create log directory if needed, and write log files of clipped and low activity files
     log_dir = utils.get_dir(cfg, 'log_dir', 'Logs')
 
-    utils.write_log_file(log_dir, 'source_files.csv', clean_source_files + noise_source_files)
-    utils.write_log_file(log_dir, 'clipped_files.csv', clean_clipped_files + noise_clipped_files)
+    utils.write_log_file(log_dir, 'source_files.csv', zip([i for i in range(len(clean_primary_source_files))], clean_primary_source_files, clean_secondary_source_files, noise_source_files))
+    utils.write_log_file(log_dir, 'clipped_files.csv', zip(clean_clipped_files, noise_clipped_files))
     utils.write_log_file(log_dir, 'low_activity_files.csv', \
-                         clean_low_activity_files + noise_low_activity_files)
+                         zip(clean_low_activity_files, noise_low_activity_files))
 
     # Compute and print stats about percentange of clipped and low activity files
-    total_clean = len(clean_source_files) + len(clean_clipped_files) + len(clean_low_activity_files)
+    total_clean = len(clean_primary_source_files) + len(clean_clipped_files) + len(clean_low_activity_files)
     total_noise = len(noise_source_files) + len(noise_clipped_files) + len(noise_low_activity_files)
 
     pct_clean_clipped = round(len(clean_clipped_files)/total_clean*100, 1)
