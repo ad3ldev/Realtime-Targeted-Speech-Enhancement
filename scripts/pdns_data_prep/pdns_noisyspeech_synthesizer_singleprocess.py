@@ -463,7 +463,7 @@ def main_gen(params):
                     "returning without writing audio to disk")
                 continue
             
-            clean_clipped_files.append(chose_primary_sf)
+            clean_source_files.append(chose_primary_sf)
             clean_source_files2 += clean2_sf
             noise_source_files += (noise_sf)
 
