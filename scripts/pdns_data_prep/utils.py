@@ -24,9 +24,11 @@ def get_dir(cfg, param_name, new_dir_name):
 
 def write_log_file(log_dir, log_filename, data):
     '''Helper function to write log file'''
+    if type(data) is zip:
+        data = list(data)
     print(f'Writing log file to {os.path.join(log_dir, log_filename)}')
     print(data)
-    print(f'# of rows: {len(data)}')
+    print(f'Length of data: {len(data)}')
     with open(os.path.join(log_dir, log_filename), mode='w', newline='') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter=',')
         for row in data:
