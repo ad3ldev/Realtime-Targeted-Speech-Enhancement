@@ -69,7 +69,7 @@ def build_audio3(is_clean, params, spk_index, audio_samples_length=-1):
     input_audio, fs_input = audioread(source_files[idx])
         
     if fs_input != fs_output:
-        input_audio = librosa.resample(input_audio, fs_input, fs_output)
+        input_audio = librosa.resample(input_audio, orig_sr = fs_input, target_sr = fs_output)
 
     num_segs= int(input_audio.shape[0]/(params['fs']*params['audio_length']))
     # if current file is longer than remaining desired length, and this is
@@ -151,7 +151,7 @@ def build_audio(is_clean, params, index, audio_samples_length=-1):
         idx = (idx + 1) % np.size(source_files)
         input_audio, fs_input = audioread(source_files[idx])
         if fs_input != fs_output:
-            input_audio = librosa.resample(input_audio, fs_input, fs_output)
+            input_audio = librosa.resample(input_audio, orig_sr = fs_input, target_sr = fs_output)
 
         # if current file is longer than remaining desired length, and this is
         # noise generation or this is training set, subsample it randomly
@@ -215,7 +215,8 @@ def build_audio2(is_clean, params, index, audio_samples_length=-1):
         input_audio, fs_input = audioread(source_files[idx])
 
         if fs_input != fs_output:
-            input_audio = librosa.resample(input_audio, fs_input, fs_output)
+            input_audio = librosa.resample(input_audio, orig_sr = fs_input, target_sr = fs_output)
+
 
         # if current file is longer than remaining desired length, and this is
         # noise generation or this is training set, subsample it randomly
