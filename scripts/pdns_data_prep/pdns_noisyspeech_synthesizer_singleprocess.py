@@ -478,7 +478,7 @@ def main_gen(params):
                             str(snr) + '_tl' + str(target_level) + '.wav'
 
             cleanfilename = 'clean_fileid_'+str(file_num)+'_'+chose_primary_sf+'.wav'
-            noisefilename = 'noise_fileid_'+str(file_num)+'_'+noise_sf+'.wav'
+            noisefilename = 'noise_fileid_'+str(file_num)+'_'+noise_files_joined+'.wav'
 
             noisypath = os.path.join(params['noisyspeech_dir'], noisyfilename)
             cleanpath = os.path.join(params['clean_proc_dir'], cleanfilename)
