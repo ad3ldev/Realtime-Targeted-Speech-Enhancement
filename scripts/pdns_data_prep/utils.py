@@ -26,8 +26,7 @@ def write_log_file(log_dir, log_filename, data):
     '''Helper function to write log file'''
     data = zip(*data)
     with open(os.path.join(log_dir, log_filename), mode='w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=' ',
-                               quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csvwriter = csv.writer(csvfile, delimiter=',')
         for row in data:
             csvwriter.writerow([row])
 
