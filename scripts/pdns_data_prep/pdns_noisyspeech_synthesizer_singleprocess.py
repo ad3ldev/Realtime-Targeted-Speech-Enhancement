@@ -510,9 +510,9 @@ def main_gen(params):
 
             for i in range(len(audio_signals)):
                 try:
-                    audiowrite(file_paths[i], audio_signals[i], params['fs'])
-                    audiowrite(file_paths2[i], audio_signals2[i], params['fs'])
-                    audiowrite(file_paths3[i], audio_signals3[i], params['fs'])
+                    # audiowrite(file_paths[i], audio_signals[i], params['fs'])
+                    # audiowrite(file_paths2[i], audio_signals2[i], params['fs'])
+                    # audiowrite(file_paths3[i], audio_signals3[i], params['fs'])
                     print("File #" + str(file_num) + " written to disk")
                 except Exception as e:
                     print(str(e))
