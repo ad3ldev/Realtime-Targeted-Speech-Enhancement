@@ -1,8 +1,8 @@
 from collections import OrderedDict
-from datetime import datetime
+
 import pytorch_lightning as pl
 import hydra
-from utils.time import format_seconds
+from utils.console_logger import ConsoleLogger
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from utils.logger import get_root_logger
 
@@ -10,6 +10,7 @@ class BaseModel(pl.LightningModule):
     def __init__(self, net) -> None:
         super().__init__()
         self.net = net
+        self.console_logger = ConsoleLogger()
 
     def get_bare_model(self):
         return self.net
@@ -92,59 +93,19 @@ class BaseModel(pl.LightningModule):
 
     def on_train_start(self) -> None:
         get_root_logger().info(f'Training Started...')
-        self.train_tic = datetime.now()
+        self.console_logger.train_tic()
 
 
     def on_train_batch_end(self, outputs, batch, batch_idx):
         if self.trainer.global_step % self.trainer.log_every_n_steps == 0:
-            eta = self.estimate_remaining_time()
-            losses_str = self.get_loss_str()
-            lrs = self.get_lrs_str()
-            get_root_logger().info(f'[epoch: {self.trainer.current_epoch}, iter: {self.trainer.global_step}, lr: {lrs}] [eta: {eta}] {losses_str}')
+            self.console_logger.log_train_step(self.trainer, self.trainer.callback_metrics, self.optimizers())
 
-    def get_lrs_str(self):
-        optims = self.optimizers()
-        if optims is list:
-            lrs = (f"{opt.param_groups[0]['lr']:.4f}" for opt in optims)
-        else:
-            lrs = f"{optims.param_groups[0]['lr']:.4f}"
-        return lrs
-
-    def get_loss_str(self):
-        metrics = self.trainer.callback_metrics
-        loss_dict = {k: v for k, v in metrics.items() if 'train' in k and 'step' in k}
-        losses_str = ""
-        for k, v in loss_dict.items():
-            losses_str += f"{k}: {v:.4f}, "
-
-        losses_str = losses_str[:-2]
-        return losses_str
-
-    def estimate_remaining_time(self):
-        eta = "N/A"
-        if self.trainer.max_steps > -1:
-            duration = (datetime.now() - self.train_tic).seconds / self.trainer.log_every_n_steps
-            eta = format_seconds(duration * (self.trainer.max_steps - self.trainer.global_step))
-            self.train_tic = datetime.now()
-        return eta
-
+    
     def on_validation_epoch_start(self):
         get_root_logger().info(f'Validation Started...')
-        self.val_tic = datetime.now()
+        self.console_logger.val_tic()
 
 
     def on_validation_epoch_end(self):
-        duration = format_seconds((datetime.now() - self.val_tic).seconds)
-        metrics_str = self.get_metrics_str()
-        get_root_logger().info(f'Validation Results: {metrics_str} and took {duration}')
-        self.train_tic = datetime.now()
-
-    def get_metrics_str(self):
-        metrics = self.trainer.callback_metrics
-        metrics = {k: v for k, v in metrics.items() if 'val' in k}
-        metrics_str = ""
-        for k, v in metrics.items():
-            metrics_str += f"{k}: {v:.4f}, "
-        
-        metrics_str = metrics_str[:-2]
-        return metrics_str
+        self.console_logger.log_validation_result(self.trainer, self.trainer.callback_metrics)
+        self.console_logger.train_tic()
