@@ -1,0 +1,9 @@
+test:
+  metrics:
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
+      
+    l2:
+      _target_: torch.nn.MSELoss
+      reduction: mean

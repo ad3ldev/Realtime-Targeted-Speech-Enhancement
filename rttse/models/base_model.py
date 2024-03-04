@@ -25,6 +25,12 @@ class BaseModel(pl.LightningModule):
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
+    def setup_testing(self, cfg):
+        self.cfg = cfg
+        self.save_hyperparameters(cfg, logger=False)
+        
+        self.metrics = hydra.utils.instantiate(cfg['test']['metrics'])
+
     @master_only
     def print_netowrk(self, stage=None):
         logger = get_root_logger()
