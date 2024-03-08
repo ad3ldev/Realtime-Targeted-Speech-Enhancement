@@ -469,6 +469,7 @@ def main_gen(params):
 
             # write resultant audio streams to files
             hyphen = '-'
+            clean_primary_filenameonly = chose_primary_sf[:-4].split(os.path.sep)[-1]
             clean_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in clean2_sf]
             clean_files_joined = hyphen.join(clean_source_filenamesonly)[:MAXFILELEN]
             noise_source_filenamesonly = [i[:-4].split(os.path.sep)[-1] for i in noise_sf]
@@ -477,7 +478,7 @@ def main_gen(params):
             noisyfilename = 'primary_noisy_fileid_' + str(file_num) + '_' + clean_files_joined + '_' + noise_files_joined + '_snr' + \
                             str(snr) + '_tl' + str(target_level) + '.wav'
 
-            cleanfilename = 'clean_fileid_'+str(file_num)+'_'+chose_primary_sf+'.wav'
+            cleanfilename = 'clean_fileid_'+str(file_num)+'_'+clean_primary_filenameonly+'.wav'
             noisefilename = 'noise_fileid_'+str(file_num)+'_'+noise_files_joined+'.wav'
 
             noisypath = os.path.join(params['noisyspeech_dir'], noisyfilename)
