@@ -487,41 +487,43 @@ def main_gen(params):
 
             noisyfilename2 = 'ps_noisy_fileid_'+ str(file_num) + '_' +  clean_files_joined + '_' + noise_files_joined + '_snr' + \
                             str(snr) + '_tl' + str(target_level) + '.wav'
-            cleanfilename2 = 'ps_clean_fileid_'+str(file_num)+'.wav'
+            # cleanfilename2 = 'ps_clean_fileid_'+str(file_num)+'.wav'
             noisefilename2 = 'ps_noise_fileid_'+str(file_num)+'.wav'
 
             noisypath2 = os.path.join(params['noisyspeech_dir'], noisyfilename2)
-            cleanpath2 = os.path.join(params['clean_proc_dir'], cleanfilename2)
+            # cleanpath2 = os.path.join(params['clean_proc_dir'], cleanfilename2)
             noisepath2 = os.path.join(params['noise_proc_dir'], noisefilename2)
 
             noisyfilename3 = 'psn_noisy_fileid_' + str(file_num) + '_' +clean_files_joined + '_' + noise_files_joined + '_snr' + \
                             str(snr) + '_tl' + str(target_level) + '.wav'
-            cleanfilename3 = 'psn_clean_fileid_'+str(file_num)+'.wav'
+            # cleanfilename3 = 'psn_clean_fileid_'+str(file_num)+'.wav'
             noisefilename3 = 'psn_noise_fileid_'+str(file_num)+'.wav'
 
             noisypath3 = os.path.join(params['noisyspeech_dir'], noisyfilename3)
-            cleanpath3 = os.path.join(params['clean_proc_dir'], cleanfilename3)
+            # cleanpath3 = os.path.join(params['clean_proc_dir'], cleanfilename3)
             noisepath3 = os.path.join(params['noise_proc_dir'], noisefilename3)
 
-            audio_signals = [noisy_snr, clean_snr, noise_snr]
-            file_paths = [noisypath, cleanpath, noisepath]
+            audio_signals = [noisy_snr, noise_snr]
+            file_paths = [noisypath, noisepath]
 
-            audio_signals2 = [noisy_snr2, clean_snr, noise_snr2]
-            file_paths2 = [noisypath2, cleanpath2, noisepath2]
+            audio_signals2 = [noisy_snr2, noise_snr2]
+            file_paths2 = [noisypath2, noisepath2]
 
-            audio_signals3 = [noisy_snr3, clean_snr, noise_snr3]
-            file_paths3 = [noisypath3, cleanpath3, noisepath3]
+            audio_signals3 = [noisy_snr3, noise_snr3]
+            file_paths3 = [noisypath3, noisepath3]
 
             file_num += 1 #         file_num = file_num + 3*num_clips
-
-            for i in range(len(audio_signals)):
-                try:
+            
+            # Save clean only once
+            try:
+                audiowrite(cleanpath, clean_snr, params['fs'])
+                for i in range(len(audio_signals)):
                     audiowrite(file_paths[i], audio_signals[i], params['fs'])
                     audiowrite(file_paths2[i], audio_signals2[i], params['fs'])
                     audiowrite(file_paths3[i], audio_signals3[i], params['fs'])
-                    print("File #" + str(file_num) + " written to disk")
-                except Exception as e:
-                    print(str(e))
+                print("File #" + str(file_num) + " written to disk")
+            except Exception as e:
+                print(str(e))
 
             # for i in range(len(audio_signals2)):
             #     try:
