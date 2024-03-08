@@ -1,0 +1,43 @@
+_target_: data.base_data_module.BaseDataModule
+
+opt:
+  data_dir:
+  train:
+    dataset:
+      _target_: data.pdns_dataset.PDNSDataset
+      root: /kaggle/input/pdns-2023-10-hours
+      synthesized_speakers_csv: /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
+      reference_speakers_csv: /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
+      sr: 16000
+      mode: all
+      seed: 42
+      reference_tensor: False
+      crop_length_sec: 0
+
+
+    dataloader:
+      batch_size: 32
+      num_workers: 2
+      shuffle: True   # Can be changed to False if we wanted identical experiments
+      pin_memory: True
+      collate_fn: data.pdns_dataset.PDNSDataset.collate_fn
+
+  val: # Should be changed to actual validation set
+    dataset:
+      _target_: data.pdns_dataset.PDNSDataset
+      root: /kaggle/input/pdns-2023-10-hours
+      synthesized_speakers_csv: 
+      reference_speakers_csv:
+      sr: 16000
+      mode: all
+      seed: 42
+      reference_tensor: False
+      crop_length_sec: 0
+
+
+    dataloader:
+      batch_size: 32
+      num_workers: 2
+      collate_fn: data.pdns_dataset.PDNSDataset.collate_fn
+      # shuffle: True
+      # pin_memory: True
