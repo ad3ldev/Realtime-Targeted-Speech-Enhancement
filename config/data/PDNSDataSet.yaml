@@ -26,12 +26,11 @@ opt:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
       root: /kaggle/input/pdns-2023-10-hours
-      synthesized_speakers_csv: 
-      reference_speakers_csv:
+      synthesized_speakers_csv: /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
+      reference_speakers_csv: /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
       sr: 16000
       mode: all
       seed: 42
-      reference_tensor: False
       crop_length_sec: 0
 
 
