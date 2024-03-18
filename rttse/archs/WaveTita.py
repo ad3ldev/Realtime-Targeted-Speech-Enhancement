@@ -87,10 +87,14 @@ if __name__ == "__main__":
             reference_path = data["reference_path"]
             labels = torch.zeros((batch_size, 1, 192))
 
-            for i in range(batch_size):
-                labels[i] = model.speaker_embedder.get_embedding(reference_path[i])
+            for j in range(batch_size):
+                labels[j] = model.speaker_embedder.get_embedding(reference_path[j])
 
             labels = labels.to(model.device)
+
+            print(f"Shape of noisy audio: {noisy_audio.shape}")
+            print(f"Shape of labels: {labels.shape}")
+
             # Forward pass
             enhanced_audio = model(noisy_audio, labels)
 
