@@ -12,7 +12,7 @@ class WaveTita(torch.nn.Module):
         super(WaveTita, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
-        self.speech_enhancer = speech_enhancer()
+        self.speech_enhancer = speech_enhancer
     
     def detect_device(self) -> str:
         return "cuda" if torch.cuda.is_available() else "cpu"
@@ -36,7 +36,11 @@ class WaveTita(torch.nn.Module):
         labels = labels.to(self.device)
         return self.speech_enhancer(noisy_audio, labels)
     
-
+if __name__ == "__main__":
+    model = WaveTita()
+    print(model.device)
+    print(model.speaker_embedder)
+    print(model.speech_enhancer)
 # if __name__ == "__main__":
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument('--root', help='Root directory of PDNS')
