@@ -13,12 +13,11 @@ opt:
       seed: 42
       crop_length_sec: 0
 
-
     dataloader:
       batch_size: 32
       num_workers: 2
-      shuffle: True   # Can be changed to False if we wanted identical experiments
-      pin_memory: True
+      shuffle: True # Can be changed to False if we wanted identical experiments
+      pin_memory: False
       # collate_fn: data.pdns_dataset.PDNSDataset.collate_fn
 
   val: # Should be changed to actual validation set
@@ -31,7 +30,6 @@ opt:
       mode: all
       seed: 42
       crop_length_sec: 0
-
 
     dataloader:
       batch_size: 32

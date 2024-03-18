@@ -14,10 +14,7 @@ import torchaudio
 
 from nemo.collections.asr.models import EncDecSpeakerLabelModel
 
-speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
 
-for param in speaker_embedder.parameters():
-    param.requires_grad = False
 
 # speaker_embedder_fn = lambda x: 
 
@@ -54,6 +51,11 @@ class PDNSDataset(Dataset):
         """
         super(PDNSDataset).__init__()
         
+        self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
+
+        for param in self.speaker_embedder.parameters():
+            param.requires_grad = False
+
         try:
             torch.multiprocessing.set_start_method('spawn')
         except RuntimeError:
@@ -127,7 +129,7 @@ class PDNSDataset(Dataset):
         
         # Select a random speaker from the clean speakers
         reference_file = self.rng.choice(self.reference_files[file[2]])
-        speaker_embedding = speaker_embedder.get_embedding(reference_file)
+        speaker_embedding = self.speaker_embedder.get_embedding(reference_file)
         
         # Resample the audio to the desired sample rate
         if clean_sr != self.sr:

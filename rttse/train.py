@@ -54,4 +54,6 @@ def train_pipeline(cfg):
 
 
 if __name__ == "__main__":
+    # import logging
+    # logging.disable(logging.CRITICAL)
     train_pipeline()
