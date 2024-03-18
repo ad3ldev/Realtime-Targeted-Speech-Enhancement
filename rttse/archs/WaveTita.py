@@ -85,7 +85,7 @@ if __name__ == "__main__":
         for i, data in enumerate(trainloader):
             noisy_audio = data["noisy"].to(model.device)
             reference_path = data["reference_path"]
-            labels = torch.zeros((batch_size, 1, 192))
+            labels = torch.zeros((batch_size, 192))
 
             for j in range(batch_size):
                 labels[j] = model.speaker_embedder.get_embedding(reference_path[j])
