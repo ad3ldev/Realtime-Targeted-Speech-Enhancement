@@ -163,7 +163,7 @@ class PDNSDataset(Dataset):
         #         reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
         #     data["reference"] = reference_audio
         
-        return (noisy_audio, speaker_embedding), clean_audio
+        return (noisy_audio, speaker_embedding.squeeze()), clean_audio
 
     def __len__(self):
         return len(self.files)
