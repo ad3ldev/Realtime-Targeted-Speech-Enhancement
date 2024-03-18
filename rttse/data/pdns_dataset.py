@@ -12,6 +12,15 @@ from torch.utils.data.distributed import DistributedSampler
 
 import torchaudio
 
+from nemo.collections.asr.models import EncDecSpeakerLabelModel
+
+speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
+
+def speaker_embedder_fn():
+    # Freeze the speaker embedder
+    for param in speaker_embedder.parameters():
+        param.requires_grad = False
+    return speaker_embedder.get_embedding
 
 class PDNSDataset(Dataset):
     """
@@ -20,6 +29,7 @@ class PDNSDataset(Dataset):
     
     def __init__(
         self, 
+        speaker_embedder,
         root = './', 
         synthesized_speakers_csv = './speakers.csv',
         reference_speakers_csv = './reference_speakers.csv',
@@ -27,11 +37,12 @@ class PDNSDataset(Dataset):
         crop_length_sec = 0, 
         mode: Literal['all', 'ps', 'pn', 'psn'] = 'all',
         seed: int = 42,
-        reference_tensor: bool = False
+        # reference_tensor: bool = False
         ):
         """ Creates a PDNSDataset object.
 
         Args:
+            speaker_embedder: The speaker embedding function.
             root (str, optional): The root directory of PDNS that contains clean and noisy subdirectories. Defaults to './'.
             synthesized_speakers_csv (str, optional): The csv containing the synthesization sources of each generated audio clip. This is used to find the primary speaker of each clip. Defaults to './speakers.csv'.
             reference_speakers_csv (str, optional): The csv containing the speakers of all raw files from the dataset. This is used to get a clean audio clip related to a sepcific speaker. Defaults to './reference_speakers.csv'.
@@ -50,7 +61,8 @@ class PDNSDataset(Dataset):
         
         self.crop_length_sec = crop_length_sec
         self.sr = sr
-        self.reference_tensor = reference_tensor
+        # self.reference_tensor = reference_tensor
+        self.speaker_embedder = speaker_embedder
         
         # Load reference speaker csv
         reference_speakers = pd.read_csv(reference_speakers_csv)
@@ -115,6 +127,7 @@ class PDNSDataset(Dataset):
         
         # Select a random speaker from the clean speakers
         reference_file = self.rng.choice(self.reference_files[file[2]])
+        speaker_embedding = self.speaker_embedder(reference_file)
         
         # Resample the audio to the desired sample rate
         if clean_sr != self.sr:
@@ -143,41 +156,41 @@ class PDNSDataset(Dataset):
         }
         
         # Load reference audio if reference_tensor is True
-        if self.reference_tensor:
-            reference_audio, reference_sr = torchaudio.load(reference_file)
-            if reference_sr != self.sr:
-                reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
-            data["reference"] = reference_audio
+        # if self.reference_tensor:
+        #     reference_audio, reference_sr = torchaudio.load(reference_file)
+        #     if reference_sr != self.sr:
+        #         reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
+        #     data["reference"] = reference_audio
         
-        return data
+        return (noisy_audio, speaker_embedding), clean_audio
 
     def __len__(self):
         return len(self.files)
     
-    @staticmethod
-    def collate_fn(batch):
-        """Collate function for the dataloader
+    # @staticmethod
+    # def collate_fn(batch):
+    #     """Collate function for the dataloader
 
-        Args:
-            batch : List of data returned by __getitem__
+    #     Args:
+    #         batch : List of data returned by __getitem__
 
-        Returns:
-            dict: A dictionary containing the clean, noisy, reference audio tensors if exist and the reference path list.
-        """
-        return {
-            "clean": torch.stack([data["clean"] for data in batch]),
-            "noisy": torch.stack([data["noisy"] for data in batch]),
-            "reference_path": [data["reference_path"] for data in batch],
-            "reference": torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
-        }
+    #     Returns:
+    #         dict: A dictionary containing the clean, noisy, reference audio tensors if exist and the reference path list.
+    #     """
+    #     return {
+    #         "clean": torch.stack([data["clean"] for data in batch]),
+    #         "noisy": torch.stack([data["noisy"] for data in batch]),
+    #         "reference_path": [data["reference_path"] for data in batch],
+    #         "reference": torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+    #     }
 
 
 def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
     """
     Get dataloader with distributed sampling
     """
-    dataset = PDNSDataset(root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
-    kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSDataset.collate_fn}
+    dataset = PDNSDataset(speaker_embedder=speaker_embedder_fn, root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+    kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False}
 
     if num_gpus > 1:
         train_sampler = DistributedSampler(dataset)
@@ -206,13 +219,14 @@ if __name__ == '__main__':
     
     print(f"Number of steps: {len(trainloader)}")
 
-    for data in trainloader: 
-        clean_audio = data["clean"]
-        noisy_audio = data["noisy"]
-        reference_path = data["reference_path"]
+    for (noisy_audio, speaker_embedding), clean_audio in trainloader: 
         clean_audio = clean_audio.cuda()
+        speaker_embedding = speaker_embedding.cuda()
         noisy_audio = noisy_audio.cuda()
-        # print(f"clean {clean_audio[0][0][0]}")
-        # print(f"noisy {noisy_audio[0][0][0]}")
+        print(f"clean.shape: {clean_audio.shape}")
+        print(f"speaker_embedding.shape: {speaker_embedding.shape}")
+        print(f"noisy.shape: {noisy_audio.shape}")
+        print(f"clean {clean_audio[0][0][0]}")
+        print(f"speaker_embedding {speaker_embedding[0][0]}")
+        print(f"noisy {noisy_audio[0][0][0]}")
         # print(clean_audio.shape, noisy_audio.shape)
-        print(reference_path)    
