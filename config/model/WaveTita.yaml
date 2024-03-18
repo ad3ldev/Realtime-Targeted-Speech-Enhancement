@@ -2,15 +2,15 @@ _target_: models.base_model.BaseModel
 
 net:
   _target_: archs.WaveTita.WaveTita
-    speech_enhancer:
-      _target_: archs.Waveformer.Net
-      label_len: 192
-      L: 32
-      enc_dim: 512
-      num_enc_layers: 10
-      dec_dim: 256
-      num_dec_layers: 1
-      dec_buf_len: 13
-      dec_chunk_size: 13
-      out_buf_len: 4
-      use_pos_enc: "true"
+  speech_enhancer:
+    _target_: archs.Waveformer.Net
+    label_len: 192
+    L: 32
+    enc_dim: 512
+    num_enc_layers: 10
+    dec_dim: 256
+    num_dec_layers: 1
+    dec_buf_len: 13
+    dec_chunk_size: 13
+    out_buf_len: 4
+    use_pos_enc: "true"
