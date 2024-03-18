@@ -8,7 +8,8 @@ import argparse
 from nemo.collections.asr.models import EncDecSpeakerLabelModel
 
 from Waveformer import Net, loss
-from rttse.data.pdns_dataset import load_PDNSDataset
+
+from pdns_dataset import load_PDNSDataset
 
 class WaveTita(torch.nn.Module):
     def __init__(self, *args, **kwargs) -> None:
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_gpus', type=int, default=1, help='Number of GPUs')
     args = parser.parse_args()
     
-    trainloader = load_PDNSDataset(**args)
+    trainloader = load_PDNSDataset(root=args.root, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
 
     # Hyperparameters
     learning_rate = 0.001
