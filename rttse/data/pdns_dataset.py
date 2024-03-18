@@ -14,10 +14,9 @@ import torchaudio
 
 
 class PDNSCollate:
-    def __init__(self, sr, crop_length_sec):
-        self.sr = sr
-        self.crop_length_sec = crop_length_sec
-
+    def __init__(self):
+        pass
+    
     def __call__(self, batch):
         clean_audio = torch.stack([data["clean"] for data in batch])
         noisy_audio = torch.stack([data["noisy"] for data in batch])
