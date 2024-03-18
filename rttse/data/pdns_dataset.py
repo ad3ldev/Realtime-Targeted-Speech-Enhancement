@@ -188,7 +188,7 @@ def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, cro
     """
     Get dataloader with distributed sampling
     """
-    dataset = PDNSDataset(speaker_embedder=speaker_embedder_fn, root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+    dataset = PDNSDataset(speaker_embedder=None, root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False}
 
     if num_gpus > 1:
