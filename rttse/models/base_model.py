@@ -48,7 +48,7 @@ class BaseModel(pl.LightningModule):
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
             # metric_name, metric_fn = list(metric.items())[0]
-            metrics_dict[f'{phase}/{metric_name}'] = metric_fn(y_hat, y)
+            metrics_dict[f'{phase}/{metric_name}'] = metric_fn.to(y_hat.device)(y_hat, y)
 
         return metrics_dict
     
