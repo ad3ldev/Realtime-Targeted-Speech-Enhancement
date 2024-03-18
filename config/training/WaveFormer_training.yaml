@@ -19,19 +19,19 @@ train:
 
 val:
   metrics:
-    pesq_wb:
-      _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
-      fs: 44100
-      mode: wb
+    # pesq_wb:
+    #   _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
+    #   fs: 44100
+    #   mode: wb
 
-    pesq_nb:
-      _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
-      fs: 44100
-      mode: nb
+    # pesq_nb:
+    #   _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
+    #   fs: 44100
+    #   mode: nb
 
-    stoi:
-      _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
-      fs: 44100
+    # stoi:
+    #   _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
+    #   fs: 44100
 
     si_snr:
       _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
