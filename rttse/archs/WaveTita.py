@@ -88,7 +88,7 @@ if __name__ == "__main__":
             labels = torch.zeros((batch_size, 1, 192))
 
             for i in range(batch_size):
-                labels[i] = model.speaker_embedder.get_speaker_embeddings(reference_path[i])
+                labels[i] = model.speaker_embedder.get_embedding(reference_path[i])
 
             labels = labels.to(model.device)
             # Forward pass
