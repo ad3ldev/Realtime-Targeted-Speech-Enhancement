@@ -5,7 +5,7 @@ train:
     weight_decay: 0.0
 
   scheduler:
-    _target_: torch.optm.lr_scheduler.ReduceLROnPlateau
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
     mode: max
     factor: 0.1
     patience: 5
