@@ -28,7 +28,6 @@ class PDNSDataset(Dataset):
     
     def __init__(
         self, 
-        speaker_embedder,
         root = './', 
         synthesized_speakers_csv = './speakers.csv',
         reference_speakers_csv = './reference_speakers.csv',
@@ -41,7 +40,6 @@ class PDNSDataset(Dataset):
         """ Creates a PDNSDataset object.
 
         Args:
-            speaker_embedder: The speaker embedding function.
             root (str, optional): The root directory of PDNS that contains clean and noisy subdirectories. Defaults to './'.
             synthesized_speakers_csv (str, optional): The csv containing the synthesization sources of each generated audio clip. This is used to find the primary speaker of each clip. Defaults to './speakers.csv'.
             reference_speakers_csv (str, optional): The csv containing the speakers of all raw files from the dataset. This is used to get a clean audio clip related to a sepcific speaker. Defaults to './reference_speakers.csv'.
@@ -62,8 +60,6 @@ class PDNSDataset(Dataset):
         
         self.crop_length_sec = crop_length_sec
         self.sr = sr
-        # self.reference_tensor = reference_tensor
-        self.speaker_embedder = speaker_embedder
         
         # Load reference speaker csv
         reference_speakers = pd.read_csv(reference_speakers_csv)
@@ -190,7 +186,7 @@ def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, cro
     """
     Get dataloader with distributed sampling
     """
-    dataset = PDNSDataset(speaker_embedder=None, root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+    dataset = PDNSDataset(root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False}
 
     if num_gpus > 1:
