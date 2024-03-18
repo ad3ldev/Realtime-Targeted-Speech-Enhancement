@@ -8,15 +8,12 @@ hydra:
 logger:
   use_tb_logger:
   wandb:
-    project: 
+    project:
     resume_id:
     group:
 
 defaults:
-- data: CleanUNetDataSet
-- model: CleanUNet
-- training: CleanUNet_training
-- trainer: CleanUNet_trainer
-
-
-
+  - data: PDNSDataSet
+  - model: WaveTita
+  - training: WaveFormer_training
+  - trainer: CleanUNet_trainer
