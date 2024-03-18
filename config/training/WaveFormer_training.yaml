@@ -4,14 +4,14 @@ train:
     lr: 5e-5
     weight_decay: 0.0
 
-  scheduler:
-    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
-    mode: max
-    factor: 0.1
-    patience: 5
-    min_lr: 5e-6
-    threshold: 0.1
-    threshold_mode: abs
+  # scheduler:
+  #   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  #   mode: max
+  #   factor: 0.1
+  #   patience: 5
+  #   min_lr: 5e-6
+  #   threshold: 0.1
+  #   threshold_mode: abs
 
   losses:
     loss:
