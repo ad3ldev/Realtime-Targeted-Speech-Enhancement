@@ -15,7 +15,7 @@ opt:
       crop_length_sec: 0
 
     dataloader:
-      batch_size: 32
+      batch_size: 2
       num_workers: 2
       shuffle: True # Can be changed to False if we wanted identical experiments
       pin_memory: True
@@ -35,7 +35,7 @@ opt:
       crop_length_sec: 0
 
     dataloader:
-      batch_size: 32
+      batch_size: 2
       num_workers: 2
       collate_fn:
         _target_: data.pdns_dataset.PDNSCollate # shuffle: True
