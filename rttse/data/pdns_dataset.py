@@ -167,22 +167,17 @@ class PDNSDataset(Dataset):
     def __len__(self):
         return len(self.files)
     
-    # @staticmethod
-    # def collate_fn(batch):
-    #     """Collate function for the dataloader
+    @staticmethod
+    def collate_fn(batch):
+        """Collate function for the dataloader
 
-    #     Args:
-    #         batch : List of data returned by __getitem__
+        Args:
+            batch : List of data returned by __getitem__
 
-    #     Returns:
-    #         dict: A dictionary containing the clean, noisy, reference audio tensors if exist and the reference path list.
-    #     """
-    #     return {
-    #         "clean": torch.stack([data["clean"] for data in batch]),
-    #         "noisy": torch.stack([data["noisy"] for data in batch]),
-    #         "reference_path": [data["reference_path"] for data in batch],
-    #         "reference": torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
-    #     }
+        Returns:
+            The collated batch
+        """
+        return (torch.stack([data[0][0] for data in batch]), torch.stack([data[0][1] for data in batch])), torch.stack([data[1] for data in batch])
 
 
 def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
