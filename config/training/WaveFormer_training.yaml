@@ -34,4 +34,4 @@ val:
     #   fs: 44100
 
     si_snr:
-      _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
+      _target_: torchmetrics.functional.ScaleInvariantSignalNoiseRatio
