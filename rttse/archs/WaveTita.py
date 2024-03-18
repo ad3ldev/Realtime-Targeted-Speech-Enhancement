@@ -4,9 +4,6 @@ import torch
 
 from nemo.collections.asr.models import EncDecSpeakerLabelModel
 
-from Waveformer import Net, loss
-
-
 class WaveTita(torch.nn.Module):
     def __init__(self, speech_enhancer, *args, **kwargs) -> None:
         super(WaveTita, self).__init__(*args, **kwargs)
@@ -36,11 +33,6 @@ class WaveTita(torch.nn.Module):
         labels = labels.to(self.device)
         return self.speech_enhancer(noisy_audio, labels)
     
-if __name__ == "__main__":
-    model = WaveTita()
-    print(model.device)
-    print(model.speaker_embedder)
-    print(model.speech_enhancer)
 # if __name__ == "__main__":
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument('--root', help='Root directory of PDNS')
