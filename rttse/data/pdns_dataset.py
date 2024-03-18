@@ -55,6 +55,8 @@ class PDNSDataset(Dataset):
             ValueError: In case of an unknown noisy file which doesn't start with 'primary', 'ps', or 'psn'.
         """
         super(PDNSDataset).__init__()
+        
+        torch.multiprocessing.set_start_method('spawn')
 
         self.rng = np.random.default_rng(seed) # May need to change this to torch seed
         
@@ -148,11 +150,11 @@ class PDNSDataset(Dataset):
         
         clean_audio, noisy_audio = clean_audio.unsqueeze(0), noisy_audio.unsqueeze(0)
         
-        data = {
-            "clean": clean_audio,
-            "noisy": noisy_audio,
-            "reference_path": reference_file
-        }
+        # data = {
+        #     "clean": clean_audio,
+        #     "noisy": noisy_audio,
+        #     "reference_path": reference_file
+        # }
         
         # Load reference audio if reference_tensor is True
         # if self.reference_tensor:
