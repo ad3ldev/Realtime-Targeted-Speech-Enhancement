@@ -14,6 +14,7 @@ from pdns_dataset import load_PDNSDataset
 class WaveTita(torch.nn.Module):
     def __init__(self, *args, **kwargs) -> None:
         super(WaveTita, self).__init__(*args, **kwargs)
+        self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
         network_config = {
             "label_len": 192,
@@ -28,7 +29,6 @@ class WaveTita(torch.nn.Module):
             "use_pos_enc": "true"
         }
         self.speech_enhancer = self.load_speech_enhancer(network_config)
-        self.device = self.detect_device()
     
     def detect_device(self) -> str:
         return "cuda" if torch.cuda.is_available() else "cpu"
