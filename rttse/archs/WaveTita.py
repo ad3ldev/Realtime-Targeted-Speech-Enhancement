@@ -85,6 +85,7 @@ if __name__ == "__main__":
         for i, data in enumerate(trainloader):
             noisy_audio = data["noisy"].to(model.device)
             reference_path = data["reference_path"]
+            clean_audio = data["clean"].to(model.device)
             labels = torch.zeros((batch_size, 192))
 
             for j in range(batch_size):
@@ -100,7 +101,8 @@ if __name__ == "__main__":
 
             # Backward pass and optimization
             optimizer.zero_grad()
-            loss.backward()
+            loss_value = loss(enhanced_audio, clean_audio)
+            loss_value.backward()
             optimizer.step()
 
             # Print progress
