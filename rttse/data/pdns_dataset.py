@@ -13,6 +13,23 @@ from torch.utils.data.distributed import DistributedSampler
 import torchaudio
 
 
+class PDNSCollate:
+    def __init__(self, sr, crop_length_sec):
+        self.sr = sr
+        self.crop_length_sec = crop_length_sec
+
+    def __call__(self, batch):
+        clean_audio = torch.stack([data["clean"] for data in batch])
+        noisy_audio = torch.stack([data["noisy"] for data in batch])
+        reference_path = [data["reference_path"] for data in batch]
+        reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+        return {
+            "clean": clean_audio,
+            "noisy": noisy_audio,
+            "reference_path": reference_path,
+            "reference": reference
+        }
+
 class PDNSDataset(Dataset):
     """
     Create a Dataset for the PDNS dataset. The dataset is created by matching the speakers from the synthesized speakers csv file to the speakers csv files.
@@ -154,65 +171,65 @@ class PDNSDataset(Dataset):
     def __len__(self):
         return len(self.files)
     
-    @staticmethod
-    def collate_fn(batch):
-        """Collate function for the dataloader
+    # @staticmethod
+    # def collate_fn(batch):
+    #     """Collate function for the dataloader
 
-        Args:
-            batch : List of data returned by __getitem__
+    #     Args:
+    #         batch : List of data returned by __getitem__
 
-        Returns:
-            dict: A dictionary containing the clean, noisy, reference audio tensors if exist and the reference path list.
-        """
-        return {
-            "clean": torch.stack([data["clean"] for data in batch]),
-            "noisy": torch.stack([data["noisy"] for data in batch]),
-            "reference_path": [data["reference_path"] for data in batch],
-            "reference": torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
-        }
+    #     Returns:
+    #         dict: A dictionary containing the clean, noisy, reference audio tensors if exist and the reference path list.
+    #     """
+    #     return {
+    #         "clean": torch.stack([data["clean"] for data in batch]),
+    #         "noisy": torch.stack([data["noisy"] for data in batch]),
+    #         "reference_path": [data["reference_path"] for data in batch],
+    #         "reference": torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+    #     }
 
 
-def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
-    """
-    Get dataloader with distributed sampling
-    """
-    dataset = PDNSDataset(root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
-    kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSDataset.collate_fn}
+# def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
+#     """
+#     Get dataloader with distributed sampling
+#     """
+#     dataset = PDNSDataset(root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+#     # kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSDataset.collate_fn}
 
-    if num_gpus > 1:
-        train_sampler = DistributedSampler(dataset)
-        dataloader = torch.utils.data.DataLoader(dataset, sampler=train_sampler, **kwargs)
-    else:
-        train_sampler = torch.utils.data.RandomSampler(dataset)
-        dataloader = torch.utils.data.DataLoader(dataset, sampler=None, shuffle=False, **kwargs)
+#     if num_gpus > 1:
+#         train_sampler = DistributedSampler(dataset)
+#         dataloader = torch.utils.data.DataLoader(dataset, sampler=train_sampler, **kwargs)
+#     else:
+#         train_sampler = torch.utils.data.RandomSampler(dataset)
+#         dataloader = torch.utils.data.DataLoader(dataset, sampler=None, shuffle=False, **kwargs)
         
-    return dataloader
+#     return dataloader
 
 
-if __name__ == '__main__':
-    # Testing the PDNSDataset
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--root', help='Root directory of PDNS')
-    parser.add_argument('--synthesized_speakers_csv', help='Path to the synthesized speakers csv file')
-    parser.add_argument('--reference_speakers_csv', help='Path to the reference speakers csv file')
-    parser.add_argument('--crop_length_sec', type=int, default=0, help='Length of the audio clip')
-    parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
-    parser.add_argument('--sample_rate', type=int, default=41000, help='Sample rate')
-    parser.add_argument('--num_gpus', type=int, default=1, help='Number of GPUs')
-    args = parser.parse_args()
+# if __name__ == '__main__':
+#     # Testing the PDNSDataset
+#     import argparse
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--root', help='Root directory of PDNS')
+#     parser.add_argument('--synthesized_speakers_csv', help='Path to the synthesized speakers csv file')
+#     parser.add_argument('--reference_speakers_csv', help='Path to the reference speakers csv file')
+#     parser.add_argument('--crop_length_sec', type=int, default=0, help='Length of the audio clip')
+#     parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
+#     parser.add_argument('--sample_rate', type=int, default=41000, help='Sample rate')
+#     parser.add_argument('--num_gpus', type=int, default=1, help='Number of GPUs')
+#     args = parser.parse_args()
     
-    trainloader = load_PDNSDataset(root=args.root, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
+#     trainloader = load_PDNSDataset(root=args.root, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
     
-    print(f"Number of steps: {len(trainloader)}")
+#     print(f"Number of steps: {len(trainloader)}")
 
-    for data in trainloader: 
-        clean_audio = data["clean"]
-        noisy_audio = data["noisy"]
-        reference_path = data["reference_path"]
-        clean_audio = clean_audio.cuda()
-        noisy_audio = noisy_audio.cuda()
-        # print(f"clean {clean_audio[0][0][0]}")
-        # print(f"noisy {noisy_audio[0][0][0]}")
-        # print(clean_audio.shape, noisy_audio.shape)
-        print(reference_path)  
+#     for data in trainloader: 
+#         clean_audio = data["clean"]
+#         noisy_audio = data["noisy"]
+#         reference_path = data["reference_path"]
+#         clean_audio = clean_audio.cuda()
+#         noisy_audio = noisy_audio.cuda()
+#         # print(f"clean {clean_audio[0][0][0]}")
+#         # print(f"noisy {noisy_audio[0][0][0]}")
+#         # print(clean_audio.shape, noisy_audio.shape)
+#         print(reference_path)  

@@ -19,7 +19,8 @@ opt:
       num_workers: 2
       shuffle: True # Can be changed to False if we wanted identical experiments
       pin_memory: True
-      collate_fn: data.pdns_dataset.PDNSDataset.collate_fn
+      collate_fn:
+        _traget_: data.pdns_dataset.PDNSCollate
 
   val: # Should be changed to actual validation set
     dataset:
@@ -36,6 +37,6 @@ opt:
     dataloader:
       batch_size: 32
       num_workers: 2
-      collate_fn: data.pdns_dataset.PDNSDataset.collate_fn
-      # shuffle: True
+      collate_fn:
+        _traget_: data.pdns_dataset.PDNSCollate # shuffle: True
       # pin_memory: True
