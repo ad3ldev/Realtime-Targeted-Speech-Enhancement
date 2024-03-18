@@ -16,11 +16,10 @@ from nemo.collections.asr.models import EncDecSpeakerLabelModel
 
 speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
 
-def speaker_embedder_fn():
-    # Freeze the speaker embedder
-    for param in speaker_embedder.parameters():
-        param.requires_grad = False
-    return speaker_embedder.get_embedding
+for param in speaker_embedder.parameters():
+    param.requires_grad = False
+
+speaker_embedder_fn = lambda x: speaker_embedder.get_embedding(x)
 
 class PDNSDataset(Dataset):
     """
