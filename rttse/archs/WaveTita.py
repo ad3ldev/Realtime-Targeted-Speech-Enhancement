@@ -107,4 +107,4 @@ if __name__ == "__main__":
 
             # Print progress
             if i % 10 == 0:
-                print(f"Epoch {epoch}, Step {i}, Loss: {loss.item()}")
+                print(f"Epoch {epoch}, Step {i}, Loss: {loss_value.item()}")
