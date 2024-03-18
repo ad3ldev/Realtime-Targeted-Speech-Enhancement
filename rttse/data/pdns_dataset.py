@@ -19,7 +19,7 @@ speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_l
 for param in speaker_embedder.parameters():
     param.requires_grad = False
 
-speaker_embedder_fn = lambda x: speaker_embedder.get_embedding(x)
+# speaker_embedder_fn = lambda x: 
 
 class PDNSDataset(Dataset):
     """
@@ -126,7 +126,7 @@ class PDNSDataset(Dataset):
         
         # Select a random speaker from the clean speakers
         reference_file = self.rng.choice(self.reference_files[file[2]])
-        speaker_embedding = self.speaker_embedder(reference_file)
+        speaker_embedding = speaker_embedder.get_embedding(reference_file)
         
         # Resample the audio to the desired sample rate
         if clean_sr != self.sr:
