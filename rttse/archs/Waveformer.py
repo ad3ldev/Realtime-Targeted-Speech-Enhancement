@@ -405,7 +405,7 @@ class Net(nn.Module):
                               device=device)
         return enc_buf, dec_buf, out_buf
 
-    def forward(self, x, label, init_enc_buf=None, init_dec_buf=None,
+    def forward(self, x, init_enc_buf=None, init_dec_buf=None,
                 init_out_buf=None, pad=True):
         """
         Extracts the audio corresponding to the `label` in the given
@@ -420,6 +420,7 @@ class Net(nn.Module):
             out: [B, n_spk, T]
                 extracted audio with sounds corresponding to the `label`
         """
+        x, label = x
         mod = 0
         if pad:
             pad_size = (self.L, self.L) if self.lookahead else (0, 0)
