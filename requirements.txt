@@ -11,5 +11,6 @@ tqdm
 pesq
 pystoi
 wandb
+Cython
 nemo_toolkit[asr]
 speechbrain
