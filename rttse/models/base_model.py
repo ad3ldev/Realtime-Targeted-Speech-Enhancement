@@ -41,7 +41,7 @@ class BaseModel(pl.LightningModule):
             loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weights.get(loss_name, 1)
             l_total += loss_dict[f'{phase}/{loss_name}']
 
-        if len(self.losses) > 1: loss_dict[f'{phase}/l_total'] = l_total
+        loss_dict[f'{phase}/l_total'] = l_total
         return loss_dict
 
     def calculate_metrics(self, y_hat, y, phase):
