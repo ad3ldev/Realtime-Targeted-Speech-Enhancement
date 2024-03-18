@@ -50,11 +50,14 @@ class BaseModel(pl.LightningModule):
             # metric_name, metric_fn = list(metric.items())[0]
             metrics_dict[f'{phase}/{metric_name}'] = metric_fn.to(y_hat.device)(y_hat, y)
 
-        return metrics_dict
+        return 
+
+    def batch_adapter(self, batch):
+        return batch, batch['clean']
     
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
         
         y_hat = self.net(x)
 
@@ -63,7 +66,7 @@ class BaseModel(pl.LightningModule):
         return loss_dict['train/l_total']
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
 
         y_hat = self.net(x)
 
@@ -73,7 +76,7 @@ class BaseModel(pl.LightningModule):
 
 
     def test_step(self,  batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
