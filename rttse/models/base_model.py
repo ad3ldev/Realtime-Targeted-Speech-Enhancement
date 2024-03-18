@@ -50,7 +50,7 @@ class BaseModel(pl.LightningModule):
             # metric_name, metric_fn = list(metric.items())[0]
             metrics_dict[f'{phase}/{metric_name}'] = metric_fn.to(y_hat.device)(y_hat, y)
 
-        return 
+        return metrics_dict
 
     def batch_adapter(self, batch):
         return batch, batch['clean']
@@ -69,10 +69,7 @@ class BaseModel(pl.LightningModule):
         x, y = self.batch_adapter(batch)
 
         y_hat = self.net(x)
-        print(y_hat.shape)
-        print(y_hat)
-        print(y.shape)
-        print(y)
+
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
         self.log_dict(metrics_dict)
