@@ -51,15 +51,15 @@ class PDNSDataset(Dataset):
         """
         super(PDNSDataset).__init__()
         
-        self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
-
-        for param in self.speaker_embedder.parameters():
-            param.requires_grad = False
-
         try:
             torch.multiprocessing.set_start_method('spawn')
         except RuntimeError:
             pass
+            
+        self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
+
+        for param in self.speaker_embedder.parameters():
+            param.requires_grad = False
 
         self.rng = np.random.default_rng(seed) # May need to change this to torch seed
         
