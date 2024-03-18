@@ -69,7 +69,10 @@ class BaseModel(pl.LightningModule):
         x, y = self.batch_adapter(batch)
 
         y_hat = self.net(x)
-
+        print(y_hat.shape)
+        print(y_hat)
+        print(y.shape)
+        print(y)
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
         self.log_dict(metrics_dict)
