@@ -2,6 +2,7 @@ _target_: models.base_model.BaseModel
 
 net:
   _target_: archs.WaveTita.WaveTita
+  initial_weights:
   speech_enhancer:
     _target_: archs.Waveformer.Net
     label_len: 192

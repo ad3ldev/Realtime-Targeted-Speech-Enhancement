@@ -5,11 +5,13 @@ import torch
 from nemo.collections.asr.models import EncDecSpeakerLabelModel
 
 class WaveTita(torch.nn.Module):
-    def __init__(self, speech_enhancer, *args, **kwargs) -> None:
+    def __init__(self, speech_enhancer, initial_weights=None, *args, **kwargs) -> None:
         super(WaveTita, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
         self.speech_enhancer = speech_enhancer
+        if initial_weights:
+            self.speech_enhancer.load_state_dict(torch.load(initial_weights))
     
     def detect_device(self) -> str:
         return "cuda" if torch.cuda.is_available() else "cpu"
