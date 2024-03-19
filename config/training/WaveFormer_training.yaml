@@ -16,6 +16,10 @@ train:
   losses:
     loss:
       _target_: loss.waveformer_loss.WaveformerLoss
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
+      
 
 val:
   metrics:
