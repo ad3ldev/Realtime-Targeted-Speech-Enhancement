@@ -11,10 +11,11 @@ class WaveTita(torch.nn.Module):
         super(WaveTita, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
-        self.speech_enhancer = speech_enhancer
+        self.speech_enhancer = torch.compile(speech_enhancer, mode='max-autotune')
         if initial_weights:
             self.speech_enhancer.load_state_dict(torch.load(initial_weights))
             get_root_logger().info(f"Loaded weights from {initial_weights}")
+            
     
     def detect_device(self) -> str:
         return "cuda" if torch.cuda.is_available() else "cpu"
