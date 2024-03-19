@@ -503,13 +503,13 @@ def main_gen(params):
             # cleanpath3 = os.path.join(params['clean_proc_dir'], cleanfilename3)
             noisepath3 = os.path.join(params['noise_proc_dir'], noisefilename3)
 
-            audio_signals = [noisy_snr, noise_snr]
+            audio_signals = [noisy_snr, noise_snr] if params['save_noise'] else [noisy_snr]
             file_paths = [noisypath, noisepath]
 
-            audio_signals2 = [noisy_snr2, noise_snr2]
+            audio_signals2 = [noisy_snr2, noise_snr2] if params['save_noise'] else [noisy_snr2]
             file_paths2 = [noisypath2, noisepath2]
 
-            audio_signals3 = [noisy_snr3, noise_snr3]
+            audio_signals3 = [noisy_snr3, noise_snr3] if params['save_noise'] else [noisy_snr3]
             file_paths3 = [noisypath3, noisepath3]
 
             file_num += 1 #         file_num = file_num + 3*num_clips
@@ -627,6 +627,7 @@ def main_body():
     print('Number of files to be synthesized:', params['num_files'])
     
     params['is_test_set'] = utils.str2bool(cfg['is_test_set'])
+    params['save_noise'] = utils.str2bool(cfg['save_noise'])
     params['clean_activity_threshold'] = float(cfg['clean_activity_threshold'])
     params['noise_activity_threshold'] = float(cfg['noise_activity_threshold'])
     params['snr_lower'] = int(cfg['snr_lower'])
