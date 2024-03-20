@@ -11,3 +11,14 @@ tqdm
 pesq
 pystoi
 wandb
+
+# PDNS Synthesis
+soundfile
+shutil
+glob
+configparser
+argparse
+librosa
+scipy
+pandas
+pathlib
