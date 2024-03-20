@@ -6,7 +6,6 @@ opt:
   train:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
-      # root: /kaggle/input/pdns-2023-10-hours
       split: train
       clean_path: /kaggle/input/pdns-2023-10-hours/clean
       noisy_path: /kaggle/input/pdns-2023-10-hours/noisy

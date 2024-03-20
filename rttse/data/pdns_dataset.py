@@ -42,7 +42,7 @@ class PDNSDataset(Dataset):
         synthesized_speakers_csv: str = None,
         reference_speakers_csv: str = None,
         speaker_reference_path: str = None,
-        sr = 41000, 
+        sr = 44100, 
         crop_length_sec = 0, 
         mode: Literal['all', 'ps', 'pn', 'psn'] = 'all',
         seed: int = 42,
@@ -150,7 +150,7 @@ class PDNSDataset(Dataset):
         file = self.files[n]
         clean_audio, clean_sr = torchaudio.load(file[0])
         noisy_audio, noisy_sr = torchaudio.load(file[1])
-        
+                
         # Select a random speaker from the clean speakers
         if isinstance(self.reference_files, dict):
             reference_file = self.rng.choice(self.reference_files[file[2]])
@@ -167,7 +167,7 @@ class PDNSDataset(Dataset):
             noisy_audio = torchaudio.transforms.Resample(orig_freq=noisy_sr, new_freq=self.sr)(noisy_audio)
         
         clean_audio, noisy_audio = clean_audio.squeeze(0), noisy_audio.squeeze(0)
-        assert len(clean_audio) == len(noisy_audio)
+        assert len(clean_audio) == len(noisy_audio), "Length of clean: " + file[0] + " and noisy audio: " + file[1] + " does not match"
 
         crop_length = int(self.crop_length_sec * self.sr)
         assert crop_length < len(clean_audio)
@@ -216,12 +216,12 @@ class PDNSDataset(Dataset):
     #     }
 
 
-# def load_PDNSDataset(root, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
+# def load_PDNSDataset(split, clean_path, noisy_path, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
 #     """
 #     Get dataloader with distributed sampling
 #     """
-#     dataset = PDNSDataset(root=root, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
-#     # kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSDataset.collate_fn}
+#     dataset = PDNSDataset(split=split, clean_path=clean_path, noisy_path=noisy_path, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+#     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSCollate()}
 
 #     if num_gpus > 1:
 #         train_sampler = DistributedSampler(dataset)
@@ -237,7 +237,10 @@ class PDNSDataset(Dataset):
 #     # Testing the PDNSDataset
 #     import argparse
 #     parser = argparse.ArgumentParser()
-#     parser.add_argument('--root', help='Root directory of PDNS')
+#     # parser.add_argument('--root', help='Root directory of PDNS')
+#     parser.add_argument('--split', help='Split of the dataset')
+#     parser.add_argument('--clean_path', help='Path to the clean audio files')
+#     parser.add_argument('--noisy_path', help='Path to the noisy audio files')
 #     parser.add_argument('--synthesized_speakers_csv', help='Path to the synthesized speakers csv file')
 #     parser.add_argument('--reference_speakers_csv', help='Path to the reference speakers csv file')
 #     parser.add_argument('--crop_length_sec', type=int, default=0, help='Length of the audio clip')
@@ -246,7 +249,9 @@ class PDNSDataset(Dataset):
 #     parser.add_argument('--num_gpus', type=int, default=1, help='Number of GPUs')
 #     args = parser.parse_args()
     
-#     trainloader = load_PDNSDataset(root=args.root, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
+#     print(args)
+    
+#     trainloader = load_PDNSDataset(split=args.split, clean_path=args.clean_path, noisy_path=args.noisy_path, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
     
 #     print(f"Number of steps: {len(trainloader)}")
 
@@ -254,9 +259,9 @@ class PDNSDataset(Dataset):
 #         clean_audio = data["clean"]
 #         noisy_audio = data["noisy"]
 #         reference_path = data["reference_path"]
-#         clean_audio = clean_audio.cuda()
-#         noisy_audio = noisy_audio.cuda()
-#         # print(f"clean {clean_audio[0][0][0]}")
-#         # print(f"noisy {noisy_audio[0][0][0]}")
-#         # print(clean_audio.shape, noisy_audio.shape)
+#         # clean_audio = clean_audio.cuda()
+#         # noisy_audio = noisy_audio.cuda()
+#         print(f"clean {clean_audio[0][0][0]}")
+#         print(f"noisy {noisy_audio[0][0][0]}")
+#         print(clean_audio.shape, noisy_audio.shape)
 #         print(reference_path)  
