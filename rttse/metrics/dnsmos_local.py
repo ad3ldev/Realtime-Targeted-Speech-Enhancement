@@ -59,6 +59,7 @@ class DNSMOSScore(Metric):
         return sig_poly, bak_poly, ovr_poly
     
     def update(self, preds: Tensor, target: Tensor) -> None:
+        print("Inside update with shape ", preds.shape)
         fs = self.sampling_rate
         if self.input_sampling_rate != fs:
             audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(preds)
