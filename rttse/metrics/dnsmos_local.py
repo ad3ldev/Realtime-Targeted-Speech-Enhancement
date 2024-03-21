@@ -60,16 +60,11 @@ class DNSMOSScore(Metric):
     
     def update(self, preds: Tensor, target: Tensor) -> None:
         print("Inside update with shape ", preds.shape)
-        for predection in preds:
-            self.update_clip(predection.squeeze())
-    
-    def update_clip(self, predection):
-        print("Inside update_clip with shape ", predection.shape)
         fs = self.sampling_rate
         if self.input_sampling_rate != fs:
-            audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(predection)
+            audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(preds)
         else:
-            audio = predection
+            audio = preds
 
         actual_audio_len = len(audio)
         len_samples = int(INPUT_LENGTH*fs)
