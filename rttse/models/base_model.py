@@ -24,7 +24,6 @@ class BaseModel(pl.LightningModule):
         self.losses = hydra.utils.instantiate(cfg['train']['losses'])
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
-        # self.metrics.update((key, metric.to(self.device)) for key, metric in self.metrics.items())
 
     @master_only
     def print_netowrk(self, stage=None):
@@ -75,8 +74,7 @@ class BaseModel(pl.LightningModule):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
-        self.log_dict(metrics_dict, on_step=True, on_epoch=True, prog_bar=True)
-
+        self.log_dict(metrics_dict)
 
     def test_step(self,  batch, batch_idx):
         x, y = batch
