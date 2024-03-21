@@ -51,12 +51,11 @@ class BaseModel(pl.LightningModule):
     def calculate_metrics(self, y_hat, y, phase):
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
-            if(metric_name == 'DNSMOS'):
-                dns_metrics = metric_fn(y_hat.cpu().numpy(), self.cfg['val']['metrics']['DNSMOS']['fs'])
-                for key, value in dns_metrics.items():
-                    metrics_dict[f'{phase}/{key}'] = value
+            result = metric_fn(y_hat, y)
+            if isinstance(result, dict):
+                metrics_dict.update({f'{phase}/{metric_name}/{k}': v for k, v in result.items()})
             else:
-                metrics_dict[f'{phase}/{metric_name}'] = metric_fn(y_hat, y)
+                metrics_dict[f'{phase}/{metric_name}'] = result
         return metrics_dict
     
 

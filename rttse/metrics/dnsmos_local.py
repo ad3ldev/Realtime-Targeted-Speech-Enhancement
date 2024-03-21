@@ -1,26 +1,18 @@
-# Usage:
-# python dnsmos_local.py -t c:\temp\DNSChallenge4_Blindset -o DNSCh4_Blind.csv -p
-#
-
-# import argparse
-# import concurrent.futures
-# import glob
 import os
 
 import librosa
 import numpy as np
-# import numpy.polynomial.polynomial as poly
+from torch import Tensor, tensor, cat
+import torchaudio
+from torchmetrics import Metric
 import onnxruntime as ort
-# import pandas as pd
-# import soundfile as sf
-# from requests import session
-# from tqdm import tqdm
 
 SAMPLING_RATE = 16000
 INPUT_LENGTH = 9.01
 
-class DNSMOSScore:
-    def __init__(self, fs, primary_model_path = None, p808_model_path = None, personalized_MOS = False) -> None:
+class DNSMOSScore(Metric):
+    def __init__(self, fs, primary_model_path = None, p808_model_path = None, personalized_MOS = False, **kwargs) -> None:
+        super().__init__(**kwargs)
         # Get the current directory of this file
         current_dir = os.path.dirname(os.path.realpath(__file__))
         p808_model_path = p808_model_path if p808_model_path else os.path.join(current_dir, 'DNSMOS', 'model_v8.onnx')
@@ -31,9 +23,19 @@ class DNSMOSScore:
         
         self.onnx_sess = ort.InferenceSession(primary_model_path)
         self.p808_onnx_sess = ort.InferenceSession(p808_model_path)
-        self.sampling_rate = fs
+        self.sampling_rate = 16000
+        self.input_sampling_rate = fs
         self.is_personalized_MOS = personalized_MOS
         
+        self.add_state("OVRL_raw", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("SIG_raw", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("BAK_raw", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("OVRL", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("SIG", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("BAK", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("P808_MOS", default=tensor(0.0), dist_reduce_fx="sum")
+        self.add_state("total", default=tensor(0), dist_reduce_fx="sum")
+               
     def audio_melspec(self, audio, n_mels=120, frame_size=320, hop_length=160, sr=16000, to_db=True):
         mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels)
         if to_db:
@@ -55,24 +57,20 @@ class DNSMOSScore:
         ovr_poly = p_ovr(ovr)
 
         return sig_poly, bak_poly, ovr_poly
-
-    def __call__(self, y_hat, input_sampling_rate):
-        aud = y_hat
-        
+    
+    def update(self, preds: Tensor, target: Tensor) -> None:
         fs = self.sampling_rate
-        if input_sampling_rate != fs:
-            audio = librosa.resample(aud, orig_sr=input_sampling_rate, target_sr=fs)
+        if self.input_sampling_rate != fs:
+            audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(preds)
         else:
-            audio = aud
-        
-        audio = aud
+            audio = preds
 
         actual_audio_len = len(audio)
         len_samples = int(INPUT_LENGTH*fs)
         while len(audio) < len_samples:
-            audio = np.append(audio, audio)
+            audio = cat((audio, audio), dim=0)
         
-        num_hops = int(np.floor(len(audio)/fs) - INPUT_LENGTH)+1
+        num_hops = int((len(audio) // fs) - INPUT_LENGTH) + 1
         hop_len_samples = fs
         predicted_mos_sig_seg_raw = []
         predicted_mos_bak_seg_raw = []
@@ -82,6 +80,7 @@ class DNSMOSScore:
         predicted_mos_ovr_seg = []
         predicted_p808_mos = []
 
+        audio = audio.cpu().numpy()
         for idx in range(num_hops):
             audio_seg = audio[int(idx*hop_len_samples) : int((idx+INPUT_LENGTH)*hop_len_samples)]
             if len(audio_seg) < len_samples:
@@ -101,72 +100,17 @@ class DNSMOSScore:
             predicted_mos_bak_seg.append(mos_bak)
             predicted_mos_ovr_seg.append(mos_ovr)
             predicted_p808_mos.append(p808_mos)
-
-        clip_dict = {'len_in_sec': actual_audio_len/fs, 'sr':fs}
-        clip_dict['num_hops'] = num_hops
-        clip_dict['OVRL_raw'] = np.mean(predicted_mos_ovr_seg_raw)
-        clip_dict['SIG_raw'] = np.mean(predicted_mos_sig_seg_raw)
-        clip_dict['BAK_raw'] = np.mean(predicted_mos_bak_seg_raw)
-        clip_dict['OVRL'] = np.mean(predicted_mos_ovr_seg)
-        clip_dict['SIG'] = np.mean(predicted_mos_sig_seg)
-        clip_dict['BAK'] = np.mean(predicted_mos_bak_seg)
-        clip_dict['P808_MOS'] = np.mean(predicted_p808_mos)
-        return clip_dict
-
-# def main(args):
-#     models = glob.glob(os.path.join(args.testset_dir, "*"))
-#     audio_clips_list = []
-#     p808_model_path = os.path.join('DNSMOS', 'model_v8.onnx')
-
-#     if args.personalized_MOS:
-#         primary_model_path = os.path.join('pDNSMOS', 'sig_bak_ovr.onnx')
-#     else:
-#         primary_model_path = os.path.join('DNSMOS', 'sig_bak_ovr.onnx')
-
-#     compute_score = ComputeScore(primary_model_path, p808_model_path)
-
-#     rows = []
-#     clips = []
-#     clips = glob.glob(os.path.join(args.testset_dir, "*.wav"))
-#     is_personalized_eval = args.personalized_MOS
-#     desired_fs = SAMPLING_RATE
-#     for m in tqdm(models):
-#         max_recursion_depth = 10
-#         audio_path = os.path.join(args.testset_dir, m)
-#         audio_clips_list = glob.glob(os.path.join(audio_path, "*.wav"))
-#         while len(audio_clips_list) == 0 and max_recursion_depth > 0:
-#             audio_path = os.path.join(audio_path, "**")
-#             audio_clips_list = glob.glob(os.path.join(audio_path, "*.wav"))
-#             max_recursion_depth -= 1
-#         clips.extend(audio_clips_list)
-
-#     with concurrent.futures.ThreadPoolExecutor() as executor:
-#         # compute_score(clip, desired_fs, False)
-#         future_to_url = {executor.submit(compute_score, clip, desired_fs, is_personalized_eval): clip for clip in clips}
-#         for future in tqdm(concurrent.futures.as_completed(future_to_url)):
-#             clip = future_to_url[future]
-#             try:
-#                 data = future.result()
-#             except Exception as exc:
-#                 print('%r generated an exception: %s' % (clip, exc))
-#             else:
-#                 rows.append(data)            
-
-#     df = pd.DataFrame(rows)
-#     if args.csv_path:
-#         csv_path = args.csv_path
-#         df.to_csv(csv_path)
-#     else:
-#         print(df.describe())
-
-# if __name__=="__main__":
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('-t', "--testset_dir", default='.', 
-#                         help='Path to the dir containing audio clips in .wav to be evaluated')
-#     parser.add_argument('-o', "--csv_path", default=None, help='Dir to the csv that saves the results')
-#     parser.add_argument('-p', "--personalized_MOS", action='store_true', 
-#                         help='Flag to indicate if personalized MOS score is needed or regular')
+        self.OVRL_raw += tensor(np.mean(predicted_mos_ovr_seg_raw))
+        self.SIG_raw += tensor(np.mean(predicted_mos_sig_seg_raw))
+        self.BAK_raw += tensor(np.mean(predicted_mos_bak_seg_raw))
+        self.OVRL += tensor(np.mean(predicted_mos_ovr_seg))
+        self.SIG += tensor(np.mean(predicted_mos_sig_seg))
+        self.BAK += tensor(np.mean(predicted_mos_bak_seg))
+        self.P808_MOS += tensor(np.mean(predicted_p808_mos))
+        self.total += 1
     
-#     args = parser.parse_args()
-
-#     main(args)
+    def compute(self) -> dict:
+        clip_dict = {'OVRL_raw': self.OVRL_raw, 'SIG_raw': self.SIG_raw, 'BAK_raw': self.BAK_raw, 'OVRL': self.OVRL, 'SIG': self.SIG, 'BAK': self.BAK, 'P808_MOS': self.P808_MOS}
+        for key in clip_dict:
+            clip_dict[key] = clip_dict[key] / self.total
+        return clip_dict
