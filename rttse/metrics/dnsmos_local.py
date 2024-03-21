@@ -59,7 +59,18 @@ class DNSMOSScore(Metric):
         return sig_poly, bak_poly, ovr_poly
     
     def update(self, preds: Tensor, target: Tensor) -> None:
-        print("Inside update with shape ", preds.shape)
+        dim = preds.dim()
+        if dim == 1:
+            self.update_clip(preds)
+        elif dim == 2:
+            self.update_clip(preds.squeeze())
+        elif dim == 3:
+            for predection in preds:
+                self.update_clip(predection.squeeze())
+        else:
+            raise ValueError("Input tensor should be 1D, 2D or 3D")
+    
+    def update_clip(self, predection):
         fs = self.sampling_rate
         if self.input_sampling_rate != fs:
             audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(preds)
