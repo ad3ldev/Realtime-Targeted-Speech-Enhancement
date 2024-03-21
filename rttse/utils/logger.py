@@ -17,7 +17,6 @@ def init_tb_logger(save_dir):
 def init_wandb_logger(opt):
     """We now only use wandb to sync tensorboard log."""
     import wandb
-    from pytorch_lightning.loggers import WandbLogger
     logger = get_root_logger()
 
     project = opt['logger']['wandb']['project']
@@ -31,10 +30,9 @@ def init_wandb_logger(opt):
         resume = 'never'
 
 
-    # wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True)
-    wandb_logger = WandbLogger(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True)
+    wandb.init(id=wandb_id, resume=resume, name=opt['name'], config=opt, project=project, sync_tensorboard=True)
+
     logger.info(f'Use wandb logger with id={wandb_id}; project={project}.')
-    return wandb_logger
 
 
 def get_root_logger(logger_name='rttse'):
@@ -64,7 +62,7 @@ def get_env_info():
 def init_logging(cfg):
 
     opt = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
-    loggers = []
+
     # initialize wandb logger before tensorboard logger to allow proper sync
     if (opt['logger'].get('wandb') is not None) \
         and (opt['logger']['wandb'].get('project') is not None) \
@@ -72,15 +70,12 @@ def init_logging(cfg):
 
         assert opt['logger'].get('use_tb_logger') is True, ('should turn on tensorboard when using wandb')
 
-        wandb_logger = init_wandb_logger(opt)
-        loggers.append(wandb_logger)
+        init_wandb_logger(opt)
 
 
     tb_logger = init_tb_logger(save_dir=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir)
-    loggers.append(tb_logger)
 
-    return loggers
-
+    return tb_logger
 
 
 
