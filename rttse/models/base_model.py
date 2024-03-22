@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import pytorch_lightning as pl
 import hydra
+import torchaudio
 from utils.dist_utils import master_only
 
 from utils.logger import get_root_logger
@@ -29,7 +30,7 @@ class BaseModel(pl.LightningModule):
         self.cfg = cfg
         self.save_hyperparameters(cfg, logger=False)
         
-        self.metrics = hydra.utils.instantiate(cfg['test']['metrics'])
+        self.metrics = hydra.utils.instantiate(cfg['metrics'])
 
     @master_only
     def print_netowrk(self, stage=None):
@@ -78,11 +79,18 @@ class BaseModel(pl.LightningModule):
         self.log_dict(metrics_dict)
 
 
+    def on_test_start(self) -> None:
+        self.results = []
+        return super().on_test_start()
+
     def test_step(self,  batch, batch_idx):
         x, y = batch
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
+
+        if self.cfg.save_results:
+            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(), self.cfg.sample_rate)
 
 
         self.log_dict(metrics_dict)

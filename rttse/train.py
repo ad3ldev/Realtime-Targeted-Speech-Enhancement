@@ -8,6 +8,7 @@ from utils.logger import get_root_logger
 
 
 
+
 def setup_datasets(data_cfg):
     data_loader = hydra.utils.instantiate(data_cfg)
     return data_loader
@@ -26,8 +27,7 @@ def setup_model(model_cfg, training_cfg):
 def setup_trainer(trainer_cfg, tb_logger):
     seed_everything(trainer_cfg.manual_seed)
     callbacks = hydra.utils.instantiate(trainer_cfg.callbacks)
-    callbacks = [list(cb.values())[0] for cb in callbacks]
-    trainer = Trainer(**trainer_cfg['trainer_args'], logger=tb_logger, callbacks=callbacks)
+    trainer = Trainer(**trainer_cfg['trainer_args'], logger=tb_logger, callbacks=list(callbacks.values()))
     return trainer, trainer_cfg.get('checkpoint_path')
 
 

@@ -1,9 +1,17 @@
-test:
-  metrics:
-    l1:
-      _target_: torch.nn.L1Loss
-      reduction: mean
-      
-    l2:
-      _target_: torch.nn.MSELoss
-      reduction: mean
+manual_seed: 0
+save_results: False
+save_dir: ${hydra:run:dir}/output
+sample_rate: 44100
+
+metrics:
+  l1:
+    _target_: torch.nn.L1Loss
+    reduction: mean
+    
+  l2:
+    _target_: torch.nn.MSELoss
+    reduction: mean
+
+trainer_args:
+  ckpt_path:
+  verbose: True

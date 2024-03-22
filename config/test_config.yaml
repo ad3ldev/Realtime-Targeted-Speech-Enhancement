@@ -5,12 +5,11 @@ hydra:
   run:
     dir: results/${name}/${now:%Y-%m-%d_%H-%M-%S}
 
+logger:
+  use_tb_logger: True
+
 
 defaults:
-- data: CleanUNetDataSet
-- model: CleanUNet
+- data: random_data
+- model: simpleAE
 - testing: testing
-- trainer: CleanUNet_trainer
-
-
-

@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+from pytorch_lightning.utilities.types import EVAL_DATALOADERS
 from torch.utils.data import DataLoader
 
 from utils.logger import get_root_logger
@@ -13,17 +14,44 @@ class BaseDataModule(pl.LightningDataModule):
         pass
 
     def setup(self, stage=None):
-        self.train_dataset = self.opt['train']['dataset']
-        self.val_dataset = self.opt['val']['dataset']
-        logger = get_root_logger()
-        logger.info("\nTraining Statistics:\n--------------------"
-                f"\n\t# Number of Training Samples: {len(self.train_dataset)}"
-                f"\n\t# Number of Validation Samples: {len(self.val_dataset)}"
-                f"\n\t# Training Batch Size: {self.opt['train']['dataloader']['batch_size']}\n\n")
+        if stage == 'fit':
+            self.train_dataset = self.opt['train']['dataset']
+            self.val_dataset = self.opt['val']['dataset']
+            logger = get_root_logger()
+            logger.info("\nTraining Statistics:\n--------------------"
+                    f"\n\t# Number of Training Samples: {len(self.train_dataset)}"
+                    f"\n\t# Number of Validation Samples: {len(self.val_dataset)}"
+                    f"\n\t# Training Batch Size: {self.opt['train']['dataloader']['batch_size']}\n\n")
+            
+        elif stage == 'test':
+            self.test_dataset = self.opt['test']['dataset']
+            logger = get_root_logger()
+            logger.info("\nTesting Statistics:\n--------------------"
+                    f"\n\t# Number of Testing Samples: {len(self.test_dataset)}"
+                    f"\n\t# Testing Batch Size: {self.opt['test']['dataloader']['batch_size']}\n\n")
+            
+        else:
+            raise ValueError(f"Stage {stage} not Implemented.")
 
 
     def train_dataloader(self):
+        if 'train' not in self.opt:
+            get_root_logger().warning("No training dataset found in the configuration.")
+            return None
+        
         return DataLoader(self.train_dataset, **self.opt['train']['dataloader'])
     
     def val_dataloader(self):
+        if 'val' not in self.opt:
+            get_root_logger().warning("No validation dataloader found in the configuration.")
+
+            return None
+        
         return DataLoader(self.val_dataset, **self.opt['val']['dataloader'])
+    
+    def test_dataloader(self):
+        if 'test' not in self.opt:
+            get_root_logger().warning("No testing dataloader found in the configuration.")
+            return None
+        
+        return DataLoader(self.test_dataset, **self.opt['test']['dataloader'])

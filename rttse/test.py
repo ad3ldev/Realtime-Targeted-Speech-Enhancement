@@ -14,16 +14,12 @@ def setup_datasets(data_cfg):
 
 def setup_model(model_cfg, testing_cfg):
     model = hydra.utils.instantiate(model_cfg)
-    model.setup_training(testing_cfg)
+    model.setup_testing(testing_cfg)
 
     model.print_netowrk()
 
     return model
 
-def setup_trainer(trainer_cfg):
-    seed_everything(trainer_cfg.manual_seed)
-    trainer = Trainer(**trainer_cfg['trainer_args'])
-    return trainer, trainer_cfg.get('checkpoint_path')
 
 
 
@@ -36,17 +32,18 @@ def test_pipeline(cfg):
 
     logger.info(f"\n{OmegaConf.to_yaml(cfg)}")
 
+    seed_everything(cfg.testing.manual_seed)
+
     tb_logger = init_logging(cfg)
 
-    trainer, ckpt_path = setup_trainer(cfg.trainer, tb_logger)
+    trainer = Trainer(logger=tb_logger)
 
     data_loader = setup_datasets(cfg.data)
 
     model = setup_model(cfg.model, cfg.testing)
 
 
-    trainer.test(model, data_loader, ckpt_path=ckpt_path)
-
+    trainer.test(model, data_loader, **cfg.testing.trainer_args)
 
 if __name__ == "__main__":
     test_pipeline()
