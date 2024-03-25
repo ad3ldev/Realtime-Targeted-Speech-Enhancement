@@ -3,13 +3,17 @@ manual_seed: 0
 checkpoint_path: 
 
 trainer_args: 
-  max_epochs: 1
+  max_steps: 100000
+  accumulate_grad_batches: 2
 
 callbacks:
   ModelCheckpoint:
     _target_: pytorch_lightning.callbacks.ModelCheckpoint
     every_n_epochs: 1
-
+    
+  EMACallback:
+    _target_: utils.callbacks.EMACallback
+    decay: 0.999
   
   LearningRateMonitor:
     _target_: pytorch_lightning.callbacks.LearningRateMonitor
