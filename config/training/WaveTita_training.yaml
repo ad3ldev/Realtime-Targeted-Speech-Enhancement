@@ -11,11 +11,18 @@ train:
 
 
   losses:
-    loss:
-      _target_: loss.waveformer_loss.WaveformerLoss
     l1:
       _target_: torch.nn.L1Loss
       reduction: mean
+      
+    mrstft:
+      _target_: loss.stft_loss.MultiResolutionSTFTLoss
+      sc_lambda: 0.5
+      mag_lambda: 0.5
+      band: full
+      hop_sizes: [50, 120, 240]
+      win_lengths: [240, 600, 1200]
+      fft_sizes: [512, 1024, 2048]
       
 
 val:
