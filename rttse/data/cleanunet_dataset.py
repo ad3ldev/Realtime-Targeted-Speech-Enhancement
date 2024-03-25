@@ -27,11 +27,12 @@ class CleanNoisyPairDataset(Dataset):
         self.crop_length_sec = crop_length_sec
         self.subset = subset
 
-        N_clean = len(os.listdir(os.path.join(root, 'training_set','clean')))
-        N_noisy = len(os.listdir(os.path.join(root, 'training_set', 'noisy')))
-        assert N_clean == N_noisy
+
 
         if subset == "training":
+            N_clean = len(os.listdir(os.path.join(root, 'training_set','clean')))
+            N_noisy = len(os.listdir(os.path.join(root, 'training_set', 'noisy')))
+            assert N_clean == N_noisy
             self.files = [(os.path.join(root, 'training_set', 'clean', 'fileid_{}.wav'.format(i)),
                            os.path.join(root, 'training_set', 'noisy', 'fileid_{}.wav'.format(i))) for i in range(N_clean)]
         

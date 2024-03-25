@@ -5,7 +5,9 @@ opt:
   train:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
-      root: /kaggle/input/pdns-2023-10-hours
+      split: train
+      clean_path: /kaggle/input/pdns-2023-10-hours/clean
+      noisy_path: /kaggle/input/pdns-2023-10-hours/noisy
       synthesized_speakers_csv: /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
       reference_speakers_csv: /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
       sr: 44100
@@ -22,17 +24,14 @@ opt:
       collate_fn:
         _target_: data.pdns_dataset.PDNSCollate
 
-  val: # Should be changed to actual validation set
+  val:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
-      root: /kaggle/input/pdns-2023-10-hours
-      synthesized_speakers_csv: /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
-      reference_speakers_csv: /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
+      split: val
+      clean_path: /kaggle/input/dns-2023-dev-testset-speaker/clean_personalized
+      noisy_path: /kaggle/input/dns-2023-dev-testset-speaker/noisy
+      speaker_reference_path: /kaggle/input/dns-2023-dev-testset-speaker/speaker_reference_16000
       sr: 44100
-      mode: all
-      seed: 42
-      reference_tensor: False
-      crop_length_sec: 0
 
     dataloader:
       batch_size: 8

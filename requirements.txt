@@ -14,3 +14,15 @@ wandb
 Cython
 nemo_toolkit[asr]
 speechbrain
+onnxruntime
+librosa
+
+# PDNS Synthesis
+soundfile
+shutil
+glob
+configparser
+argparse
+scipy
+pandas
+pathlib

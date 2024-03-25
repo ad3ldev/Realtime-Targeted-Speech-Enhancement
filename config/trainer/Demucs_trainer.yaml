@@ -1,0 +1,18 @@
+manual_seed: 0
+
+checkpoint_path:
+
+trainer_args: 
+  max_steps: 250000
+  accelerator: auto
+
+callbacks:
+  - ModelCheckpoint:
+      _target_: pytorch_lightning.callbacks.ModelCheckpoint
+      every_n_epochs: 2
+      save_top_k: -1
+
+  
+  - LearningRateMonitor:
+      _target_: pytorch_lightning.callbacks.LearningRateMonitor
+      logging_interval: step
