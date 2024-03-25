@@ -37,8 +37,8 @@ val:
     #   _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
     #   fs: 44100
 
-    si_snr:
-      _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
+    # si_snr:
+    #   _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
     
     DNSMOS:
       _target_: metrics.dnsmos_local.DNSMOSScore
