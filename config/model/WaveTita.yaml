@@ -2,7 +2,7 @@ _target_: models.base_model.BaseModel
 
 net:
   _target_: archs.WaveTita.WaveTita
-  initial_weights:
+  initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Waveformer_init_ckpt.pt
   speech_enhancer:
     _target_: archs.Waveformer.Net
     label_len: 192
