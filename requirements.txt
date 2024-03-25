@@ -19,7 +19,6 @@ librosa
 
 # PDNS Synthesis
 soundfile
-glob
 configparser
 argparse
 scipy
