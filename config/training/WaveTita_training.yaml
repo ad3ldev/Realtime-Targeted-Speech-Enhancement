@@ -39,3 +39,8 @@ val:
 
     si_snr:
       _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
+    
+    DNSMOS:
+      _target_: metrics.dnsmos_local.DNSMOSScore
+      fs: 44100
+      personalized_MOS: True
