@@ -15,8 +15,8 @@ logger:
 defaults:
 - data: PDNSDataSet
 - model: WaveTita
-- training: WaveFormer_training
-- trainer: CleanUNet_trainer
+- training: WaveTita_training
+- trainer: trainer
 
 
 
