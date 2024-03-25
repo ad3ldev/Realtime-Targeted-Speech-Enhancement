@@ -1,17 +1,14 @@
 train:
   optim:
     _target_: torch.optim.Adam
-    lr: 5e-5
+    lr: 1e-4
     weight_decay: 0.0
 
-  # scheduler:
-  #   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
-  #   mode: max
-  #   factor: 0.1
-  #   patience: 5
-  #   min_lr: 5e-6
-  #   threshold: 0.1
-  #   threshold_mode: abs
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 100000
+    eta_min: 1e-6
+
 
   losses:
     loss:
