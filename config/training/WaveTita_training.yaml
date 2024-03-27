@@ -13,8 +13,7 @@ train:
     threshold: 0.1
     threshold_mode: abs
   
-  monitor:
-    loss: 'waveformer_loss'
+  monitor: train/l_total
 
   losses:
     waveformer_loss:
