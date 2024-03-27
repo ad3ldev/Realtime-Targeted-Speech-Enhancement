@@ -90,13 +90,11 @@ class BaseModel(pl.LightningModule):
 
 
     def configure_optimizers(self):
-        logger = get_root_logger()
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
         if 'scheduler' in self.hparams.train:
             scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
             if 'monitor' in self.hparams.train:
                 loss = self.hparams.train.monitor.loss
-                logger.info(f"Using {loss} as monitor for the scheduler")
                 return [optimizer], [{"scheduler": scheduler, "monitor": loss, "interval": "epoch"}]
             return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
         return [optimizer]
