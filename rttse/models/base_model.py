@@ -94,7 +94,7 @@ class BaseModel(pl.LightningModule):
         if 'scheduler' in self.hparams.train:
             scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
             if 'monitor' in self.hparams.train:
-                monitor = hydra.utils.instantiate(self.hparams.train.monitor)
-                scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer, monitor=monitor)
+                loss = self.hparams.train.monitor
+                return [optimizer], [{"lr_scheduler": {"scheduler": scheduler, "monitor": loss}, "interval": "epoch"}]
             return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
         return [optimizer]
