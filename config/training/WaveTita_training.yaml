@@ -1,24 +1,24 @@
 train:
   optim:
     _target_: torch.optim.Adam
-    lr: 5e-5
+    lr: 5e-4
     weight_decay: 0.0
 
-  # scheduler:
-  #   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
-  #   mode: max
-  #   factor: 0.1
-  #   patience: 5
-  #   min_lr: 5e-6
-  #   threshold: 0.1
-  #   threshold_mode: abs
+  scheduler:
+    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+    mode: max
+    factor: 0.1
+    patience: 5
+    min_lr: 5e-6
+    threshold: 0.1
+    threshold_mode: abs
 
   losses:
-    loss:
+    waveformer_loss:
       _target_: loss.waveformer_loss.WaveformerLoss
-    l1:
-      _target_: torch.nn.L1Loss
-      reduction: mean
+    # l1:
+    #   _target_: torch.nn.L1Loss
+    #   reduction: mean
       
 
 val:
@@ -44,3 +44,6 @@ val:
       _target_: metrics.dnsmos_local.DNSMOSScore
       fs: 44100
       personalized_MOS: True
+    
+    waveformer_loss:
+      _target_: loss.waveformer_loss.WaveformerLoss
