@@ -12,6 +12,7 @@ train:
     min_lr: 5e-6
     threshold: 0.1
     threshold_mode: abs
+    monitor: waveformer_loss
 
   losses:
     waveformer_loss:
