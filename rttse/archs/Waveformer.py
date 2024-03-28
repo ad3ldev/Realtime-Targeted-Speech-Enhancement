@@ -15,7 +15,7 @@ from torchmetrics.functional import(
 
 from speechbrain.lobes.models.transformer.Transformer import PositionalEncoding
 
-import nemo.collections.asr as nemo_asr
+# import nemo.collections.asr as nemo_asr
 
 def mod_pad(x, chunk_size, pad):
     # Mod pad the input to perform integer number of
@@ -397,6 +397,9 @@ class Net(nn.Module):
                 stride=L,
                 padding=out_buf_len * L, bias=False),
             nn.Tanh())
+        
+        ## Initialize weights
+        self.apply(self._init_weights)
 
     def init_buffers(self, batch_size, device):
         enc_buf = self.mask_gen.encoder.init_ctx_buf(batch_size, device)
@@ -404,6 +407,23 @@ class Net(nn.Module):
         out_buf = torch.zeros(batch_size, self.enc_dim, self.out_buf_len,
                               device=device)
         return enc_buf, dec_buf, out_buf
+    
+    def _init_weights(self, m):
+        if isinstance(m, nn.Conv2d):
+            m.weight.data.normal_(0.0, 0.02)
+            if m.bias is not None:
+                m.bias.data.normal_(0.0, 0.02)
+                
+        elif isinstance(m, nn.ConvTranspose2d):
+            m.weight.data.normal_(0.0, 0.02)
+            
+        elif isinstance(m, nn.Linear):
+            nn.init.trunc_normal_(m.weight, std=.02)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
 
     def forward(self, x, label, init_enc_buf=None, init_dec_buf=None,
                 init_out_buf=None, pad=True):
