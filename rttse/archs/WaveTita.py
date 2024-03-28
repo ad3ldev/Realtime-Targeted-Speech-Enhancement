@@ -1,3 +1,4 @@
+from copy import deepcopy
 from torch import Tensor
 
 import torch
@@ -41,6 +42,9 @@ class WaveTita(torch.nn.Module):
 
         labels = labels.to(self.device)
         return self.speech_enhancer(noisy_audio, labels)
+    
+    def __deepcopy__(self, memo):
+        return WaveTita(deepcopy(self.speech_enhancer, memo))
     
 # if __name__ == "__main__":
 #     parser = argparse.ArgumentParser()
