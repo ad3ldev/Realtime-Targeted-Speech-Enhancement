@@ -18,11 +18,13 @@ class PDNSCollate:
         noisy_audio = torch.stack([data["noisy"] for data in batch])
         reference_path = [data["reference_path"] for data in batch]
         reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+        index = [data["index"] for data in batch]
         return {
             "clean": clean_audio,
             "noisy": noisy_audio,
             "reference_path": reference_path,
-            "reference": reference
+            "reference": reference,
+            "index": index
         }
 
 class PDNSDataset(Dataset):
@@ -190,7 +192,8 @@ class PDNSDataset(Dataset):
         data = {
             "clean": clean_audio,
             "noisy": noisy_audio,
-            "reference_path": reference_file
+            "reference_path": reference_file,
+            "index": n
         }
         
         # Load reference audio if reference_tensor is True
