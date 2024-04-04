@@ -126,12 +126,12 @@ class PDNSDataset(Dataset):
         noisy_pn_files = []
         noisy_psn_files = []
         for noisy_file in noisy_files:
-            noisy_file = os.path.basename(noisy_file)
-            if noisy_file.startswith('primary'):
+            noisy_file_basename = os.path.basename(noisy_file)
+            if noisy_file_basename.startswith('primary'):
                 noisy_pn_files.append(noisy_file)
-            elif noisy_file.startswith('psn'):
+            elif noisy_file_basename.startswith('psn'):
                 noisy_psn_files.append(noisy_file)
-            elif noisy_file.startswith('ps'):
+            elif noisy_file_basename.startswith('ps'):
                 noisy_ps_files.append(noisy_file)
             else:
                 raise ValueError(f"Unknown noise type for file {noisy_file}")
