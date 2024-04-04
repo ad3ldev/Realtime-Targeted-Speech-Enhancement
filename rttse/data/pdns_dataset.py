@@ -1,15 +1,11 @@
 import os
 import numpy as np
 import pandas as pd
+import re
 from typing import Literal
-
-import warnings
-warnings.filterwarnings("ignore")
 
 import torch
 from torch.utils.data import Dataset
-from torch.utils.data.distributed import DistributedSampler
-
 import torchaudio
 
 
@@ -105,8 +101,8 @@ class PDNSDataset(Dataset):
             assert len(clean_files) == len(noisy_files), "Number of clean and noisy files does not match"
             assert len(clean_files) == len(self.reference_files), "Number of clean and reference files does not match"
         
-        clean_files.sort()
-        noisy_files.sort()
+        clean_files = self._sort_files(clean_files)
+        noisy_files = self._sort_files(noisy_files)
         
         if split == 'train':
             noisy_files = self.choose_train_noisy_files(mode, noisy_files)
@@ -131,12 +127,17 @@ class PDNSDataset(Dataset):
             noisy_file = os.path.basename(noisy_file)
             if noisy_file.startswith('primary'):
                 noisy_pn_files.append(noisy_file)
-            elif noisy_file.startswith('ps'):
-                noisy_ps_files.append(noisy_file)
             elif noisy_file.startswith('psn'):
                 noisy_psn_files.append(noisy_file)
+            elif noisy_file.startswith('ps'):
+                noisy_ps_files.append(noisy_file)
             else:
                 raise ValueError(f"Unknown noise type for file {noisy_file}")
+        
+        noisy_ps_files = self._sort_files(noisy_ps_files)
+        noisy_pn_files = self._sort_files(noisy_pn_files)
+        noisy_psn_files = self._sort_files(noisy_psn_files)
+        noisy_files = noisy_ps_files + noisy_pn_files + noisy_psn_files
         
         if mode == 'ps':
             noisy_files = noisy_ps_files
@@ -145,6 +146,12 @@ class PDNSDataset(Dataset):
         elif mode == 'psn':
             noisy_files = noisy_psn_files
         return noisy_files
+
+    def _sort_files(self, files):
+        pattern = r'fileid_(\d+)'
+        if(len(files) >= 1 and re.search(pattern, files[0]) is None):
+            return sorted(files)
+        return sorted(files, key=lambda x: int(re.search(pattern, x).group(1)))
 
     def __getitem__(self, n):
         file = self.files[n]
@@ -224,7 +231,7 @@ class PDNSDataset(Dataset):
 #     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSCollate()}
 
 #     if num_gpus > 1:
-#         train_sampler = DistributedSampler(dataset)
+#         train_sampler = torch.utils.data.distributed.DistributedSampler(dataset)
 #         dataloader = torch.utils.data.DataLoader(dataset, sampler=train_sampler, **kwargs)
 #     else:
 #         train_sampler = torch.utils.data.RandomSampler(dataset)
