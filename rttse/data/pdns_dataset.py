@@ -77,9 +77,6 @@ class PDNSDataset(Dataset):
         clean_files = [os.path.join(clean_path, file) for file in os.listdir(clean_path)]
         noisy_files = [os.path.join(noisy_path, file) for file in os.listdir(noisy_path)]
         
-        print("Noisy files in first:")
-        print(noisy_files[:5])
-        
         # Load reference speaker csv
         if speaker_reference_path is None:
             assert reference_speakers_csv is not None, "Either speaker_reference_path or reference_speakers_csv should be provided"
@@ -109,13 +106,8 @@ class PDNSDataset(Dataset):
         clean_files = self._sort_files(clean_files)
         noisy_files = self._sort_files(noisy_files)
         
-        print("Noisy files after sorting:")
-        print(noisy_files[:5])
-        
         if split == 'train':
             noisy_files = self.choose_train_noisy_files(mode, noisy_files)
-            print("Noisy files after choosing:")
-            print(noisy_files[:5])
             if(len(clean_files)*3 == len(noisy_files)): # In case of 'all' mode, repeat the noisy files 3 times
                 clean_files = clean_files*3
                 synthesized_primary_speakers = synthesized_primary_speakers*3
