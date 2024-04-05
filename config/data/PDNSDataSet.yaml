@@ -14,10 +14,10 @@ opt:
       mode: all
       seed: 42
       reference_tensor: False
-      crop_length_sec: 0
+      crop_length_sec: 3
 
     dataloader:
-      batch_size: 6
+      batch_size: 10
       num_workers: 2
       shuffle: True # Can be changed to False if we wanted identical experiments
       pin_memory: True
