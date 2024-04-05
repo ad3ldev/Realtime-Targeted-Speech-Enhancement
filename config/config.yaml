@@ -13,10 +13,10 @@ logger:
     group:
 
 defaults:
-- data: random_data
-- model: simpleAE
-- training: training
-- trainer: trainer
+- data: CleanUNetDataSet
+- model: Demucs
+- training: Demucs_training
+- trainer: Demucs_trainer
 
 
 

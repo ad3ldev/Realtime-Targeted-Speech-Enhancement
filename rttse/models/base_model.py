@@ -41,6 +41,9 @@ class BaseModel(pl.LightningModule):
         for loss_name, loss_fn in self.losses.items():
             # loss_name, loss_fn = list(loss.items())[0]
             loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weights.get(loss_name, 1)
+            # Check if the result is a tuple
+            if isinstance(loss_dict[f'{phase}/{loss_name}'], tuple):
+                loss_dict[f'{phase}/{loss_name}'] = sum(loss_dict[f'{phase}/{loss_name}'])
             l_total += loss_dict[f'{phase}/{loss_name}']
 
         if len(self.losses) > 1: loss_dict[f'{phase}/l_total'] = l_total
@@ -49,9 +52,11 @@ class BaseModel(pl.LightningModule):
     def calculate_metrics(self, y_hat, y, phase):
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
-            # metric_name, metric_fn = list(metric.items())[0]
-            metrics_dict[f'{phase}/{metric_name}'] = metric_fn(y_hat, y)
-
+            result = metric_fn(y_hat, y)
+            if isinstance(result, dict):
+                metrics_dict.update({f'{phase}/{metric_name}/{k}': v for k, v in result.items()})
+            else:
+                metrics_dict[f'{phase}/{metric_name}'] = result
         return metrics_dict
     
 
@@ -72,7 +77,6 @@ class BaseModel(pl.LightningModule):
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
         self.log_dict(metrics_dict)
-
 
     def test_step(self,  batch, batch_idx):
         x, y = batch
