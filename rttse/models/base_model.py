@@ -1,14 +1,16 @@
 from collections import OrderedDict
+
 import pytorch_lightning as pl
 import hydra
-from utils.dist_utils import master_only
-
+from utils.console_logger import ConsoleLogger
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from utils.logger import get_root_logger
 
 class BaseModel(pl.LightningModule):
     def __init__(self, net) -> None:
         super().__init__()
         self.net = net
+        self.console_logger = ConsoleLogger()
 
     def get_bare_model(self):
         return self.net
@@ -25,7 +27,7 @@ class BaseModel(pl.LightningModule):
 
         self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
 
-    @master_only
+    @rank_zero_only
     def print_netowrk(self, stage=None):
         logger = get_root_logger()
 
@@ -67,7 +69,7 @@ class BaseModel(pl.LightningModule):
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
-        self.log_dict(loss_dict, on_step=True, on_epoch=True, prog_bar=True)
+        self.log_dict(loss_dict, on_step=True, on_epoch=True)
         return loss_dict['train/l_total']
 
     def validation_step(self, batch, batch_idx):
@@ -98,3 +100,22 @@ class BaseModel(pl.LightningModule):
                 return [optimizer], [{"scheduler": scheduler, "monitor": monitor, "interval": "epoch"}]
             return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
         return [optimizer]
+
+    def on_train_start(self) -> None:
+        get_root_logger().info(f'Training Started...')
+        self.console_logger.train_tic()
+
+
+    def on_train_batch_end(self, outputs, batch, batch_idx):
+        if self.trainer.global_step % self.trainer.log_every_n_steps == 0:
+            self.console_logger.log_train_step(self.trainer, self.trainer.callback_metrics, self.optimizers())
+
+    
+    def on_validation_epoch_start(self):
+        get_root_logger().info(f'Validation Started...')
+        self.console_logger.val_tic()
+
+
+    def on_validation_epoch_end(self):
+        self.console_logger.log_validation_result(self.trainer, self.trainer.callback_metrics)
+        self.console_logger.train_tic()
