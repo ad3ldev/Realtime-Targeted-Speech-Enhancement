@@ -18,30 +18,10 @@ train:
   losses:
     waveformer_loss:
       _target_: loss.waveformer_loss.WaveformerLoss
-    # l1:
-    #   _target_: torch.nn.L1Loss
-    #   reduction: mean
       
 
 val:
-  metrics:
-    # pesq_wb:
-    #   _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
-    #   fs: 44100
-    #   mode: wb
-
-    # pesq_nb:
-    #   _target_: torchmetrics.audio.pesq.PerceptualEvaluationSpeechQuality
-    #   fs: 44100
-    #   mode: nb
-
-    # stoi:
-    #   _target_: torchmetrics.audio.stoi.ShortTimeObjectiveIntelligibility
-    #   fs: 44100
-
-    # si_snr:
-    #   _target_: torchmetrics.audio.ScaleInvariantSignalNoiseRatio
-    
+  metrics:    
     DNSMOS:
       _target_: metrics.dnsmos_local.DNSMOSScore
       fs: 44100
