@@ -46,7 +46,7 @@ class BaseModel(pl.LightningModule):
                 loss_dict[f'{phase}/{loss_name}'] = sum(loss_dict[f'{phase}/{loss_name}'])
             l_total += loss_dict[f'{phase}/{loss_name}']
 
-        if len(self.losses) > 1: loss_dict[f'{phase}/l_total'] = l_total
+        loss_dict[f'{phase}/l_total'] = l_total
         return loss_dict
 
     def calculate_metrics(self, y_hat, y, phase):
@@ -58,10 +58,13 @@ class BaseModel(pl.LightningModule):
             else:
                 metrics_dict[f'{phase}/{metric_name}'] = result
         return metrics_dict
+
+    def batch_adapter(self, batch):
+        return batch, batch['clean']
     
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
         
         y_hat = self.net(x)
 
@@ -70,7 +73,7 @@ class BaseModel(pl.LightningModule):
         return loss_dict['train/l_total']
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
 
         y_hat = self.net(x)
 
@@ -79,7 +82,7 @@ class BaseModel(pl.LightningModule):
         self.log_dict(metrics_dict)
 
     def test_step(self,  batch, batch_idx):
-        x, y = batch
+        x, y = self.batch_adapter(batch)
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
@@ -90,10 +93,13 @@ class BaseModel(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
-        scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
-        return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
-    
-
+        if 'scheduler' in self.hparams.train:
+            scheduler = hydra.utils.instantiate(self.hparams.train.scheduler, optimizer=optimizer)
+            if 'monitor' in self.hparams.train:
+                monitor = self.hparams.train.monitor
+                return [optimizer], [{"scheduler": scheduler, "monitor": monitor, "interval": "epoch"}]
+            return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
+        return [optimizer]
 
     def on_train_start(self) -> None:
         get_root_logger().info(f'Training Started...')

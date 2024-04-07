@@ -1,4 +1,3 @@
-
 _target_: data.base_data_module.BaseDataModule
 
 opt:
@@ -15,11 +14,11 @@ opt:
       mode: all
       seed: 42
       reference_tensor: False
-      crop_length_sec: 0
+      crop_length_sec: 3
 
     dataloader:
-      batch_size: 8
-      num_workers: 2
+      batch_size: 20
+      num_workers: 4
       shuffle: True # Can be changed to False if we wanted identical experiments
       pin_memory: True
       collate_fn:
@@ -35,8 +34,8 @@ opt:
       sr: 44100
 
     dataloader:
-      batch_size: 8
-      num_workers: 2
+      batch_size: 20
+      num_workers: 4
       collate_fn:
         _target_: data.pdns_dataset.PDNSCollate # shuffle: True
       # pin_memory: True

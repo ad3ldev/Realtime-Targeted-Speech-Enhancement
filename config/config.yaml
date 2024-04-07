@@ -13,10 +13,10 @@ logger:
     group:
 
 defaults:
-- data: CleanUNetDataSet
-- model: Demucs
-- training: Demucs_training
-- trainer: Demucs_trainer
+- data: PDNSDataSet
+- model: WaveTita
+- training: WaveTita_training
+- trainer: WaveTita_trainer
 
 
 
