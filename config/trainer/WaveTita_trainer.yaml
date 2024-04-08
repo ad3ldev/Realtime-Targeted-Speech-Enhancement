@@ -4,6 +4,7 @@ checkpoint_path:
 
 trainer_args: 
   max_epochs: 500
+  check_val_every_n_epoch: 2
 
 callbacks:
   ModelCheckpoint:

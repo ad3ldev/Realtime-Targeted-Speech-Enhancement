@@ -5,21 +5,31 @@ train:
     weight_decay: 0.0
 
   scheduler:
-    _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
-    mode: max
-    factor: 0.1
-    patience: 5
-    min_lr: 5e-6
-    threshold: 0.1
-    threshold_mode: abs
-  
-  monitor: train/l_total
+    _target_: utils.schedulers.LinearWarmupCosineDecay
+    lr_max: 1e-4
+    n_iter: 250000
+    iteration: 10001
+    divider: 25
+    warmup_proportion: 0.05
+    phase: ['linear', 'cosine']
 
   losses:
-    waveformer_loss:
-      _target_: loss.waveformer_loss.WaveformerLoss
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
       
+    mrstft:
+      _target_: loss.stft_loss.MultiResolutionSTFTLoss
+      sc_lambda: 0.5
+      mag_lambda: 0.5
+      band: full
+      hop_sizes: [50, 120, 240]
+      win_lengths: [240, 600, 1200]
+      fft_sizes: [512, 1024, 2048]
 
+  losses_weights:
+    mrstft: 0.5
+      
 val:
   metrics:    
     DNSMOS:

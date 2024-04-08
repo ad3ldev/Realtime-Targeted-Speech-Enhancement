@@ -15,8 +15,6 @@ from torchmetrics.functional import(
 
 from speechbrain.lobes.models.transformer.Transformer import PositionalEncoding
 
-import nemo.collections.asr as nemo_asr
-
 def mod_pad(x, chunk_size, pad):
     # Mod pad the input to perform integer number of
     # inferences
@@ -353,12 +351,24 @@ class MaskNet(nn.Module):
 
         return m, enc_buf, dec_buf
 
+def rescale_conv(conv, reference):
+    std = conv.weight.std().detach()
+    scale = (std / reference)**0.5
+    conv.weight.data /= scale
+    if conv.bias is not None:
+        conv.bias.data /= scale
+
+def rescale_module(module, reference):
+    for sub in module.modules():
+        if isinstance(sub, (nn.Conv1d, nn.ConvTranspose1d)):
+            rescale_conv(sub, reference)
+
 class Net(nn.Module):
     def __init__(self, label_len, L=8,
                  enc_dim=512, num_enc_layers=10,
                  dec_dim=256, dec_buf_len=100, num_dec_layers=2,
                  dec_chunk_size=72, out_buf_len=2,
-                 use_pos_enc=True, skip_connection=True, proj=True, lookahead=True):
+                 use_pos_enc=True, skip_connection=True, proj=True, lookahead=True, rescale=0.1):
         super(Net, self).__init__()
         self.L = L
         self.out_buf_len = out_buf_len
@@ -397,6 +407,9 @@ class Net(nn.Module):
                 stride=L,
                 padding=out_buf_len * L, bias=False),
             nn.Tanh())
+        
+        if rescale:
+            rescale_module(self, reference=rescale)
 
     def init_buffers(self, batch_size, device):
         enc_buf = self.mask_gen.encoder.init_ctx_buf(batch_size, device)
@@ -501,32 +514,24 @@ if __name__ == "__main__":
     network_config = {
         "label_len": 192,
         "L": 32,
-        "enc_dim": 512,
+        "enc_dim": 1024,
         "num_enc_layers": 10,
-        "dec_dim": 256,
+        "dec_dim": 512,
         "num_dec_layers": 1,
         "dec_buf_len": 13,
         "dec_chunk_size": 13,
         "out_buf_len": 4, 
-        "use_pos_enc": "true"
+        "use_pos_enc": True
     }
 
-    state_dict = torch.load("Waveformer_ckpt.pt", map_location=device)["model_state_dict"]
+    # state_dict = torch.load("rttse/archs/Waveformer_init_ckpt.pt", map_location=device)
 
-    model = load_model(Net(**network_config), state_dict)
+    # model = load_model(Net(**network_config), state_dict)
 
-    model.to(device).eval()
+    model = Net(**network_config)
 
-    mixture = torch.randn(1, 1, 264600) # sampling rate should be 44100
+    model.to(device)
 
-    # speaker_model = nemo_asr.models.EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large')
-    # query = speaker_model.get_embedding('/Sample.wav') returns: [1, 192] embedding for the speaker
-
-    query_length = 192
-    query = torch.ones(1, query_length)
-    query[0, 9] = 1.0 # set the 10th index to 1.0 (one hot encoding of keyboard audio)
-
-    with torch.inference_mode():
-        output = model(mixture.to(device), query.to(device)).squeeze(0).cpu()
-
-    print(output.shape)
+    # get model summary
+    from torchinfo import summary
+    summary(model, [(8, 1, 3 * 44100), (8, 192)])
