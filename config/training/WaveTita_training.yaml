@@ -1,12 +1,12 @@
 train:
   optim:
     _target_: torch.optim.Adam
-    lr: 5e-4
+    lr: 5e-3
     weight_decay: 0.0
 
   scheduler:
     _target_: utils.schedulers.LinearWarmupCosineDecay
-    lr_max: 1e-4
+    lr_max: 5e-3
     n_iter: 250000
     iteration: 10001
     divider: 25
