@@ -37,5 +37,6 @@ val:
       fs: 44100
       personalized_MOS: True
     
-    waveformer_loss:
-      _target_: loss.waveformer_loss.WaveformerLoss
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
