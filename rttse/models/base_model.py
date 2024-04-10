@@ -3,6 +3,7 @@ from collections import OrderedDict
 import pytorch_lightning as pl
 import hydra
 from utils.console_logger import ConsoleLogger
+from torch import nn
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from utils.logger import get_root_logger
 
@@ -23,9 +24,9 @@ class BaseModel(pl.LightningModule):
         self.save_hyperparameters(cfg, logger=False)
 
         self.loss_weights = cfg['train'].get('loss_weights', {})    
-        self.losses = hydra.utils.instantiate(cfg['train']['losses'])
+        self.losses = nn.ModuleDict(hydra.utils.instantiate(cfg['train']['losses']))
 
-        self.metrics = hydra.utils.instantiate(cfg['val']['metrics'])
+        self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['val']['metrics']))
 
     @rank_zero_only
     def print_netowrk(self, stage=None):

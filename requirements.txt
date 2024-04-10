@@ -16,6 +16,8 @@ nemo_toolkit[asr]
 speechbrain
 onnxruntime
 librosa
+onnx
+onnx2torch
 
 # PDNS Synthesis
 soundfile
