@@ -14,7 +14,7 @@ opt:
       mode: all
       seed: 42
       reference_tensor: False
-      crop_length_sec: 3
+      crop_length_sec: 0
 
     dataloader:
       batch_size: 8
