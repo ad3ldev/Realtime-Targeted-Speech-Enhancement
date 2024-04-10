@@ -3,6 +3,7 @@ import os
 import torch
 import torchaudio
 from torch import tensor
+from torch.nn import Module
 from torchmetrics import Metric
 
 import onnx
@@ -66,8 +67,9 @@ class DNSMOSScore(Metric):
         self.add_state("P808_MOS", default=tensor(0.0), dist_reduce_fx="sum")
         self.add_state("total", default=tensor(0), dist_reduce_fx="sum")
     
-    def audio_melspec(self, audio, n_mels=120, frame_size=320, hop_length=160, sr=16000, to_db=True):
-        transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels, norm='slaney', mel_scale='slaney').to(self.device)
+    def audio_melspec(self, audio: tensor, n_mels=120, frame_size=320, hop_length=160, sr=16000, to_db=True):
+        transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels, norm='slaney', mel_scale='slaney')
+        print(f"audio.device: {audio.device}, self.device: {self.device}")
         mel_spec = transform(audio)
         if to_db:
             mel_spec = (power_to_db(mel_spec, ref=torch.max)+40)/40
@@ -160,13 +162,16 @@ class DNSMOSScore(Metric):
         return clip_dict
     
     def to(self, device):
-        super().to(device)
         self.primary_model.to(device)
         self.p808_model.to(device)
         if self.resmapler:
             self.resmapler.to(device)
         return self
-
+    
+    def _apply(self, fn , exclude_state = "") -> Module:
+        self.to(self.device)
+        return super()._apply(fn, exclude_state)
+    
 # import argparse
 # from tqdm import tqdm
 # def main():
