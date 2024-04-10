@@ -33,7 +33,6 @@ def power_to_db(S, ref = tensor(1.0), amin = tensor(1e-10), top_db = tensor(80.0
 class DNSMOSScore(Metric):
     def __init__(self, fs, primary_model_path = None, p808_model_path = None, personalized_MOS = False, **kwargs) -> None:
         super().__init__(**kwargs)
-        print(f"[DNSMOS]: Initalizing DNSMOS with self.device: {self.device}")
         # Get the current directory of this file
         current_dir = os.path.dirname(os.path.realpath(__file__))
         p808_model_path = p808_model_path if p808_model_path else os.path.join(current_dir, 'DNSMOS', 'model_v8.onnx')
@@ -164,7 +163,6 @@ class DNSMOSScore(Metric):
         return clip_dict
     
     def to(self, device):
-        print(f"[DNSMOS]: Calling to with device: {device}")
         this = super().to(device)
         this.primary_model.to(device)
         this.p808_model.to(device)
@@ -173,7 +171,6 @@ class DNSMOSScore(Metric):
         return this
     
     def _apply(self, fn , exclude_state = "") -> Module:
-        print(f"[DNSMOS]: Applying _apply with self.device: {self.device}")
         this = super()._apply(fn, exclude_state)
         self.primary_model.to(self.device)
         self.p808_model.to(self.device)
