@@ -54,6 +54,8 @@ class DNSMOSScore(Metric):
             # Move resampler to GPU if available
             if torch.cuda.is_available():
                 self.resmapler = self.resmapler.cuda()
+                self.primary_model = self.primary_model.cuda()
+                self.p808_model = self.p808_model.cuda()
         else:
             self.resmapler = None
         
