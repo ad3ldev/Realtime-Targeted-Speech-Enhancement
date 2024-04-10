@@ -28,15 +28,15 @@ train:
       fft_sizes: [512, 1024, 2048]
 
   losses_weights:
-    mrstft: 0.5
+    mrstft: 0.3
       
 val:
   metrics:    
-    DNSMOS:
-      _target_: metrics.dnsmos_local.DNSMOSScore
-      fs: 44100
-      personalized_MOS: True
+    # DNSMOS:
+    #   _target_: metrics.dnsmos_local.DNSMOSScore
+    #   fs: 44100
+    #   personalized_MOS: True
     
-    l1:
-      _target_: torch.nn.L1Loss
-      reduction: mean
+    # l1:
+    #   _target_: torch.nn.L1Loss
+    #   reduction: mean
