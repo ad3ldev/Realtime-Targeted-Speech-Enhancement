@@ -51,13 +51,16 @@ class DNSMOSScore(Metric):
         
         if self.sampling_rate != self.input_sampling_rate:            
             self.resmapler = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=self.sampling_rate)
-            # Move resampler to GPU if available
-            if torch.cuda.is_available():
-                self.resmapler = self.resmapler.cuda()
-                self.primary_model = self.primary_model.cuda()
-                self.p808_model = self.p808_model.cuda()
         else:
             self.resmapler = None
+        
+        print(torch.cuda.is_available())
+        
+        if torch.cuda.is_available():
+            if self.resmapler:
+                self.resmapler = self.resmapler.cuda()
+            self.primary_model = self.primary_model.cuda()
+            self.p808_model = self.p808_model.cuda()
         
         self.is_personalized_MOS = personalized_MOS
         
@@ -72,6 +75,8 @@ class DNSMOSScore(Metric):
     
     def audio_melspec(self, audio, n_mels=120, frame_size=320, hop_length=160, sr=16000, to_db=True):
         transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels, norm='slaney', mel_scale='slaney')
+        if torch.cuda.is_available():
+            transform = transform.cuda()
         mel_spec = transform(audio)
         if to_db:
             mel_spec = (power_to_db(mel_spec, ref=torch.max)+40)/40
@@ -108,7 +113,7 @@ class DNSMOSScore(Metric):
     def update_clip(self, predection):
         fs = self.sampling_rate
         if self.input_sampling_rate != fs:
-            audio = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=fs)(predection.to('cpu'))
+            audio = self.resmapler(predection)
         else:
             audio = predection
 
@@ -188,6 +193,8 @@ class DNSMOSScore(Metric):
     
 #     for file in tqdm(files):
 #         audio, sr = torchaudio.load(os.path.join(testset_dir, file))
+#         if torch.cuda.is_available():
+#             audio = audio.cuda()
 #         dns_mos(audio, tensor(0.0))
     
 #     # Compute the metric
