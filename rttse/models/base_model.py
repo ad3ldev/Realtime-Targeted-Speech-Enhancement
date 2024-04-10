@@ -51,6 +51,8 @@ class BaseModel(pl.LightningModule):
 
     def calculate_metrics(self, y_hat, y, phase):
         metrics_dict = OrderedDict()
+        if not self.metrics:
+            return metrics_dict
         for metric_name, metric_fn in self.metrics.items():
             result = metric_fn(y_hat, y)
             if isinstance(result, dict):
