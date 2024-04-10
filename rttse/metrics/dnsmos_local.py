@@ -33,7 +33,7 @@ def power_to_db(S, ref = tensor(1.0), amin = tensor(1e-10), top_db = tensor(80.0
 class DNSMOSScore(Metric):
     def __init__(self, fs, primary_model_path = None, p808_model_path = None, personalized_MOS = False, **kwargs) -> None:
         super().__init__(**kwargs)
-        print(f"Initalizing DNSMOS with self.device: {self.device}")
+        print(f"[DNSMOS]: Initalizing DNSMOS with self.device: {self.device}")
         # Get the current directory of this file
         current_dir = os.path.dirname(os.path.realpath(__file__))
         p808_model_path = p808_model_path if p808_model_path else os.path.join(current_dir, 'DNSMOS', 'model_v8.onnx')
@@ -161,6 +161,7 @@ class DNSMOSScore(Metric):
         return clip_dict
     
     def to(self, device):
+        print(f"[DNSMOS]: Calling to with device: {device}")
         this = super().to(device)
         this.primary_model.to(device)
         this.p808_model.to(device)
@@ -168,38 +169,47 @@ class DNSMOSScore(Metric):
             this.resmapler.to(device)
         return this
     
-import argparse
-from tqdm import tqdm
-def main():
-    # Source files path
-    parser = argparse.ArgumentParser(description='DNSMOS')
-    parser.add_argument('--primary_model_path', type=str, default=None, help='Primary model path')
-    parser.add_argument('--p808_model_path', type=str, default=None, help='P808 model path')
-    parser.add_argument('--personalized_MOS', action='store_true', help='Use personalized MOS')
-    parser.add_argument('-t', "--testset_dir", default='.', 
-                        help='Path to the dir containing audio clips in .wav to be evaluated')
-    parser.add_argument('-fs', "--sampling_rate", default=16000, help='Sampling rate of the audio clips')
-    # parser.add_argument('-o', "--csv_path", default=None, help='Dir to the csv that saves the results')
-    args = parser.parse_args()
+    def _apply(self, fn , exclude_state = "") -> Module:
+        print(f"[DNSMOS]: Applying _apply with self.device: {self.device}")
+        this = super()._apply(fn, exclude_state)
+        self.primary_model.to(self.device)
+        self.p808_model.to(self.device)
+        if self.resmapler:
+            self.resmapler.to(self.device)
+        return this
     
-    # Get the files in the testset directory
-    testset_dir = args.testset_dir
-    files = [f for f in os.listdir(testset_dir) if f.endswith('.wav')]
-    # Initialize the metric
-    dns_mos = DNSMOSScore(fs=args.sampling_rate, primary_model_path=args.primary_model_path, p808_model_path=args.p808_model_path, personalized_MOS=args.personalized_MOS).to('cuda')
-    # Evaluate the audio clips
+# import argparse
+# from tqdm import tqdm
+# def main():
+#     # Source files path
+#     parser = argparse.ArgumentParser(description='DNSMOS')
+#     parser.add_argument('--primary_model_path', type=str, default=None, help='Primary model path')
+#     parser.add_argument('--p808_model_path', type=str, default=None, help='P808 model path')
+#     parser.add_argument('--personalized_MOS', action='store_true', help='Use personalized MOS')
+#     parser.add_argument('-t', "--testset_dir", default='.', 
+#                         help='Path to the dir containing audio clips in .wav to be evaluated')
+#     parser.add_argument('-fs', "--sampling_rate", default=16000, help='Sampling rate of the audio clips')
+#     # parser.add_argument('-o', "--csv_path", default=None, help='Dir to the csv that saves the results')
+#     args = parser.parse_args()
     
-    rows = []
+#     # Get the files in the testset directory
+#     testset_dir = args.testset_dir
+#     files = [f for f in os.listdir(testset_dir) if f.endswith('.wav')]
+#     # Initialize the metric
+#     dns_mos = DNSMOSScore(fs=args.sampling_rate, primary_model_path=args.primary_model_path, p808_model_path=args.p808_model_path, personalized_MOS=args.personalized_MOS).to('cuda')
+#     # Evaluate the audio clips
     
-    for file in tqdm(files):
-        audio, sr = torchaudio.load(os.path.join(testset_dir, file))
-        if torch.cuda.is_available():
-            audio = audio.cuda()
-        dns_mos(audio, tensor(0.0))
+#     rows = []
     
-    # Compute the metric
-    results = dns_mos.compute()
-    print(results)
+#     for file in tqdm(files):
+#         audio, sr = torchaudio.load(os.path.join(testset_dir, file))
+#         if torch.cuda.is_available():
+#             audio = audio.cuda()
+#         dns_mos(audio, tensor(0.0))
+    
+#     # Compute the metric
+#     results = dns_mos.compute()
+#     print(results)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
