@@ -454,8 +454,7 @@ class Net(nn.Module):
         x = self.in_conv(x)
 
         # Generate label embedding
-        # l = self.label_embedding(label) # [B, label_len] --> [B, channels]
-        l = label
+        l = self.label_embedding(label) # [B, label_len] --> [B, channels]
 
         # Generate mask corresponding to the label
         m, enc_buf, dec_buf = self.mask_gen(x, l, enc_buf, dec_buf)
