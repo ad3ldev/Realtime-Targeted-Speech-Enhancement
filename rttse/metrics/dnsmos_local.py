@@ -48,6 +48,9 @@ class DNSMOSScore(Metric):
         self.primary_model = onnx2torch.convert(primary_model_onnx).to(self.device)
         self.p808_model = onnx2torch.convert(p808_model_onnx).to(self.device)
         
+        self.primary_model.requires_grad_(False)
+        self.p808_model.requires_grad_(False)
+        
         self.sampling_rate = SAMPLING_RATE
         self.input_sampling_rate = fs
         
@@ -131,9 +134,9 @@ class DNSMOSScore(Metric):
             
             input_features = audio_seg.unsqueeze(0)
             p808_input_features = self.audio_melspec(audio=audio_seg[:-160]).unsqueeze(0)
-            with torch.no_grad():
-                p808_mos = self.p808_model(p808_input_features)[0][0]
-                primary_model_result = self.primary_model(input_features)[0]
+            # with torch.no_grad():
+            p808_mos = self.p808_model(p808_input_features)[0][0]
+            primary_model_result = self.primary_model(input_features)[0]
             mos_sig_raw,mos_bak_raw,mos_ovr_raw = primary_model_result[0], primary_model_result[1], primary_model_result[2]
             mos_sig,mos_bak,mos_ovr = self.get_polyfit_val(mos_sig_raw,mos_bak_raw,mos_ovr_raw,self.is_personalized_MOS)
 
