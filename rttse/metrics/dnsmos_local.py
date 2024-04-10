@@ -32,6 +32,7 @@ def power_to_db(S, ref = tensor(1.0), amin = tensor(1e-10), top_db = tensor(80.0
 class DNSMOSScore(Metric):
     def __init__(self, fs, primary_model_path = None, p808_model_path = None, personalized_MOS = False, **kwargs) -> None:
         super().__init__(**kwargs)
+        print(self.device)
         # Get the current directory of this file
         current_dir = os.path.dirname(os.path.realpath(__file__))
         p808_model_path = p808_model_path if p808_model_path else os.path.join(current_dir, 'DNSMOS', 'model_v8.onnx')
@@ -43,25 +44,17 @@ class DNSMOSScore(Metric):
         primary_model_onnx = onnx.load(primary_model_path)
         p808_model_onnx = onnx.load(p808_model_path)
         
-        self.primary_model = onnx2torch.convert(primary_model_onnx)
-        self.p808_model = onnx2torch.convert(p808_model_onnx)
+        self.primary_model = onnx2torch.convert(primary_model_onnx).to(self.device)
+        self.p808_model = onnx2torch.convert(p808_model_onnx).to(self.device)
         
         self.sampling_rate = SAMPLING_RATE
         self.input_sampling_rate = fs
         
         if self.sampling_rate != self.input_sampling_rate:            
-            self.resmapler = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=self.sampling_rate)
+            self.resmapler = torchaudio.transforms.Resample(orig_freq=self.input_sampling_rate, new_freq=self.sampling_rate).to(self.device)
         else:
             self.resmapler = None
-        
-        print(torch.cuda.is_available())
-        
-        if torch.cuda.is_available():
-            if self.resmapler:
-                self.resmapler = self.resmapler.cuda()
-            self.primary_model = self.primary_model.cuda()
-            self.p808_model = self.p808_model.cuda()
-        
+                    
         self.is_personalized_MOS = personalized_MOS
         
         self.add_state("OVRL_raw", default=tensor(0.0), dist_reduce_fx="sum")
@@ -74,9 +67,7 @@ class DNSMOSScore(Metric):
         self.add_state("total", default=tensor(0), dist_reduce_fx="sum")
     
     def audio_melspec(self, audio, n_mels=120, frame_size=320, hop_length=160, sr=16000, to_db=True):
-        transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels, norm='slaney', mel_scale='slaney')
-        if torch.cuda.is_available():
-            transform = transform.cuda()
+        transform = torchaudio.transforms.MelSpectrogram(sample_rate=sr, n_fft=frame_size+1, hop_length=hop_length, n_mels=n_mels, norm='slaney', mel_scale='slaney').to(self.device)
         mel_spec = transform(audio)
         if to_db:
             mel_spec = (power_to_db(mel_spec, ref=torch.max)+40)/40
@@ -167,6 +158,14 @@ class DNSMOSScore(Metric):
         for key in clip_dict:
             clip_dict[key] = clip_dict[key] / self.total
         return clip_dict
+    
+    def to(self, device):
+        super().to(device)
+        self.primary_model.to(device)
+        self.p808_model.to(device)
+        if self.resmapler:
+            self.resmapler.to(device)
+        return self
 
 # import argparse
 # from tqdm import tqdm
@@ -186,7 +185,7 @@ class DNSMOSScore(Metric):
 #     testset_dir = args.testset_dir
 #     files = [f for f in os.listdir(testset_dir) if f.endswith('.wav')]
 #     # Initialize the metric
-#     dns_mos = DNSMOSScore(fs=args.sampling_rate, primary_model_path=args.primary_model_path, p808_model_path=args.p808_model_path, personalized_MOS=args.personalized_MOS)
+#     dns_mos = DNSMOSScore(fs=args.sampling_rate, primary_model_path=args.primary_model_path, p808_model_path=args.p808_model_path, personalized_MOS=args.personalized_MOS).to('cuda')
 #     # Evaluate the audio clips
     
 #     rows = []
