@@ -12,6 +12,7 @@ callbacks:
   ModelCheckpoint:
     _target_: pytorch_lightning.callbacks.ModelCheckpoint
     every_n_epochs: 1
+    save_top_k: -1
 
   EMACallback:
     _target_: utils.callbacks.EMACallback
