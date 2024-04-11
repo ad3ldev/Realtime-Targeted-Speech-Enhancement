@@ -1,0 +1,39 @@
+train:
+  optim:
+    _target_: torch.optim.Adam
+    lr: 1e-4
+    weight_decay: 0.0
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 100000
+    eta_min: 1e-6
+
+  losses:
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
+
+    mrstft:
+      _target_: loss.stft_loss.MultiResolutionSTFTLoss
+      sc_lambda: 0.5
+      mag_lambda: 0.5
+      band: full
+      hop_sizes: [50, 120, 240]
+      win_lengths: [240, 600, 1200]
+      fft_sizes: [512, 1024, 2048]
+
+  losses_weights:
+    mrstft: 0.5
+      
+
+val:
+  metrics:    
+    DNSMOS:
+      _target_: metrics.dnsmos_local.DNSMOSScore
+      fs: 16000
+      personalized_MOS: True
+
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
