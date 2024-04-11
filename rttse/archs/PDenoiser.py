@@ -12,7 +12,7 @@ import torch as th
 from torch import nn
 from torch.nn import functional as F
 
-from rttse.utils.demucs_utils import downsample2, upsample2, capture_init
+from utils.demucs_utils import downsample2, upsample2, capture_init
 
 class BLSTM(nn.Module):
     def __init__(self, dim, layers=2, bi=True):
