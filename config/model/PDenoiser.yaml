@@ -2,6 +2,7 @@ _target_: models.base_model.BaseModel
 
 net:
   _target_: archs.WaveTita.WaveTita
+  initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Denoiser_init_ckpt.th
   speech_enhancer:
     _target_: archs.PDenoiser.PDenoiser
     reference_embedding: 192
