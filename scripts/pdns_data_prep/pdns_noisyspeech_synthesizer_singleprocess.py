@@ -28,13 +28,10 @@ from scipy.io import wavfile
 
 import csv
 import random
-random.seed(5)
+# random.seed(5)
 
 MAXTRIES = 50
 MAXFILELEN = 100
-
-np.random.seed(5)
-random.seed(5)
 
 def add_pyreverb(clean_speech, rir):
     #
@@ -368,8 +365,7 @@ def main_gen(params):
     clean_index2 = 0
     noise_index = 0
 
-    # file_num = params['fileindex_start']
-    file_num = 0 # Start from 0 and skip files until we reach the starting index
+    file_num = params['fileindex_start']
     cleanfilenames= params['cleanfilenames'] 
     cleanfilenames2= params['cleanfilenames2'] 
 
@@ -446,11 +442,6 @@ def main_gen(params):
                                                                     clean=noisy_snr2, 
                                                                     noise=noise, 
                                                                     snr=snr3)
-            
-            # Skip writing audio to disk if file number is below the starting index
-            if(file_num < params['fileindex_start']):
-                file_num += 1
-                continue
             
             # unexpected clipping
             #if is_clipped(clean_snr) or is_clipped(noise_snr2) or is_clipped(noisy_snr2):
@@ -610,6 +601,11 @@ def main_body():
     params['audio_length'] = float(cfg['audio_length'])
     params['silence_length'] = float(cfg['silence_length'])
     params['total_hours'] = float(cfg['total_hours'])
+    
+    # seed
+    params['seed'] = int(cfg['seed']) if cfg['seed'] != None else 5
+    np.random.seed(params['seed'])
+    random.seed(params['seed'])
     
     # clean singing speech
     params['clean_singing'] = str(cfg['clean_singing'])
