@@ -368,7 +368,8 @@ def main_gen(params):
     clean_index2 = 0
     noise_index = 0
 
-    file_num = params['fileindex_start']
+    # file_num = params['fileindex_start']
+    file_num = 0 # Start from 0 and skip files until we reach the starting index
     cleanfilenames= params['cleanfilenames'] 
     cleanfilenames2= params['cleanfilenames2'] 
 
@@ -445,6 +446,12 @@ def main_gen(params):
                                                                     clean=noisy_snr2, 
                                                                     noise=noise, 
                                                                     snr=snr3)
+            
+            # Skip writing audio to disk if file number is below the starting index
+            if(file_num < params['fileindex_start']):
+                file_num += 1
+                continue
+            
             # unexpected clipping
             #if is_clipped(clean_snr) or is_clipped(noise_snr2) or is_clipped(noisy_snr2):
             if is_clipped(clean_snr) or is_clipped(noisy_snr):
