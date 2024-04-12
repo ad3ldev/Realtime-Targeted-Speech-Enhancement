@@ -368,7 +368,7 @@ class Net(nn.Module):
                  enc_dim=512, num_enc_layers=10,
                  dec_dim=256, dec_buf_len=100, num_dec_layers=2,
                  dec_chunk_size=72, out_buf_len=2,
-                 use_pos_enc=True, skip_connection=True, proj=True, lookahead=True, rescale=0.1):
+                 use_pos_enc=True, skip_connection=True, proj=True, lookahead=True, rescale=None):
         super(Net, self).__init__()
         self.L = L
         self.out_buf_len = out_buf_len

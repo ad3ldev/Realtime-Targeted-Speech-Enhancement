@@ -15,4 +15,3 @@ net:
     dec_chunk_size: 13
     out_buf_len: 4
     use_pos_enc: true
-    rescale: 0.1
