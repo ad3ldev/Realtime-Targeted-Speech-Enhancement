@@ -35,11 +35,11 @@ class PDNSDataset(Dataset):
     def __init__(
         self, 
         split: Literal['train', 'val', 'test'],
-        clean_path: str,
-        noisy_path: str,
-        synthesized_speakers_csv: str = None,
-        reference_speakers_csv: str = None,
-        speaker_reference_path: str = None,
+        clean_paths: list,
+        noisy_paths: list,
+        synthesized_speakers_paths: list = None,
+        dataset_speakers_paths: list = None,
+        speaker_reference_paths: list = None,
         sr = 44100, 
         crop_length_sec = 0, 
         mode: Literal['all', 'ps', 'pn', 'psn'] = 'all',
@@ -51,11 +51,11 @@ class PDNSDataset(Dataset):
         Arguments:
         ----------
         - split (Literal['train', 'val', 'test']): The split of the dataset.
-        - clean_path (str): The path to the clean audio files.
-        - noisy_path (str): The path to the noisy audio files.
-        - speaker_reference_path (str, optional): The path to the speaker reference files. If None, the reference_speakers_csv is used. Defaults to None.            
-        - synthesized_speakers_csv (str, optional): The csv containing the synthesization sources of each generated audio clip. This is used to find the primary speaker of each clip. Defaults to './speakers.csv'.
-        - reference_speakers_csv (str, optional): The csv containing the speakers of all raw files from the dataset. This is used to get a clean audio clip related to a sepcific speaker. Defaults to './reference_speakers.csv'.
+        - clean_paths (list): A list of paths to the clean audio files.
+        - noisy_paths (list): A list of paths to the noisy audio files.
+        - speaker_reference_paths (list, optional): A list of paths to the speaker reference files. If None, the reference_speakers_csv is used. Defaults to None.            
+        - synthesized_speakers_paths (list, optional): A list of csv paths containing the synthesization sources of each generated audio clip. This is used to find the primary speaker of each clip.
+        - dataset_speakers_paths (list, optional): A list of csv paths containing the speakers of all raw files from the dataset. This is used to get a clean audio clip related to a sepcific speaker.
         - sr (int, optional): The required sampling rate of all the data. Defaults to 41000.
         - crop_length_sec (int, optional): The required length of each audio clip. If zero doesn't crop. Defaults to 0.
         - mode (Literal[&#39;all&#39;, &#39;ps&#39;, &#39;pn&#39;, &#39;psn&#39;], optional): The noisy speech mode. Used for the selection of noisy audio clips. "all" uses all of the noisy clips, "ps" stands for primary and secondry, "pn" stands for primary and noisy, "psn" stands for primary secondary and noisy. Defaults to 'all'.
@@ -74,13 +74,13 @@ class PDNSDataset(Dataset):
         self.sr = sr
         self.reference_tensor = reference_tensor
         
-        clean_files = [os.path.join(clean_path, file) for file in os.listdir(clean_path)]
-        noisy_files = [os.path.join(noisy_path, file) for file in os.listdir(noisy_path)]
+        clean_files = [os.path.join(clean_path, file) for clean_path in clean_paths for file in os.listdir(clean_path)]
+        noisy_files = [os.path.join(noisy_path, file) for noisy_path in noisy_paths for file in os.listdir(noisy_path)]
         
         # Load reference speaker csv
-        if speaker_reference_path is None:
-            assert reference_speakers_csv is not None, "Either speaker_reference_path or reference_speakers_csv should be provided"
-            reference_speakers = pd.read_csv(reference_speakers_csv)
+        if speaker_reference_paths is None:
+            assert dataset_speakers_paths is not None, "Either speaker_reference_path or reference_speakers_paths should be provided"
+            reference_speakers = pd.concat([pd.read_csv(reference_speakers_path) for reference_speakers_path in dataset_speakers_paths])
             reference_speakers = reference_speakers[reference_speakers['speaker_type'] == 'primary']
             self.reference_files = dict()
             for _, row in reference_speakers.iterrows():
@@ -89,15 +89,15 @@ class PDNSDataset(Dataset):
                 else:
                     self.reference_files[row['speaker_id']].append(row['filename'])
             
-            assert synthesized_speakers_csv is not None, "speaker_reference_path or synthesized_speakers_csv should be provided"
+            assert synthesized_speakers_paths is not None, "speaker_reference_path or synthesized_speakers_paths should be provided"
             # Load synthesized speaker csv
-            synthesized_speakers_df = pd.read_csv(synthesized_speakers_csv)
+            synthesized_speakers_df = pd.concat([pd.read_csv(synthesized_speakers_path) for synthesized_speakers_path in synthesized_speakers_paths])
             synthesized_primary_speakers = synthesized_speakers_df['primary_speaker'].tolist()
             
             assert len(clean_files)*3 == len(noisy_files), "Number of clean and noisy files does not match" # 3 noisy files per clean file
             assert len(clean_files) == len(synthesized_primary_speakers), "Number of clean files and synthesized primary speakers does not match"
         else:
-            self.reference_files = [os.path.join(speaker_reference_path, file) for file in os.listdir(speaker_reference_path)]
+            self.reference_files = [os.path.join(speaker_reference_path, file) for speaker_reference_path in speaker_reference_paths for file in os.listdir(speaker_reference_path)]
             self.reference_files.sort()
             
             assert len(clean_files) == len(noisy_files), "Number of clean and noisy files does not match"
@@ -116,7 +116,7 @@ class PDNSDataset(Dataset):
         assert len(clean_files) == len(noisy_files), "Number of clean and noisy files does not match" 
         
         # Create a list of tuples of clean files, noisy files and primary speakers
-        if speaker_reference_path is None:
+        if speaker_reference_paths is None:
             self.files = list(zip(clean_files, noisy_files, synthesized_primary_speakers))
         else:
             self.files = list(zip(clean_files, noisy_files, self.reference_files))

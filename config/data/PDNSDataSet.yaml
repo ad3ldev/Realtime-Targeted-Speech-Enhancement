@@ -6,10 +6,14 @@ opt:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
       split: train
-      clean_path: /kaggle/input/pdns-2023-10-hours/clean
-      noisy_path: /kaggle/input/pdns-2023-10-hours/noisy
-      synthesized_speakers_csv: /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
-      reference_speakers_csv: /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
+      clean_paths: 
+        - /kaggle/input/pdns-2023-10-hours/clean
+      noisy_paths: 
+        - /kaggle/input/pdns-2023-10-hours/noisy
+      synthesized_speakers_paths: 
+        - /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
+      dataset_speakers_paths: 
+        - /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
       sr: 44100
       mode: all
       seed: 42
@@ -28,9 +32,12 @@ opt:
     dataset:
       _target_: data.pdns_dataset.PDNSDataset
       split: val
-      clean_path: /kaggle/input/dns-2023-dev-testset-speaker/clean_personalized
-      noisy_path: /kaggle/input/dns-2023-dev-testset-speaker/noisy
-      speaker_reference_path: /kaggle/input/dns-2023-dev-testset-speaker/speaker_reference_16000
+      clean_paths: 
+        - /kaggle/input/dns-2023-dev-testset-speaker/clean_personalized
+      noisy_paths: 
+        - /kaggle/input/dns-2023-dev-testset-speaker/noisy
+      speaker_reference_paths: 
+        - /kaggle/input/dns-2023-dev-testset-speaker/speaker_reference_16000
       sr: 44100
 
     dataloader:
