@@ -4,12 +4,11 @@ checkpoint_path:
 
 trainer_args: 
   max_epochs: 1500
-  overfit_batches: 1
 
 callbacks:
   ModelCheckpoint:
     _target_: pytorch_lightning.callbacks.ModelCheckpoint
-    every_n_epochs: 100
+    every_n_epochs: 1
     save_top_k: -1
   
   LearningRateMonitor:
