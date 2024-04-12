@@ -13,9 +13,8 @@ class WaveTita(torch.nn.Module):
         self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
         self.speech_enhancer = speech_enhancer
-
         if initial_weights:
-            self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=args.get("strict", True))
+            self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=kwargs.get("strict", True))
             get_root_logger().info(f"Loaded weights from {initial_weights}")
 
     def detect_device(self) -> str:
