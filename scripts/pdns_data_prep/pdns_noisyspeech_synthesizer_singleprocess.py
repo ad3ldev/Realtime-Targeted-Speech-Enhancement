@@ -713,7 +713,7 @@ def main_body():
     # Create log directory if needed, and write log files of clipped and low activity files
     log_dir = utils.get_dir(cfg, 'log_dir', 'Logs')
 
-    utils.write_log_file(log_dir, 'source_files.csv', zip([i for i in range(params['fileindex_start'], params['fileindex_end'])], clean_primary_source_files, clean_secondary_source_files, noise_source_files))
+    utils.write_log_file(log_dir, 'source_files.csv', zip([i for i in range(params['fileindex_start'], params['fileindex_end']+1)], clean_primary_source_files, clean_secondary_source_files, noise_source_files))
     utils.write_log_file(log_dir, 'clipped_files.csv', zip(clean_clipped_files, noise_clipped_files))
     utils.write_log_file(log_dir, 'low_activity_files.csv', \
                          zip(clean_low_activity_files, noise_low_activity_files))
