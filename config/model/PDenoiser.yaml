@@ -20,3 +20,5 @@ net:
     resample: 4
     growth: 2
     rescale: 0.1
+    freeze_encoder: false
+    freeze_decoder: false

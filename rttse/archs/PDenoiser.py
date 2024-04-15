@@ -85,7 +85,9 @@ class PDenoiser(nn.Module):
                  glu=True,
                  rescale=0.1,
                  floor=1e-3,
-                 sample_rate=16_000):
+                 sample_rate=16_000,
+                 freeze_encoder=False,
+                 freeze_decoder=False):
 
         super().__init__()
         if resample not in [1, 2, 4]:
@@ -116,6 +118,10 @@ class PDenoiser(nn.Module):
                 nn.Conv1d(hidden, hidden * ch_scale, 1), activation,
             ]
             self.encoder.append(nn.Sequential(*encode))
+            
+            if freeze_encoder:
+                for param in self.encoder.parameters():
+                    param.requires_grad = False
 
             decode = []
             decode += [
@@ -125,6 +131,11 @@ class PDenoiser(nn.Module):
             if index > 0:
                 decode.append(nn.ReLU())
             self.decoder.insert(0, nn.Sequential(*decode))
+
+            if freeze_decoder:
+                for param in self.decoder.parameters():
+                    param.requires_grad = False
+
             chout = hidden
             chin = hidden
             hidden = min(int(growth * hidden), max_hidden)
