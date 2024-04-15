@@ -22,3 +22,4 @@ net:
     rescale: 0.1
     freeze_encoder: false
     freeze_decoder: false
+    freeze_lstm: false

@@ -43,6 +43,10 @@ def rescale_module(module, reference):
         if isinstance(sub, (nn.Conv1d, nn.ConvTranspose1d)):
             rescale_conv(sub, reference)
 
+def freeze(module):
+    for param in module.parameters():
+        param.requires_grad = False
+
 
 class PDenoiser(nn.Module):
     """
@@ -87,7 +91,8 @@ class PDenoiser(nn.Module):
                  floor=1e-3,
                  sample_rate=16_000,
                  freeze_encoder=False,
-                 freeze_decoder=False):
+                 freeze_decoder=False,
+                 freeze_lstm=False):
 
         super().__init__()
         if resample not in [1, 2, 4]:
@@ -120,8 +125,7 @@ class PDenoiser(nn.Module):
             self.encoder.append(nn.Sequential(*encode))
 
             if freeze_encoder:
-                for param in self.encoder.parameters():
-                    param.requires_grad = False
+                freeze(self.encoder)
 
             decode = []
             decode += [
@@ -133,8 +137,7 @@ class PDenoiser(nn.Module):
             self.decoder.insert(0, nn.Sequential(*decode))
 
             if freeze_decoder:
-                for param in self.decoder.parameters():
-                    param.requires_grad = False
+                freeze(self.decoder)
 
             chout = hidden
             chin = hidden
@@ -149,8 +152,13 @@ class PDenoiser(nn.Module):
             nn.ReLU())
         
         self.lstm = BLSTM(chin, bi=not causal)
+        if freeze_lstm:
+            freeze(self.lstm)
+
         if rescale:
             rescale_module(self, reference=rescale)
+
+        
 
     def valid_length(self, length):
         """
