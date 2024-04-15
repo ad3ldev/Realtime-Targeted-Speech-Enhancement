@@ -14,9 +14,9 @@ class ConsoleLogger():
 
     def __get_lrs_str(self, optims):
         if optims is list:
-            lrs = (f"{opt.param_groups[0]['lr']:.4f}" for opt in optims)
+            lrs = (f"{opt.param_groups[0]['lr']:.2e}" for opt in optims)
         else:
-            lrs = f"{optims.param_groups[0]['lr']:.4f}"
+            lrs = f"{optims.param_groups[0]['lr']:.2e}"
         return lrs
 
     def __get_loss_str(self, metrics):
