@@ -7,11 +7,17 @@ opt:
       _target_: data.pdns_dataset.PDNSDataset
       split: train
       clean_paths: 
-        - /kaggle/input/pdns-2023-10-hours/clean
+        - /kaggle/input/pdns-2023-100-hours-1/clean
+        - /kaggle/input/pdns-2023-100-hours-2/clean
+        - /kaggle/input/pdns-2023-100-hours-3/clean
       noisy_paths: 
-        - /kaggle/input/pdns-2023-10-hours/noisy
+        - /kaggle/input/pdns-2023-100-hours-1/noisy
+        - /kaggle/input/pdns-2023-100-hours-2/noisy
+        - /kaggle/input/pdns-2023-100-hours-3/noisy
       synthesized_speakers_paths: 
-        - /kaggle/input/pdns-2023-10-hours/logs/synthesized_sources.csv
+        - /kaggle/input/pdns-2023-100-hours-1/logs/synthesized_sources.csv
+        - /kaggle/input/pdns-2023-100-hours-2/logs/synthesized_sources.csv
+        - /kaggle/input/pdns-2023-100-hours-3/logs/synthesized_sources.csv
       dataset_speakers_paths: 
         - /kaggle/input/dns-2023-speakers-annotations/english_read_speech.csv
       sr: 44100
@@ -41,7 +47,7 @@ opt:
       sr: 44100
 
     dataloader:
-      batch_size: 20
+      batch_size: 1
       num_workers: 4
       collate_fn:
         _target_: data.pdns_dataset.PDNSCollate # shuffle: True
