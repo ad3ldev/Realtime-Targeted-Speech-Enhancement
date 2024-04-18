@@ -99,7 +99,7 @@ class BaseModel(pl.LightningModule):
             if 'monitor' in self.hparams.train:
                 monitor = self.hparams.train.monitor
                 return [optimizer], [{"scheduler": scheduler, "monitor": monitor, "interval": "epoch"}]
-            return [optimizer], [{"scheduler": scheduler, "interval": "epoch"}]
+            return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
         return [optimizer]
 
     def on_train_start(self) -> None:

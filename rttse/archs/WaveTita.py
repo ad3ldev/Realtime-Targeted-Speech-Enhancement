@@ -1,3 +1,4 @@
+from copy import deepcopy
 from torch import Tensor
 
 import torch
@@ -7,14 +8,13 @@ from nemo.collections.asr.models import EncDecSpeakerLabelModel
 from utils.logger import get_root_logger
 
 class WaveTita(torch.nn.Module):
-    def __init__(self, speech_enhancer, initial_weights=None, *args, **kwargs) -> None:
+    def __init__(self, speech_enhancer, initial_weights=None, strict=True, *args, **kwargs) -> None:
         super(WaveTita, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
         self.speech_enhancer = speech_enhancer
-
         if initial_weights:
-            self.speech_enhancer.load_state_dict(torch.load(initial_weights))
+            self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)
             get_root_logger().info(f"Loaded weights from {initial_weights}")
 
     def detect_device(self) -> str:
@@ -38,3 +38,6 @@ class WaveTita(torch.nn.Module):
 
         labels = labels.to(self.device)
         return self.speech_enhancer(noisy_audio, labels)
+    
+    def __deepcopy__(self, memo):
+        return WaveTita(deepcopy(self.speech_enhancer, memo))
