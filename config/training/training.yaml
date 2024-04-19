@@ -10,16 +10,20 @@ train:
 
   losses:
     l1:
-      _target_: torch.nn.L1Loss
-      reduction: mean
+      _target_: loss.weighted_loss.WeightedLoss
+      loss:
+        _target_: torch.nn.L1Loss
+        reduction: mean
+        
+      weight: 1.0
       
-    l2:
-      _target_: torch.nn.MSELoss
-      reduction: mean
-
-
-  losses_weights:
-    l1: 0.5
+    l1:
+      _target_: loss.weighted_loss.WeightedLoss
+      loss:
+        _target_: torch.nn.MSELoss
+        reduction: mean
+        
+      weight: 0
 
 val:
   metrics:
