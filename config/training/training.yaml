@@ -17,7 +17,7 @@ train:
         
       weight: 1.0
       
-    l1:
+    l2:
       _target_: loss.weighted_loss.WeightedLoss
       loss:
         _target_: torch.nn.MSELoss
