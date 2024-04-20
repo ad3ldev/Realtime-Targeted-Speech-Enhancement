@@ -5,7 +5,7 @@ checkpoint_path:
 trainer_args: 
   max_steps: 100000
   accumulate_grad_batches: 1
-  check_val_every_n_epoch: 5
+  check_val_every_n_epoch: 1
   enable_progress_bar: False
 
 callbacks:

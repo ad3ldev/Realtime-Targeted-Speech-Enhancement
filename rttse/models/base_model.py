@@ -22,8 +22,7 @@ class BaseModel(pl.LightningModule):
     def setup_training(self, cfg):
         self.cfg = cfg
         self.save_hyperparameters(cfg, logger=False)
-
-        self.loss_weights = cfg['train'].get('loss_weights', {})    
+   
         self.losses = nn.ModuleDict(hydra.utils.instantiate(cfg['train']['losses']))
 
         self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['val']['metrics']))
@@ -41,7 +40,7 @@ class BaseModel(pl.LightningModule):
         l_total = 0
         for loss_name, loss_fn in self.losses.items():
             # loss_name, loss_fn = list(loss.items())[0]
-            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y) * self.loss_weights.get(loss_name, 1)
+            loss_dict[f'{phase}/{loss_name}'] = loss_fn(y_hat, y)
             # Check if the result is a tuple
             if isinstance(loss_dict[f'{phase}/{loss_name}'], tuple):
                 loss_dict[f'{phase}/{loss_name}'] = sum(loss_dict[f'{phase}/{loss_name}'])
