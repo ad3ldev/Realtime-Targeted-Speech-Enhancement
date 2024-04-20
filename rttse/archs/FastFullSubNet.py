@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torchaudio as audio
 from torch.nn import functional
-from torchinfo import summary
 
 from utils.fastfullsubnetutils import BaseModel, SequenceModel, stft, istft, decompress_cIRM
 
@@ -161,20 +160,22 @@ class Model(BaseModel):
         enhanced: torch.Tensor = istft(
             (enhanced_real, enhanced_imag), length=noisy.size(-1), input_type="real_imag", **self.stft_args
         )
-        enhanced = enhanced.squeeze(0)
+        if enhanced.dim() == 3:
+            enhanced = enhanced.squeeze(0)
         return enhanced
     
     # fmt: off
-    def forward(self, noisy):
+    def forward(self, data):
         """Forward pass.
 
         Args:
-            noisy: noisy waveform
+            data: dictionary containing the noisy waveform.
 
         Returns:
             The real part and imag part of the enhanced spectrogram with shape [B, 2, F, T].
 
         Notes:
+            noisy: noisy waveform
             mix_mag: noisy magnitude spectrogram with shape [B, 1, F, T].
             B - batch size
             C - channel
@@ -183,6 +184,8 @@ class Model(BaseModel):
             T - time
             F_s - sub-band frequency
         """
+        noisy = data['noisy']
+        noisy = noisy.squeeze(1)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
@@ -226,19 +229,18 @@ class Model(BaseModel):
 
         # Output
         output = dec_output[:, :, :, self.look_ahead:]
-        
         # Full band CRM mask
         output = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
         amp = torch.iinfo(torch.int32).max
         enhanced = 0.8 * amp * output / torch.max(torch.abs(output))
-        if enhanced.dim() == 1:
-            enhanced = enhanced.unsqueeze(0)
+        enhanced = enhanced.unsqueeze(1)
         return enhanced
         
 # fmt: on
 if __name__ == "__main__":
     import time
     import argparse
+    from torchinfo import summary
     
     args = argparse.ArgumentParser()
     args.add_argument("--source", type=str)
@@ -250,7 +252,7 @@ if __name__ == "__main__":
         if args.source:
             noisy, sr = audio.load(args.source)
         else:
-            noisy = torch.rand(1, 16000)
+            noisy = torch.rand(1, 1, 160000)
         model = Model()
 
         # Load the updated state dict into the new model
@@ -259,10 +261,10 @@ if __name__ == "__main__":
             model.load_state_dict(old_state_dict, strict=False)
         
         start = time.time()
-        enhanced = model(noisy)
+        enhanced = model({'noisy': noisy})
         print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
         end = time.time()
         print(f'inference time: {end - start:.4f} s')
         if args.target:
             audio.save(args.target, enhanced, sr)
-        summary(model, (1, 16000), device="cpu")
+        summary(model, input_data={'data':{'noisy': noisy}}, device="cpu")
