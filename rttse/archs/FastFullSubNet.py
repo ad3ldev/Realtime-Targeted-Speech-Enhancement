@@ -229,10 +229,9 @@ class Model(BaseModel):
 
         # Output
         output = dec_output[:, :, :, self.look_ahead:]
+
         # Full band CRM mask
-        output = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
-        amp = torch.iinfo(torch.int32).max
-        enhanced = 0.8 * amp * output / torch.max(torch.abs(output))
+        enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
         enhanced = enhanced.unsqueeze(1)
         return enhanced
         
@@ -243,22 +242,22 @@ if __name__ == "__main__":
     from torchinfo import summary
     
     args = argparse.ArgumentParser()
-    args.add_argument("--source", type=str)
-    args.add_argument("--target", type=str)
-    args.add_argument("--checkpoint", type=str)
+    args.add_argument("--source", type=str, help='Source wav file path')
+    args.add_argument("--target", type=str, help='Target wav file path')
+    args.add_argument("--checkpoint", type=str, help='Model checkpoint path')
     args = args.parse_args()
 
     with torch.no_grad():
         if args.source:
             noisy, sr = audio.load(args.source)
+            noisy = noisy.unsqueeze(0)
         else:
             noisy = torch.rand(1, 1, 160000)
         model = Model()
-
         # Load the updated state dict into the new model
         if args.checkpoint:
             old_state_dict = torch.load(args.checkpoint, map_location="cpu")
-            model.load_state_dict(old_state_dict, strict=False)
+            model.load_state_dict(old_state_dict)
         
         start = time.time()
         enhanced = model({'noisy': noisy})
@@ -266,5 +265,6 @@ if __name__ == "__main__":
         end = time.time()
         print(f'inference time: {end - start:.4f} s')
         if args.target:
-            audio.save(args.target, enhanced, sr)
+            for i in range(enhanced.size(0)):
+                audio.save(args.target + f'_{i}.wav', enhanced[i], sr)
         summary(model, input_data={'data':{'noisy': noisy}}, device="cpu")
