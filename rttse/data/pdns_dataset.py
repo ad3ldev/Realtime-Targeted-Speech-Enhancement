@@ -226,11 +226,11 @@ class PDNSDataset(Dataset):
     #     }
 
 
-# def load_PDNSDataset(split, clean_path, noisy_path, synthesized_speakers_csv, reference_speakers_csv, crop_length_sec, batch_size, sample_rate, num_gpus=1):
+# def load_PDNSDataset(split, clean_paths, noisy_paths, dataset_speakers_paths, synthesized_speakers_paths, speaker_reference_paths, crop_length_sec, batch_size, sample_rate, num_gpus=1):
 #     """
 #     Get dataloader with distributed sampling
 #     """
-#     dataset = PDNSDataset(split=split, clean_path=clean_path, noisy_path=noisy_path, crop_length_sec=crop_length_sec, synthesized_speakers_csv=synthesized_speakers_csv, reference_speakers_csv=reference_speakers_csv, sr=sample_rate)                                                       
+#     dataset = PDNSDataset(split=split, clean_paths=clean_paths, noisy_paths=noisy_paths, synthesized_speakers_paths=synthesized_speakers_paths, crop_length_sec=crop_length_sec, dataset_speakers_paths=dataset_speakers_paths, speaker_reference_paths=speaker_reference_paths, sr=sample_rate)                                                       
 #     kwargs = {"batch_size": batch_size, "num_workers": 4, "pin_memory": False, "drop_last": False, "collate_fn": PDNSCollate()}
 
 #     if num_gpus > 1:
@@ -247,12 +247,11 @@ class PDNSDataset(Dataset):
 #     # Testing the PDNSDataset
 #     import argparse
 #     parser = argparse.ArgumentParser()
-#     # parser.add_argument('--root', help='Root directory of PDNS')
 #     parser.add_argument('--split', help='Split of the dataset')
-#     parser.add_argument('--clean_path', help='Path to the clean audio files')
-#     parser.add_argument('--noisy_path', help='Path to the noisy audio files')
-#     parser.add_argument('--synthesized_speakers_csv', help='Path to the synthesized speakers csv file')
-#     parser.add_argument('--reference_speakers_csv', help='Path to the reference speakers csv file')
+#     parser.add_argument('--clean_paths', help='Path to the clean audio files', nargs='+')
+#     parser.add_argument('--noisy_paths', help='Path to the noisy audio files', nargs='+')
+#     parser.add_argument('--dataset_speakers_paths', help='Path to the synthesized speakers csv file', nargs='+')
+#     parser.add_argument('--speaker_reference_paths', help='Path to the reference speakers csv file', nargs='+')
 #     parser.add_argument('--crop_length_sec', type=int, default=0, help='Length of the audio clip')
 #     parser.add_argument('--batch_size', type=int, default=4, help='Batch size')
 #     parser.add_argument('--sample_rate', type=int, default=41000, help='Sample rate')
@@ -261,7 +260,7 @@ class PDNSDataset(Dataset):
     
 #     print(args)
     
-#     trainloader = load_PDNSDataset(split=args.split, clean_path=args.clean_path, noisy_path=args.noisy_path, synthesized_speakers_csv=args.synthesized_speakers_csv, reference_speakers_csv=args.reference_speakers_csv, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
+#     trainloader = load_PDNSDataset(split=args.split, clean_paths=args.clean_paths, noisy_paths=args.noisy_paths, dataset_speakers_paths=args.dataset_speakers_paths, speaker_reference_paths=args.speaker_reference_paths, crop_length_sec=args.crop_length_sec, batch_size=args.batch_size, sample_rate=args.sample_rate, num_gpus=args.num_gpus)
     
 #     print(f"Number of steps: {len(trainloader)}")
 
