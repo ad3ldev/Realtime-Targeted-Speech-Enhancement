@@ -152,8 +152,6 @@ class Model(BaseModel):
         return input
 
     def full_band_crm_mask(self, pred_crm: torch.Tensor, noisy: torch.Tensor, noisy_real, noisy_imag):
-        pred_crm = pred_crm.permute(0, 2, 3, 1)
-
         pred_crm = decompress_cIRM(pred_crm)
         enhanced_real = pred_crm[..., 0] * noisy_real - pred_crm[..., 1] * noisy_imag
         enhanced_imag = pred_crm[..., 1] * noisy_real + pred_crm[..., 0] * noisy_imag
@@ -229,7 +227,8 @@ class Model(BaseModel):
 
         # Output
         output = dec_output[:, :, :, self.look_ahead:]
-
+        output = output.permute(0, 2, 3, 1)
+        
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
         enhanced = enhanced.unsqueeze(1)
