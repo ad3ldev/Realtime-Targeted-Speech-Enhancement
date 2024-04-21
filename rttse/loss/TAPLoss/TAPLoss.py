@@ -3,7 +3,7 @@ from TAP_estimator import AcousticEstimator
 from typing import *
 
 class AcousticLoss(torch.nn.Module):
-    def __init__(self, loss_type: str, acoustic_model_path: str, device = 'cuda'):
+    def __init__(self, loss_type: str, acoustic_model_path = 'rttse/loss/TAPLoss/TAP_estimator_model_v0.pt', device = 'cuda'):
         """
         Args:
             loss_type (str):
