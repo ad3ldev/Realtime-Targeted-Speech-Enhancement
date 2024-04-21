@@ -8,7 +8,6 @@ class WeightedLoss(nn.Module):
 
     def forward(self, input, target):
         loss = self.loss(input, target)
-        print("Loss: ", loss)
-        print("Loss shape: ", loss.shape)
-        print("Weight: ", self.weight)
+        if isinstance(loss, tuple):
+            return map(lambda x: x * self.weight, loss)
         return loss * self.weight
