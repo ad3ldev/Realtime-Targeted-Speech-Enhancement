@@ -7,4 +7,8 @@ class WeightedLoss(nn.Module):
         self.weight = weight
 
     def forward(self, input, target):
-        return self.loss(input, target) * self.weight
+        loss = self.loss(input, target)
+        print("Loss: ", loss)
+        print("Loss shape: ", loss.shape)
+        print("Weight: ", self.weight)
+        return loss * self.weight
