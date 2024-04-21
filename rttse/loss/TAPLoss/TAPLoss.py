@@ -1,5 +1,5 @@
 import torch
-from TAP_estimator import AcousticEstimator
+from loss.TAPLoss.TAP_estimator import AcousticEstimator
 from typing import *
 
 class AcousticLoss(torch.nn.Module):
