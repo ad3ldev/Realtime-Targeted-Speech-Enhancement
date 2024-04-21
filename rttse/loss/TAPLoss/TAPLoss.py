@@ -41,6 +41,8 @@ class AcousticLoss(torch.nn.Module):
             acoustic_loss (torch.FloatTensor):
                 Loss value corresponding to the selected loss type.
         """
+        print("clean_waveform.shape: ", clean_waveform.shape)
+        print("enhan_waveform.shape: ", enhan_waveform.shape)
         
         if   mode == "train":
             self.estimate_acoustics.train()
@@ -71,6 +73,9 @@ class AcousticLoss(torch.nn.Module):
             * torch.abs(enhan_acoustics - clean_acoustics))
         else:
             raise ValueError("Invalid loss_type {}".format(self.loss_type))
+        
+        print("acoustic_loss: ", acoustic_loss)
+        print("acoustic_loss.shape: ", acoustic_loss.shape)
     
         return acoustic_loss            
            
