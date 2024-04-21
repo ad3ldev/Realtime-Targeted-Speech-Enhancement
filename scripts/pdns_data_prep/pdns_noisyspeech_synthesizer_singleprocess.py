@@ -28,13 +28,10 @@ from scipy.io import wavfile
 
 import csv
 import random
-random.seed(5)
+# random.seed(5)
 
 MAXTRIES = 50
 MAXFILELEN = 100
-
-np.random.seed(5)
-random.seed(5)
 
 def add_pyreverb(clean_speech, rir):
     #
@@ -445,6 +442,7 @@ def main_gen(params):
                                                                     clean=noisy_snr2, 
                                                                     noise=noise, 
                                                                     snr=snr3)
+            
             # unexpected clipping
             #if is_clipped(clean_snr) or is_clipped(noise_snr2) or is_clipped(noisy_snr2):
             if is_clipped(clean_snr) or is_clipped(noisy_snr):
@@ -604,6 +602,11 @@ def main_body():
     params['silence_length'] = float(cfg['silence_length'])
     params['total_hours'] = float(cfg['total_hours'])
     
+    # seed
+    params['seed'] = int(cfg['seed']) if cfg['seed'] != None else 5
+    np.random.seed(params['seed'])
+    random.seed(params['seed'])
+    
     # clean singing speech
     params['clean_singing'] = str(cfg['clean_singing'])
     params['singing_choice'] = int(cfg['singing_choice'])
@@ -710,7 +713,7 @@ def main_body():
     # Create log directory if needed, and write log files of clipped and low activity files
     log_dir = utils.get_dir(cfg, 'log_dir', 'Logs')
 
-    utils.write_log_file(log_dir, 'source_files.csv', zip([i for i in range(len(clean_primary_source_files))], clean_primary_source_files, clean_secondary_source_files, noise_source_files))
+    utils.write_log_file(log_dir, 'source_files.csv', zip([i for i in range(params['fileindex_start'], params['fileindex_end']+1)], clean_primary_source_files, clean_secondary_source_files, noise_source_files))
     utils.write_log_file(log_dir, 'clipped_files.csv', zip(clean_clipped_files, noise_clipped_files))
     utils.write_log_file(log_dir, 'low_activity_files.csv', \
                          zip(clean_low_activity_files, noise_low_activity_files))
