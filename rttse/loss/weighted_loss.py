@@ -9,5 +9,5 @@ class WeightedLoss(nn.Module):
     def forward(self, input, target):
         loss = self.loss(input, target)
         if isinstance(loss, tuple):
-            return map(lambda x: x * self.weight, loss)
+            return tuple(map(lambda x: x * self.weight, loss))
         return loss * self.weight
