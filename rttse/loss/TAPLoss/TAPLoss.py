@@ -41,8 +41,13 @@ class AcousticLoss(torch.nn.Module):
             acoustic_loss (torch.FloatTensor):
                 Loss value corresponding to the selected loss type.
         """
+        if clean_waveform.dim() != 2:
+            clean_waveform = clean_waveform.squeeze(dim=1)
         
-        if   mode == "train":
+        if enhan_waveform.dim() != 2:
+            enhan_waveform = enhan_waveform.squeeze(dim=1)
+
+        if mode == "train":
             self.estimate_acoustics.train()
         elif mode == "eval":
             self.estimate_acoustics.eval()     
