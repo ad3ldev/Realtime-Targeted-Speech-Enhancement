@@ -50,7 +50,7 @@ opt:
         - /kaggle/input/dns-2023-dev-testset-speaker/noisy
       speaker_reference_paths: 
         - /kaggle/input/dns-2023-dev-testset-speaker/speaker_reference_16000
-      sr: 44100
+      sr: 16000
 
     dataloader:
       batch_size: 1
