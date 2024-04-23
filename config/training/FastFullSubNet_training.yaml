@@ -1,0 +1,29 @@
+train:
+  optim:
+    _target_: torch.optim.Adam
+    lr: 1e-4
+    weight_decay: 0.0
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    T_max: 100000
+    eta_min: 1e-6
+  
+  losses:
+
+  cIRM_losses:
+    mse:
+      _target_: torch.nn.MSELoss
+
+  losses_weights:
+
+val:
+  metrics:    
+    DNSMOS:
+      _target_: metrics.dnsmos_local.DNSMOSScore
+      fs: 16000
+      personalized_MOS: True
+  
+  cIRM_metrics:
+    mse:
+      _target_: torch.nn.MSELoss

@@ -6,9 +6,9 @@ from torch.nn import functional
 import numpy as np
 EPSILON = np.finfo(np.float32).eps
 
-class BaseModel(nn.Module):
+class FullSubNetBaseModel(nn.Module):
     def __init__(self):
-        super(BaseModel, self).__init__()
+        super(FullSubNetBaseModel, self).__init__()
 
     @staticmethod
     def freq_unfold(input, num_neighbors):
@@ -582,7 +582,6 @@ def stft(y, n_fft, hop_length, win_length):
     imag = complex_stft.imag
     return mag, phase, real, imag
 
-
 def istft(features, n_fft, hop_length, win_length, length=None, input_type="complex"):
     """Wrapper of the official torch.istft.
 
@@ -637,7 +636,6 @@ def compress_cIRM(mask, K=10, C=0.1):
         mask = K * (1 - np.exp(-C * mask)) / (1 + np.exp(-C * mask))
     return mask
 
-
 def decompress_cIRM(mask, K=10, limit=9.9):
     """Decompress cIRM from [-K ~ K] to [-inf, +inf].
 
@@ -656,3 +654,27 @@ def decompress_cIRM(mask, K=10, limit=9.9):
     )
     mask = -K * torch.log((K - mask) / (K + mask))
     return mask
+
+def build_complex_ideal_ratio_mask(
+    noisy_real, noisy_imag, clean_real, clean_imag
+) -> torch.Tensor:
+    """Build the complex ratio mask.
+
+    Args:
+        noisy: [B, F, T], noisy complex-valued stft coefficients
+        clean: [B, F, T], clean complex-valued stft coefficients
+
+    References:
+        https://ieeexplore.ieee.org/document/7364200
+
+    Returns:
+        [B, F, T, 2]
+    """
+    denominator = torch.square(noisy_real) + torch.square(noisy_imag) + EPSILON
+
+    mask_real = (noisy_real * clean_real + noisy_imag * clean_imag) / denominator
+    mask_imag = (noisy_real * clean_imag - noisy_imag * clean_real) / denominator
+
+    complex_ratio_mask = torch.stack((mask_real, mask_imag), dim=-1)
+
+    return compress_cIRM(complex_ratio_mask, K=10, C=0.1).squeeze(1)

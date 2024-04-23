@@ -3,9 +3,9 @@ import torch.nn as nn
 import torchaudio as audio
 from torch.nn import functional
 
-from utils.fastfullsubnetutils import BaseModel, SequenceModel, stft, istft, decompress_cIRM
+from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
 
-class Model(BaseModel):
+class Model(FullSubNetBaseModel):
     def __init__(
         self,
         look_ahead=2,
@@ -232,7 +232,7 @@ class Model(BaseModel):
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
         enhanced = enhanced.unsqueeze(1)
-        return enhanced
+        return enhanced, output
         
 # fmt: on
 if __name__ == "__main__":
@@ -259,7 +259,7 @@ if __name__ == "__main__":
             model.load_state_dict(old_state_dict)
         
         start = time.time()
-        enhanced = model({'noisy': noisy})
+        enhanced, cRM = model({'noisy': noisy})
         print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
         end = time.time()
         print(f'inference time: {end - start:.4f} s')
