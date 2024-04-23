@@ -61,7 +61,7 @@ class FullSubNetModel(BaseModel):
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
         if self.use_cIRM_metrics:
             cIRM = self.calculate_cIRM(x['noisy'], y)
-            metrics_dict = self.calculate_metrics(cIRM, cRM, 'val', metrics_dict)
+            metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
         self.log_dict(metrics_dict)
     
@@ -85,7 +85,7 @@ class FullSubNetModel(BaseModel):
         loss_dict[f'{phase}/l_total'] = l_total
         return loss_dict
     
-    def calculate_metrics(self, cIRM, cRM, phase, metrics_dict = OrderedDict()):
+    def calculate_cIRM_metrics(self, cIRM, cRM, phase, metrics_dict = OrderedDict()):
         for metric_name, metric_fn in self.cIRM_metrics.items():
             result = metric_fn(cIRM, cRM)
             if isinstance(result, dict):
