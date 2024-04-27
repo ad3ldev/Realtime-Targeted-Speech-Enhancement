@@ -13,7 +13,10 @@ train:
 
   cIRM_losses:
     mse:
-      _target_: torch.nn.MSELoss
+      _target_: loss.weighted_loss.WeightedLoss
+      loss:
+        _target_: torch.nn.MSELoss
+      weight: 1.0
 
   losses_weights:
 
