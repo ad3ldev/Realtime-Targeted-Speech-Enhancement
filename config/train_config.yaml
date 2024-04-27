@@ -13,10 +13,10 @@ logger:
     group:
 
 defaults:
-- data: random_data
-- model: simpleAE
-- training: training
-- trainer: trainer
+- data: PDNSDataSet
+- model: WaveTita
+- training: WaveTita_training
+- trainer: WaveTita_trainer
 
 
 

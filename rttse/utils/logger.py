@@ -5,15 +5,19 @@ Code from BasicSR
 import logging
 from omegaconf import OmegaConf
 import hydra
-from .dist_utils import master_only
+# from .dist_utils import master_only
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
-@master_only
+
+
+
+@rank_zero_only
 def init_tb_logger(save_dir):
     from pytorch_lightning.loggers import TensorBoardLogger
     tb_logger = TensorBoardLogger(save_dir, name='')
     return tb_logger
 
-@master_only
+@rank_zero_only
 def init_wandb_logger(opt):
     """We now only use wandb to sync tensorboard log."""
     import wandb
@@ -76,7 +80,6 @@ def init_logging(cfg):
     tb_logger = init_tb_logger(save_dir=hydra.core.hydra_config.HydraConfig.get().runtime.output_dir)
 
     return tb_logger
-
 
 
 

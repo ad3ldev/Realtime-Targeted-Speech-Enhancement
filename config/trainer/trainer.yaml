@@ -3,8 +3,9 @@ manual_seed: 0
 checkpoint_path: 
 
 trainer_args: 
-  max_epochs: 120
+  max_steps: 120000       ###### if not specified eta will not be calculated
   accumulate_grad_batches: 1
+  enable_progress_bar: False
 
 callbacks:
   ModelCheckpoint:

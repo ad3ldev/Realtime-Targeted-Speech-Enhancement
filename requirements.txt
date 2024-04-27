@@ -11,3 +11,18 @@ tqdm
 pesq
 pystoi
 wandb
+Cython
+nemo_toolkit[asr]
+speechbrain
+onnxruntime
+librosa
+onnx
+onnx2torch
+
+# PDNS Synthesis
+soundfile
+configparser
+argparse
+scipy
+pandas
+pathlib
