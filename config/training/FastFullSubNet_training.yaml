@@ -54,6 +54,10 @@ val:
       _target_: metrics.dnsmos_local.DNSMOSScore
       fs: 16000
       personalized_MOS: True
+    
+    l1:
+      _target_: torch.nn.L1Loss
+      reduction: mean
   
   cIRM_metrics:
     mse:
