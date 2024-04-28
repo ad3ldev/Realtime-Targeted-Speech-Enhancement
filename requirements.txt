@@ -1,6 +1,6 @@
 hydra-core
 numpy
-pytorch-lightning>=2.2.0
+pytorch-lightning
 tensorboard
 timm
 torch
