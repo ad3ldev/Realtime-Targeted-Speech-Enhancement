@@ -1,5 +1,6 @@
 import hydra
 import torch
+import torchaudio
 
 from collections import OrderedDict
 from torch import nn
@@ -38,7 +39,16 @@ class FullSubNetModel(BaseModel):
         
         self.use_cIRM_losses = len(self.cIRM_losses) > 0
         self.use_cIRM_metrics = len(self.cIRM_metrics) > 0
+    
+    def setup_testing(self, cfg):
+        self.cfg = cfg
+        self.save_hyperparameters(cfg, logger=False)
         
+        self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['metrics']))      
+        self.cIRM_metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['cIRM_metrics']))  
+        
+        self.use_cIRM_metrics = len(self.cIRM_metrics) > 0
+    
     def training_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
         
@@ -64,6 +74,21 @@ class FullSubNetModel(BaseModel):
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
         self.log_dict(metrics_dict)
+    
+    def test_step(self,  batch, batch_idx):
+        x, y = self.batch_adapter(batch)
+        y_hat, cRM = self.net(x)
+
+        metrics_dict = self.calculate_metrics(y_hat, y, 'test')
+        if self.use_cIRM_metrics:
+            cIRM = self.calculate_cIRM(x['noisy'], y)
+            metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'test', metrics_dict)
+        
+        if self.cfg.save_results:
+            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
+
+        self.log_dict(metrics_dict, sync_dist=True)
+
     
     def calculate_cIRM(self, noisy, clean) -> torch.Tensor:
         _, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
