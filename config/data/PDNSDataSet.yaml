@@ -52,3 +52,25 @@ opt:
       collate_fn:
         _target_: data.pdns_dataset.PDNSCollate # shuffle: True
       # pin_memory: True
+  
+  test:
+    dataset:
+      _target_: data.pdns_dataset.PDNSDataset
+      split: test
+      clean_paths: 
+      noisy_paths: 
+        - /kaggle/input/V5_BlindTestSet_mono/Track2_Speakerphone/noisy
+      speaker_reference_paths: 
+        - /kaggle/input/V5_BlindTestSet_mono/Track2_Speakerphone/enrol
+      sr: 16000
+      mode: all
+      seed: 42
+      reference_tensor: False
+      crop_length_sec: 0
+
+    dataloader:
+      batch_size: 1
+      num_workers: 4
+      collate_fn:
+        _target_: data.pdns_dataset.PDNSCollate # shuffle: True
+      # pin_memory: True

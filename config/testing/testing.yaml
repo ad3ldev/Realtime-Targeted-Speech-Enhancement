@@ -1,16 +1,15 @@
 manual_seed: 0
-save_results: False
-save_dir: ${hydra:run:dir}/output
-sample_rate: 44100
+save_results: True
+save_dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}/output
+sample_rate: 16000
 
 metrics:
-  l1:
-    _target_: torch.nn.L1Loss
-    reduction: mean
-    
-  l2:
-    _target_: torch.nn.MSELoss
-    reduction: mean
+  DNSMOS:
+    _target_: metrics.dnsmos_local.DNSMOSScore
+    fs: 16000
+    personalized_MOS: True
+
+cIRM_metrics:
 
 trainer_args:
   ckpt_path:
