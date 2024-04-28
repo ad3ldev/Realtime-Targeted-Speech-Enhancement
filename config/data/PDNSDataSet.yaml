@@ -59,9 +59,9 @@ opt:
       split: test
       clean_paths: 
       noisy_paths: 
-        - /kaggle/input/V5_BlindTestSet_mono/Track2_Speakerphone/noisy
+        - /kaggle/input/dns-2023-blind-testset-data/V5_BlindTestSet_mono/Track2_Speakerphone/noisy
       speaker_reference_paths: 
-        - /kaggle/input/V5_BlindTestSet_mono/Track2_Speakerphone/enrol
+        - /kaggle/input/dns-2023-blind-testset-data/V5_BlindTestSet_mono/Track2_Speakerphone/enrol
       sr: 16000
       mode: all
       seed: 42
