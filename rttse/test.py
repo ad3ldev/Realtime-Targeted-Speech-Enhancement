@@ -1,4 +1,5 @@
 import hydra
+import torch
 import os
 
 from omegaconf import OmegaConf
@@ -21,11 +22,8 @@ def setup_model(model_cfg, testing_cfg):
     model.setup_testing(testing_cfg)
 
     model.print_netowrk()
-
+    model.strict_loading = False # We don't want to load the loss state_dict
     return model
-
-
-
 
 @hydra.main(version_base=None, config_path="../config", config_name="test_config")
 def test_pipeline(cfg):
