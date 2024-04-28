@@ -67,12 +67,13 @@ class BaseModel(pl.LightningModule):
         return metrics_dict
 
     def batch_adapter(self, batch):
-        return batch, batch['clean']
+        y = batch['clean']
+        x = (batch['noisy'], batch['reference_path'])
+        return (x, y)
     
 
     def training_step(self, batch, batch_idx):
-        x, y = self.batch_adapter(batch)
-        
+        x, y = self.batch_adapter(batch)        
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
@@ -81,7 +82,6 @@ class BaseModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
-
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
@@ -99,7 +99,8 @@ class BaseModel(pl.LightningModule):
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         
         if self.cfg.save_results:
-            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
+            filename = f"{batch['noisy_filename']}_{batch['reference_filename']}"
+            torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
 
 
         self.log_dict(metrics_dict, sync_dist=True)

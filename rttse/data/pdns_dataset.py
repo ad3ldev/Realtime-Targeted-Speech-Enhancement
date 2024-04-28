@@ -205,7 +205,10 @@ class PDNSDataset(Dataset):
             "clean": clean_audio,
             "noisy": noisy_audio,
             "reference_path": reference_file,
-            "index": n
+            "index": n,
+            "clean_filename": os.path.basename(file[0]),
+            "noisy_filename": os.path.basename(file[1]),
+            "reference_filename": os.path.basename(file[2]) 
         }
         
         # Load reference audio if reference_tensor is True
