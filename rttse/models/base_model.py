@@ -2,6 +2,8 @@ from collections import OrderedDict
 
 import pytorch_lightning as pl
 import hydra
+import torchaudio
+
 from utils.console_logger import ConsoleLogger
 from torch import nn
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
@@ -26,6 +28,11 @@ class BaseModel(pl.LightningModule):
         self.losses = nn.ModuleDict(hydra.utils.instantiate(cfg['train']['losses']))
 
         self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['val']['metrics']))
+    
+    def setup_testing(self, cfg):
+        self.cfg = cfg
+        self.save_hyperparameters(cfg, logger=False)
+        self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['metrics']))
 
     @rank_zero_only
     def print_netowrk(self, stage=None):
@@ -90,9 +97,9 @@ class BaseModel(pl.LightningModule):
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
-
+        
         if self.cfg.save_results:
-            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(), self.cfg.sample_rate)
+            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
 
 
         self.log_dict(metrics_dict, sync_dist=True)

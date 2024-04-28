@@ -1,11 +1,15 @@
 import hydra
+import os
+
 from omegaconf import OmegaConf
 
 from pytorch_lightning import Trainer, seed_everything
 from utils.logger import get_env_info, init_logging
 from utils.logger import get_root_logger
 
-
+def setup_testing(testing_cfg):
+    if testing_cfg.save_dir is not None:
+        os.makedirs(testing_cfg.save_dir, exist_ok=True)
 
 def setup_datasets(data_cfg):
     data_loader = hydra.utils.instantiate(data_cfg)
@@ -42,6 +46,7 @@ def test_pipeline(cfg):
 
     model = setup_model(cfg.model, cfg.testing)
 
+    setup_testing(cfg.testing)
 
     trainer.test(model, data_loader, **cfg.testing.trainer_args)
 
