@@ -1,0 +1,6 @@
+_target_: models.base_model.BaseModel
+
+net:
+  _target_: archs.WaveTita.WaveTita
+  speech_enhancer:
+    _target_: archs.EmptyNet.EmptyNet
