@@ -86,9 +86,7 @@ class PersonalizedFastFullSubNet(FastFullSubNet):
     def subbands_reweighting(self, noisy, reference):
         b, c, f, t = reference.shape
         reference = reference.reshape(b*c, f, t)
-        print(reference.shape)
         reference = F.adaptive_avg_pool1d(reference, 1).squeeze(-1)
-        print(reference.shape)
         speaker_embedding = self.speaker_embedder(reference).unsqueeze(-1).reshape(b, c, f, 1)
         return noisy * speaker_embedding
 
@@ -151,7 +149,7 @@ if __name__ == "__main__":
         else:
             noisy = torch.rand(1, 1, 3*160000)
             reference = torch.rand(1, 1, 3 * 160000)
-        model = PersonalizedFastFullSubnet()
+        model = PersonalizedFastFullSubNet()
         # Load the updated state dict into the new model
         if args.checkpoint:
             old_state_dict = torch.load(args.checkpoint, map_location="cpu")
