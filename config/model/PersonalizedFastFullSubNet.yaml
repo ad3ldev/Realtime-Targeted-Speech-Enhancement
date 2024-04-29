@@ -19,6 +19,7 @@ net:
   hop_length: 256
 
 initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Fastfullsubnet_init_ckpt.pt
+strict: False
 n_ftt: ${model.net.n_ftt}
 win_length: ${model.net.win_length}
 hop_length: ${model.net.hop_length}

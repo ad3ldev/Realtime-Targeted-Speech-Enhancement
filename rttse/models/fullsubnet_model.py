@@ -12,6 +12,7 @@ class FullSubNetModel(BaseModel):
             self, 
             net, 
             initial_weights=None, 
+            strict=True,
             n_ftt=512, 
             win_length=512, 
             hop_length=256
@@ -19,7 +20,7 @@ class FullSubNetModel(BaseModel):
         super().__init__(net)
         if initial_weights is not None:
             initial_weights = torch.load(initial_weights)
-            self.net.load_state_dict(initial_weights) 
+            self.net.load_state_dict(initial_weights, strict=strict) 
         self.stft_args = {
             'n_fft': n_ftt,
             'win_length': win_length,
