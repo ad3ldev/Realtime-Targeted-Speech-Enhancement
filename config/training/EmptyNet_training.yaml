@@ -1,4 +1,9 @@
 train:
+  optim:
+    _target_: torch.optim.Adam
+    lr: 1e-4
+    weight_decay: 0.0
+    
   losses:
     l1:
       _target_: torch.nn.L1Loss
