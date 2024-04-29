@@ -3,8 +3,8 @@ import torch.nn as nn
 import torchaudio as audio
 from torch.nn import functional as F
 
-from rttse.utils.fastfullsubnetutils import stft
-from rttse.archs.FastFullSubNet import FastFullSubNet
+from utils.fastfullsubnetutils import stft
+from archs.FastFullSubNet import FastFullSubNet
 
 
 class PersonalizedFastFullSubnet(FastFullSubNet):
