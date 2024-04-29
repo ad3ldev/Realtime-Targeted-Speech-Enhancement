@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchaudio as audio
 from torch.nn import functional
 
-from rttse.utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
+from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
 
 class FastFullSubNet(FullSubNetBaseModel):
     def __init__(
