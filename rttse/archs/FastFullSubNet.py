@@ -3,9 +3,9 @@ import torch.nn as nn
 import torchaudio as audio
 from torch.nn import functional
 
-from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
+from rttse.utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
 
-class Model(FullSubNetBaseModel):
+class FastFullSubNet(FullSubNetBaseModel):
     def __init__(
         self,
         look_ahead=2,
@@ -252,7 +252,7 @@ if __name__ == "__main__":
             noisy = noisy.unsqueeze(0)
         else:
             noisy = torch.rand(1, 1, 160000)
-        model = Model()
+        model = FastFullSubNet()
         # Load the updated state dict into the new model
         if args.checkpoint:
             old_state_dict = torch.load(args.checkpoint, map_location="cpu")
