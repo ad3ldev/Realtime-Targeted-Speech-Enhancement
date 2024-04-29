@@ -44,6 +44,8 @@ class BaseModel(pl.LightningModule):
             # Check if the result is a tuple
             if isinstance(loss_dict[f'{phase}/{loss_name}'], tuple):
                 loss_dict[f'{phase}/{loss_name}'] = sum(loss_dict[f'{phase}/{loss_name}'])
+            elif isinstance(loss_dict[f'{phase}/{loss_name}'], dict):
+                loss_dict.update({f'{phase}/{loss_name}/{k}': v for k, v in loss_dict[f'{phase}/{loss_name}'].items()})
             l_total += loss_dict[f'{phase}/{loss_name}']
 
         loss_dict[f'{phase}/l_total'] = l_total
@@ -53,7 +55,9 @@ class BaseModel(pl.LightningModule):
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
             result = metric_fn(y_hat, y)
-            if isinstance(result, dict):
+            if isinstance(result, tuple):
+                metrics_dict[f'{phase}/{metric_name}'] = sum(result)
+            elif isinstance(result, dict):
                 metrics_dict.update({f'{phase}/{metric_name}/{k}': v for k, v in result.items()})
             else:
                 metrics_dict[f'{phase}/{metric_name}'] = result
