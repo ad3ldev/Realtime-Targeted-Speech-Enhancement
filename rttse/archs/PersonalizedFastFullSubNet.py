@@ -7,7 +7,7 @@ from utils.fastfullsubnetutils import stft
 from archs.FastFullSubNet import FastFullSubNet
 
 
-class PersonalizedFastFullSubnet(FastFullSubNet):
+class PersonalizedFastFullSubNet(FastFullSubNet):
     def __init__(
         self,
         look_ahead=2,
