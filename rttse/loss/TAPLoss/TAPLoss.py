@@ -3,7 +3,7 @@ from loss.TAPLoss.TAP_estimator import AcousticEstimator
 from typing import *
 
 class AcousticLoss(torch.nn.Module):
-    def __init__(self, loss_type: str, acoustic_model_path = 'rttse/loss/TAPLoss/TAP_estimator_model_v0.pt', device = 'cuda'):
+    def __init__(self, loss_type: str, acoustic_model_path = 'rttse/loss/TAPLoss/TAP_estimator_model_v0.pt', device = 'cuda', mode = 'train'):
         """
         Args:
             loss_type (str):
@@ -15,6 +15,7 @@ class AcousticLoss(torch.nn.Module):
         self.device       = device
         self.estimate_acoustics = AcousticEstimator()
         self.loss_type = loss_type
+        self.mode = mode
         if self.loss_type == "l2":
             self.l2 = torch.nn.MSELoss()
         elif self.loss_type == "l1":
@@ -24,8 +25,8 @@ class AcousticLoss(torch.nn.Module):
         self.estimate_acoustics.load_state_dict(model_state_dict)
         self.estimate_acoustics.to(device)
         
-    def __call__(self, clean_waveform, enhan_waveform, mode="train"):
-        return self.forward(clean_waveform, enhan_waveform, mode)
+    def __call__(self, clean_waveform, enhan_waveform):
+        return self.forward(clean_waveform, enhan_waveform, self.mode)
 
     def forward(self, clean_waveform: torch.FloatTensor, enhan_waveform: torch.FloatTensor, mode: str) -> torch.FloatTensor:
 
