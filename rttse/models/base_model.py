@@ -102,8 +102,10 @@ class BaseModel(pl.LightningModule):
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         
         if self.cfg.save_results:
-            filename = f"{batch['noisy_filename']}_{batch['reference_filename']}"
-            torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
+            y_hat = y_hat.cpu()
+            for i, clip in enumerate(y_hat):
+                filename = f"{batch['noisy_filename'][i]}"
+            torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", clip, self.cfg.sample_rate)
 
 
         self.log_dict(metrics_dict, sync_dist=True)
