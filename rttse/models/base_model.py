@@ -68,8 +68,11 @@ class BaseModel(pl.LightningModule):
 
     def batch_adapter(self, batch):
         y = batch['clean']
-        x = (batch['noisy'], batch['reference_path'])
-        return (x, y)
+        
+        # Remove the clean key from the batch as the model should not see it
+        batch.pop('clean')
+        
+        return (batch, y)
     
 
     def training_step(self, batch, batch_idx):
