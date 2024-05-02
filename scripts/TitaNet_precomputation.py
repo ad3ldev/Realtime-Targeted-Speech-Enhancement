@@ -34,7 +34,7 @@ def main():
     parser.add_argument('--output_sources', type=str, default='embeddings_sources.csv', help='Path to the output file containing the sources')
     args = parser.parse_args()
     
-    reference_paths = pd.read_csv(args.reference_paths_csv)['reference_path'].tolist()
+    reference_paths = pd.read_csv(args.reference_paths_csv)['filename'].tolist()
     embeddings, embeddings_sources = compute_embeddings(reference_paths)
     save_embeddings(embeddings, args.output_embeddings)
     embeddings_sources.to_csv(args.output_sources, index=False)
