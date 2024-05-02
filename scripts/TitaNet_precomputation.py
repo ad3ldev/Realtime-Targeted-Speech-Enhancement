@@ -24,8 +24,8 @@ def compute_embeddings(reference_paths, start_index = 0):
         embeddings_sources.loc[embeddings_sources['source_path'] == reference_paths[i], 'index'] = i
     return embeddings, embeddings_sources
 
-def save_embeddings(embeddings, path):
-    torch.save(embeddings, path)
+def save_embeddings(embeddings: torch.Tensor, path):
+    torch.save(embeddings.cpu(), path)
 
 def main():
     parser = argparse.ArgumentParser()
