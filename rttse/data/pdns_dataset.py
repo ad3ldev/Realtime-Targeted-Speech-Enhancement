@@ -187,8 +187,10 @@ class PDNSDataset(Dataset):
                 clean_audio = clean_audio[start:(start + crop_length)]
             assert len(clean_audio) == len(noisy_audio), "Length of clean: " + file[0] + " and noisy audio: " + file[1] + " does not match"
             clean_audio = clean_audio.unsqueeze(0)
+            clean_filename = os.path.basename(file[0])
         else:
             clean_audio, clean_sr = None, None 
+            clean_filename = None
         
         noisy_audio = noisy_audio.unsqueeze(0)
 
@@ -206,7 +208,7 @@ class PDNSDataset(Dataset):
             "noisy": noisy_audio,
             "reference_path": reference_file,
             "index": n,
-            "clean_filename": os.path.basename(file[0]),
+            "clean_filename": clean_filename,
             "noisy_filename": os.path.basename(file[1]),
             "reference_filename": os.path.basename(file[2]) 
         }
