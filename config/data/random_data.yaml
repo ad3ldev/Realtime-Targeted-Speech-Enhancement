@@ -26,3 +26,15 @@ opt:
       num_workers: 2
       # shuffle: True
       # pin_memory: True
+
+  test:
+    dataset:
+      _target_: data.RandomSet.RandomDataSet
+      num_samples: 100
+      transforms: 
+  
+    dataloader:
+      batch_size: 1
+      num_workers: 2
+      # shuffle: True
+      # pin_memory: True

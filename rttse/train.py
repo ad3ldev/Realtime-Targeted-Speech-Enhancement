@@ -8,6 +8,7 @@ from utils.logger import get_root_logger
 
 
 
+
 def setup_datasets(data_cfg):
     data_loader = hydra.utils.instantiate(data_cfg)
     return data_loader
@@ -32,7 +33,7 @@ def setup_trainer(trainer_cfg, tb_logger):
 
 
 
-@hydra.main(version_base=None, config_path="../config", config_name="config")
+@hydra.main(version_base=None, config_path="../config", config_name="train_config")
 def train_pipeline(cfg):
     logger = get_root_logger()
 
