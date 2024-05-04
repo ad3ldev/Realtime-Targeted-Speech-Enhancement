@@ -22,8 +22,24 @@ def setup_model(model_cfg, testing_cfg):
     model.setup_testing(testing_cfg)
 
     model.print_netowrk()
-    model.strict_loading = False # We don't want to load the loss state_dict
+
     return model
+
+def setup_checkpoint(testing_cfg):
+    if testing_cfg.trainer_args['ckpt_path'] is None:
+        return
+    
+    chkpt = torch.load(testing_cfg.trainer_args['ckpt_path'])
+    
+    # Remove keys starting with 'losses.' from the state_dict and save it
+    state_dict = {k: v for k, v in chkpt['state_dict'].items() if not k.startswith('losses.')}
+    chkpt['state_dict'] = state_dict
+
+    new_ckpt_path = testing_cfg.trainer_args['ckpt_path'] + '_without_losses'
+    torch.save(chkpt, new_ckpt_path)
+    testing_cfg.trainer_args['ckpt_path'] = new_ckpt_path
+    
+    return testing_cfg
 
 @hydra.main(version_base=None, config_path="../config", config_name="test_config")
 def test_pipeline(cfg):
@@ -43,9 +59,11 @@ def test_pipeline(cfg):
     data_loader = setup_datasets(cfg.data)
 
     model = setup_model(cfg.model, cfg.testing)
+    
+    cfg.testing = setup_checkpoint(cfg.testing)
 
     setup_testing(cfg.testing)
-
+    
     trainer.test(model, data_loader, **cfg.testing.trainer_args)
 
 if __name__ == "__main__":

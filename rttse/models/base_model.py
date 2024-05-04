@@ -67,10 +67,8 @@ class BaseModel(pl.LightningModule):
         return metrics_dict
 
     def batch_adapter(self, batch):
-        y = batch['clean']
-        
         # Remove the clean key from the batch as the model should not see it
-        batch.pop('clean')
+        y = batch.pop('clean')        
         
         return (batch, y)
     
@@ -101,15 +99,18 @@ class BaseModel(pl.LightningModule):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         
-        if self.cfg.save_results:
-            y_hat = y_hat.cpu()
-            for i, clip in enumerate(y_hat):
-                filename = f"{batch['noisy_filename'][i]}"
-            torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", clip, self.cfg.sample_rate)
-
+        self.save_results(batch, y_hat)
 
         self.log_dict(metrics_dict, sync_dist=True)
 
+    def save_results(self, batch, y_hat):
+        if not self.cfg.save_results:
+            return
+        
+        y_hat = y_hat.cpu()
+        for i, clip in enumerate(y_hat):
+            filename = f"{batch['noisy_filename'][i]}"
+        torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", clip, self.cfg.sample_rate)
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
