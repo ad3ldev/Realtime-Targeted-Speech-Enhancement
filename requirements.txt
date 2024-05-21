@@ -26,3 +26,6 @@ argparse
 scipy
 pandas
 pathlib
+
+# Streaming
+pyaudio
