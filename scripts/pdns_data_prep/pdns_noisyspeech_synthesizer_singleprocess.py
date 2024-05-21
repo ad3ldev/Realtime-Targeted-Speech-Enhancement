@@ -401,7 +401,10 @@ def main_gen(params):
             else:
                 samples_rir_ch = samples_rir
             
-            clean_reverb = add_pyreverb(clean, samples_rir_ch)
+            if params['add_reverb']:
+                clean_reverb = add_pyreverb(clean, samples_rir_ch)
+            else:
+                clean_reverb = clean
             chosen_clean_reverb.append(clean_reverb)
             chosen_clean_files_reverb.append(chosen_clean_files[i])
 
@@ -617,6 +620,7 @@ def main_body():
     params['upper_t60'] = float(cfg['upper_t60'])
     params['rir_table_csv'] = str(cfg['rir_table_csv'])
     params['clean_speech_t60_csv'] = str(cfg['clean_speech_t60_csv'])
+    params['add_reverb'] = utils.str2bool(cfg['add_reverb'])
 
     if cfg['fileindex_start'] != 'None' and cfg['fileindex_start'] != 'None':
         params['num_files'] = int(cfg['fileindex_end'])-int(cfg['fileindex_start'])
@@ -685,7 +689,7 @@ def main_body():
     for path in Path(cfg['rir_dir']).rglob('*.wav'):
         rirfilenames.append(str(path.resolve()))
 
-    shuffle(rirfilenames)
+    shuffle(rirfilenames) 
     params['myrir'] = rirfilenames
     
     if 'noise_csv' in cfg.keys() and cfg['noise_csv'] != 'None':
