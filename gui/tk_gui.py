@@ -84,7 +84,7 @@ sliderFrame.pack(fill='x', side="bottom")
 
 ##############################################
 
-# Upload reference Component (Dry/Wet) ##########################
+# Upload reference Component ##########################
 def upload_audio():
     file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.mp3 *.wav *.m4a")])
     if file_path:
