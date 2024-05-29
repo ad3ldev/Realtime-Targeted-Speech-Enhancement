@@ -20,10 +20,10 @@ class InputDeviceComponent:
 
     def create_input_device_dropdown(self):
         input_devices = self.get_input_devices()
-        self.input_device_label = ttk.Label(self.root, text="Select Input Device", padding=int(self.padding_val))
+        self.input_device_label = ttk.Label(self.root, text="Select Input Device")
         self.input_device_dropdown = ttk.Combobox(self.root, values=input_devices, textvariable=self.input_device_var, state="readonly")
-        self.input_device_label.place(relx=0.05, anchor='nw')
-        self.input_device_dropdown.place(relx=0.05, rely=0.1, anchor='nw')
+        self.input_device_label.place(relx=0.05, rely=0.05, anchor='nw')
+        self.input_device_dropdown.place(relx=0.05, rely=0.15, anchor='nw')
 
     def apply_styles(self):
         style = ttk.Style()
