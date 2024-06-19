@@ -61,7 +61,7 @@ class FullSubNetModel(BaseModel):
             cIRM = self.calculate_cIRM(x['noisy'], y)
             loss_dict = self.calculate_cIRM_loss(cIRM, cRM, 'train', loss_dict)
         
-        self.log_dict(loss_dict, on_step=True, on_epoch=True)
+        self.log_dict(loss_dict, on_step=True, on_epoch=True, sync_dist=True)
         return loss_dict['train/l_total']
     
     def validation_step(self, batch, batch_idx):
@@ -74,7 +74,7 @@ class FullSubNetModel(BaseModel):
             cIRM = self.calculate_cIRM(x['noisy'], y)
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
-        self.log_dict(metrics_dict)
+        self.log_dict(metrics_dict, sync_dist=True)
     
     def test_step(self,  batch, batch_idx):
         x, y = self.batch_adapter(batch)
