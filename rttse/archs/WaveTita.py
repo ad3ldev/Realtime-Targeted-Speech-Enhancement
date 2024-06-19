@@ -29,4 +29,4 @@ class WaveTita(torch.nn.Module):
         return self.speech_enhancer(noisy_audio, labels)
     
     def __deepcopy__(self, memo):
-        return WaveTita(deepcopy(self.speech_enhancer, memo))
+        return WaveTita(deepcopy(self.speech_enhancer, memo), self.speaker_embedder)
