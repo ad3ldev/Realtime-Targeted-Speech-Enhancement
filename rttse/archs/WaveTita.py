@@ -3,7 +3,7 @@ from torch import Tensor
 
 import torch
 
-from rttse.embedders.EmbedderWrapper import EmbedderWrapper
+from embedders.EmbedderWrapper import EmbedderWrapper
 
 from utils.logger import get_root_logger
 

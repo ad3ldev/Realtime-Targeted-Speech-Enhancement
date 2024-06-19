@@ -1,4 +1,4 @@
-from rttse.embedders.EmbedderWrapper import EmbedderWrapper
+from embedders.EmbedderWrapper import EmbedderWrapper
 from nemo.collections.asr.models import EncDecSpeakerLabelModel
 from torch import Tensor
 

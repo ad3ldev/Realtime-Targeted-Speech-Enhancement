@@ -1,4 +1,4 @@
-from rttse.embedders.EmbedderWrapper import EmbedderWrapper
+from embedders.EmbedderWrapper import EmbedderWrapper
 from speechbrain.inference.speaker import EncoderClassifier
 from torch import Tensor
 import torchaudio
