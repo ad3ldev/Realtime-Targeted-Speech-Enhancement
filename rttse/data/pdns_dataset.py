@@ -9,8 +9,6 @@ import torchaudio
 from typing import Literal
 from utils.path_utils import get_file_name_without_extension
 from torch.utils.data import Dataset
-from utils.logger import get_root_logger
-
 
 
 class PDNSCollate:
@@ -236,7 +234,6 @@ class PDNSDataset(Dataset):
                 reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
             if reference_audio.shape[1] > self.reference_length:
                 reference_audio = reference_audio[:, :self.reference_length]
-            get_root_logger().info(f"Reference audio shape: {reference_audio.shape} added to the data.")
             data["reference"] = reference_audio
         
         return data
