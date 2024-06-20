@@ -3,6 +3,8 @@ from speechbrain.inference.speaker import EncoderClassifier
 from torch import Tensor, cuda
 import torchaudio
 
+from utils.logger import get_root_logger
+
 class ECAPATDNN(EmbedderWrapper):
     def __init__(self):
         super(ECAPATDNN, self).__init__()
@@ -12,4 +14,6 @@ class ECAPATDNN(EmbedderWrapper):
     def embed(self, file_path: str) -> Tensor: 
         signal, _ = torchaudio.load(file_path)
         signal = signal.to(self.device)
+        get_root_logger().info(f'ECAPA-TDNN signal tensor device: {signal.device}')
+        get_root_logger().info(f'ECAPA-TDNN model device: {self.model.device}')
         return self.model.encode_batch(signal).squeeze(0)
