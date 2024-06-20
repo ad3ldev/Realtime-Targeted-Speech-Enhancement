@@ -22,7 +22,9 @@ class PDNSCollate:
         noisy_filename = [data["noisy_filename"] for data in batch]
         clean_filename = [data["clean_filename"] for data in batch]
         reference_filename = [data["reference_filename"] for data in batch]
-        reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+        min_length = min([data["reference"].size(1) for data in batch if "reference" in data])
+        reference = torch.stack([data["reference"][0, :min_length] for data in batch if "reference" in data]) if "reference" in batch[0] else None
+        # reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
         index = [data["index"] for data in batch]
         return {
             "clean": clean_audio,
@@ -52,7 +54,8 @@ class PDNSDataset(Dataset):
         crop_length_sec = 0, 
         mode: Literal['all', 'ps', 'pn', 'psn'] = 'all',
         seed: int = 42,
-        reference_tensor: bool = False
+        reference_tensor: bool = False,
+        reference_length_sec: int = 30
         ):
         """ Creates a PDNSDataset object.
 
@@ -82,7 +85,8 @@ class PDNSDataset(Dataset):
         self.crop_length_sec = crop_length_sec
         self.sr = sr
         self.reference_tensor = reference_tensor
-        
+        self.reference_length = reference_length_sec * sr
+
         noisy_files = [os.path.join(noisy_path, file) for noisy_path in noisy_paths for file in os.listdir(noisy_path)]
         clean_files = [os.path.join(clean_path, file) for clean_path in clean_paths for file in os.listdir(clean_path)] if split != 'test' else [None]*len(noisy_files) # No clean files for test
         
@@ -224,6 +228,8 @@ class PDNSDataset(Dataset):
         # Load reference audio if reference_tensor is True
         if self.reference_tensor:
             reference_audio, reference_sr = torchaudio.load(reference_file)
+            if len(reference_audio) > self.reference_length:
+                reference_audio = reference_audio[:, :self.reference_length]
             if reference_sr != self.sr:
                 reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
             data["reference"] = reference_audio
