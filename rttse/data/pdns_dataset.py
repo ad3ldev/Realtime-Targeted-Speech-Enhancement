@@ -26,7 +26,7 @@ class PDNSCollate:
         reference_filename = [data["reference_filename"] for data in batch]
         if "reference" in batch[0]:
             min_length = min([data["reference"].shape[1] for data in batch])
-            reference = torch.stack([data["reference"][:, :min_length] for data in batch])
+            reference = torch.stack([data["reference"][0, :min_length] for data in batch])
         else:
             reference = None
         index = [data["index"] for data in batch]
@@ -59,7 +59,7 @@ class PDNSDataset(Dataset):
         mode: Literal['all', 'ps', 'pn', 'psn'] = 'all',
         seed: int = 42,
         reference_tensor: bool = False,
-        reference_length_sec: int = 30
+        reference_length_sec: int = 10
         ):
         """ Creates a PDNSDataset object.
 
@@ -232,12 +232,12 @@ class PDNSDataset(Dataset):
         # Load reference audio if reference_tensor is True
         if self.reference_tensor:
             reference_audio, reference_sr = torchaudio.load(reference_file)
-            if len(reference_audio) > self.reference_length:
-                reference_audio = reference_audio[:, :self.reference_length]
             if reference_sr != self.sr:
                 reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
-            data["reference"] = reference_audio
+            if reference_audio.shape[1] > self.reference_length:
+                reference_audio = reference_audio[:, :self.reference_length]
             get_root_logger().info(f"Reference audio shape: {reference_audio.shape} added to the data.")
+            data["reference"] = reference_audio
         
         return data
 
