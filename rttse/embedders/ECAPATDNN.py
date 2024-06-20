@@ -10,28 +10,20 @@ class ECAPATDNN(EmbedderWrapper):
         super(ECAPATDNN, self).__init__()
         self.device = "cuda" if cuda.is_available() else "cpu"
         self.model = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", run_opts={"device": self.device})
+        self.model.hparams.label_encoder.ignore_len()
 
-    def embed(self, file_path: str) -> Tensor: 
-        signal, _ = torchaudio.load(file_path)
+    def embed(self, audio_file_path: str) -> Tensor: 
+        signal, _ = torchaudio.load(audio_file_path)
         signal = signal.to(self.device)
         get_root_logger().info(f'ECAPA-TDNN signal tensor shape: {signal.shape}')
         get_root_logger().info(f'ECAPA-TDNN signal tensor device: {signal.device}')
         get_root_logger().info(f'ECAPA-TDNN model device: {self.model.device}')
         return self.model.encode_batch(signal).squeeze(1)
 
-    def embed_batch(self, file_paths: list, audio: Tensor = None) -> Tensor:
-        if audio is not None:
-            return self.model.encode_batch(audio).squeeze(1)
+    def embed_batch(self, audio_file_paths: list, audios: Tensor = None) -> Tensor:
+        if audios is None:
+            get_root_logger().error("Audios tensor is None!")
         
-        audios_tensors = []
-        min_length = float('inf')
+        get_root_logger().info(f'ECAPA-TDNN audios tensor shape: {audios.shape}')
 
-        for file_path in file_paths:
-            signal = torchaudio.load(file_path)[0].to(self.device)
-            min_length = min(min_length, signal.size(1))
-            audios_tensors.append(signal)
-
-        for i in range(len(audios_tensors)):
-            audios_tensors[i] = audios_tensors[i][:, :min_length]
-
-        return self.model.encode_batch(cat(audios_tensors)).squeeze(1)
+        return self.model.encode_batch(audios).squeeze(1)
