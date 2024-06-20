@@ -8,6 +8,7 @@ from utils.logger import get_root_logger
 class ECAPATDNN(EmbedderWrapper):
     def __init__(self):
         super(ECAPATDNN, self).__init__()
+        self.device = "cuda" if cuda.is_available() else "cpu"
         self.model = EncoderClassifier(run_opts={'device': self.device}).from_hparams(source="speechbrain/spkrec-ecapa-voxceleb")
 
     def embed(self, file_path: str) -> Tensor: 
