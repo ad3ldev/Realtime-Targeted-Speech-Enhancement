@@ -23,8 +23,9 @@ class WaveTita(torch.nn.Module):
     def forward(self, data) -> Tensor:
         noisy_audio = data["noisy"].to(self.device)
         reference_pathes = data["reference_path"]
+        references = data["reference"]
 
-        labels = self.speaker_embedder.embed_batch(reference_pathes).to(self.device)
+        labels = self.speaker_embedder.embed_batch(reference_pathes, references).to(self.device)
 
         return self.speech_enhancer(noisy_audio, labels)
     
