@@ -19,7 +19,10 @@ class ECAPATDNN(EmbedderWrapper):
         get_root_logger().info(f'ECAPA-TDNN model device: {self.model.device}')
         return self.model.encode_batch(signal).squeeze(1)
 
-    def embed_batch(self, file_paths: list) -> Tensor:
+    def embed_batch(self, file_paths: list, audio: Tensor = None) -> Tensor:
+        if audio is not None:
+            return self.model.encode_batch(audio).squeeze(1)
+        
         audios_tensors = []
         min_length = float('inf')
 
