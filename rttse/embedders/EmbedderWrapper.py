@@ -1,6 +1,9 @@
-from torch import Tensor, zeros
+from torch import Tensor, zeros, nn
 
-class EmbedderWrapper:
+class EmbedderWrapper(nn.Module):
+    def __init__(self):
+        super(EmbedderWrapper, self).__init__()
+
     def embed(self, file_path: str) -> Tensor:
         pass
 

@@ -5,6 +5,7 @@ import torchaudio
 
 class ECAPATDNN(EmbedderWrapper):
     def __init__(self):
+        super(ECAPATDNN, self).__init__()
         self.model = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb")
 
     def embed(self, file_path: str) -> Tensor: 
