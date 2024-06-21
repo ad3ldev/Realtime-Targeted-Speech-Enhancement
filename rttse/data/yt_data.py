@@ -21,7 +21,7 @@ class YTData(torch.utils.data.Dataset):
         return os.path.join(self.data_root, path)
 
 
-    def load_audio(self, path, normalize=False):
+    def load_audio(self, path, normalize=True):
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         if sr != self.sr:
             audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
