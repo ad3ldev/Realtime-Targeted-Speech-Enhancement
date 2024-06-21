@@ -26,6 +26,9 @@ class YTData(torch.utils.data.Dataset):
 
 
     def load_audio(self, path, normalize=True, crop=False):
+        if len(path) == 0:
+            return torch.zeros(int(self.crop_length_sec * self.sr))
+            
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         audio = audio.squeeze()
         if sr != self.sr:
