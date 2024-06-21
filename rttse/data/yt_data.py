@@ -24,7 +24,7 @@ class YTData(torch.utils.data.Dataset):
     def load_audio(self, path, normalize=True):
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         if sr != self.sr:
-            audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
+            audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio.float())
             # audio = F.resample(audio, sr, self.sr, dtype=audio.dtype)
         
         if self.crop_length_sec:
