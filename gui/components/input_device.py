@@ -1,6 +1,8 @@
 from tkinter import ttk
 import customtkinter as ctk
 from sounddevice import query_devices, default
+import config.objects_placement as op
+import pyaudio
 
 class InputDeviceComponent:
     padding_val = 10
@@ -11,19 +13,41 @@ class InputDeviceComponent:
         self.create_input_device_dropdown()
         self.apply_styles()
 
+    
     def get_input_devices(self):
-        devices = query_devices()
-        return [device["name"] for device in devices]
+        p = pyaudio.PyAudio()
+        input_devices = []
+        for i in range(p.get_device_count()):
+            device_info = p.get_device_info_by_index(i)
+            # if(device_info['maxInputChannels'] > 0 and device_info['hostApi'] == 0):
+            if(0 < device_info['maxInputChannels'] < 3):
+                input_devices.append(device_info['name'])
+        return input_devices
 
     def get_default_input_device(self):
-        return default.device
+        default_device_index = default.device[0]  # Default input device index
+        devices = query_devices()
+        if default_device_index < len(devices):
+            return devices[default_device_index]['name']
+        return ""
 
     def create_input_device_dropdown(self):
         input_devices = self.get_input_devices()
         self.input_device_label = ttk.Label(self.root, text="Select Input Device")
         self.input_device_dropdown = ttk.Combobox(self.root, values=input_devices, textvariable=self.input_device_var, state="readonly")
-        self.input_device_label.place(relx=0.05, rely=0.05, anchor='nw')
-        self.input_device_dropdown.place(relx=0.05, rely=0.15, anchor='nw')
+        self.input_device_label.place(relx=op.InputDevice_Label_relx, 
+                                      rely=op.InputDevice_Label_rely, 
+                                      anchor=op.InputDevice_Label_anchor)
+        self.input_device_dropdown.place(relx=op.InputDevice_Dropdown_relx,
+                                         rely=op.InputDevice_Dropdown_rely,
+                                         anchor=op.InputDevice_Dropdown_anchor)
+        # Bind the resizing event
+        self.root.bind("<Configure>", self.adjust_combobox_width)
+
+    # Method to adjust the combobox width
+    def adjust_combobox_width(self, event):
+        new_width = int(self.root.winfo_width() * 0.12)  # Adjust 0.5 to the desired percentage
+        self.input_device_dropdown.config(width=new_width)
 
     def apply_styles(self):
         style = ttk.Style()

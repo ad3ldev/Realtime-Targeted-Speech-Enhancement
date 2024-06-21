@@ -3,6 +3,7 @@ import tkinter as tk
 import customtkinter as ctk
 from dao import create_connection, create_table, insert_reference_audio
 from components import InputDeviceComponent, NoiseSuppressionComponent, ReferenceVoiceComponent
+import config.objects_placement as op
 
 class MainApplication:
     resize_after_id = None
@@ -21,8 +22,12 @@ class MainApplication:
         self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id)
         self.input_device_component = InputDeviceComponent(root)
 
-
         self.apply_initial_styles()
+
+        self.save_user_button = ttk.Button(self.root, text="Save", command=self.submit, style="Custom.TButton")
+        self.save_user_button.place(relx=op.submit_button_relx,
+                                    rely=op.submit_button_rely,
+                                    anchor=op.submit_button_anchor)
 
 
     def apply_initial_styles(self, font_size=12):
@@ -51,6 +56,9 @@ class MainApplication:
         height = self.root.winfo_height()    
         # print(width, height)
         self.adjust_font_size(width, height)
+
+    def submit(self):
+        pass
 
 def main():
     root = ctk.CTk()
