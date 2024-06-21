@@ -9,7 +9,7 @@ import torchaudio.transforms as T
 import numpy as np
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, mix_levels=(0.667, 0.444, 0.296, 0.1)):
+    def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
@@ -18,6 +18,8 @@ class YTData(torch.utils.data.Dataset):
 
         with open(data_manifest, "r") as f:
             self.data = json.load(f)
+            if take:
+                self.data = self.data[:take]
 
     def get_data_path(self, path):
         return os.path.join(self.data_root, path)
