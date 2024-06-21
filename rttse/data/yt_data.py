@@ -15,8 +15,8 @@ class YTCollate:
     def __call__(self, batch):
         clean_audio = torch.stack([data["clean"] for data in batch])
         noisy_audio = torch.stack([data["noisy"] for data in batch])
-        reference = [data["reference"] for data in batch]
-        index = [data["index"] for data in batch]
+        reference = torch.stack([data["reference"] for data in batch])
+        index = torch.stack([data["index"] for data in batch])
         return {
             "clean": clean_audio,
             "noisy": noisy_audio,
