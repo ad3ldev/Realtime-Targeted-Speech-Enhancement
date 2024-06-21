@@ -142,7 +142,7 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
 
     
     # fmt: off
-    def forward(self, data):
+    def forward(self, reference):
         """Forward pass.
 
         Args:
@@ -161,9 +161,8 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
             T - time
             F_s - sub-band frequency
         """
-        noisy = data['reference']
-        noisy = noisy.squeeze(1)
-        mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
+        reference = reference.squeeze(1)
+        mix_mag, _, reference_real, reference_imag = stft(reference, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
         mix_mag = functional.pad(mix_mag, [0, self.look_ahead])  # Pad the look ahead
