@@ -6,6 +6,8 @@ import torchaudio
 import torchaudio.functional as F
 import torchaudio.transforms as T
 
+import numpy as np
+
 class YTData(torch.utils.data.Dataset):
     def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, mix_levels=(0.667, 0.444, 0.296, 0.1)):
         self.data = data_manifest
@@ -23,18 +25,20 @@ class YTData(torch.utils.data.Dataset):
 
     def load_audio(self, path, normalize=True, crop=False):
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
+        audio = audio.squeeze()
         if sr != self.sr:
-            audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio.float())
+            audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
             # audio = F.resample(audio, sr, self.sr, dtype=audio.dtype)
         
         if crop and self.crop_length_sec:
             crop_length = int(self.crop_length_sec * self.sr)
-            assert crop_length < len(audio)
+            assert crop_length < len(audio), path
 
             # Random crop
             if crop_length > 0:
-                start = torch.random.randint(low=0, high=len(audio) - crop_length + 1)
+                start = np.random.randint(low=0, high=len(audio) - crop_length + 1)
                 audio = audio[start:(start + crop_length)]
+                assert len(audio) == crop_length
 
         return audio
 
@@ -49,9 +53,11 @@ class YTData(torch.utils.data.Dataset):
 
         mix_level = random.choices(self.mix_levels, k=1)[0]
 
-        mixed = aClean[0] + mix_level * bClean[0]
+        mixed = aClean + mix_level * bClean
+        
+        print(mixed.shape)
 
-        return aRef[0], mixed, aClean, aRef[1]
+        return aRef, mixed, aClean
 
     
     def __getitem__(self, idx):
