@@ -88,7 +88,8 @@ class YTData(torch.utils.data.Dataset):
         data = {
             "clean": sample[2],
             "noisy": sample[1],
-            "reference": sample[0]
+            "reference": sample[0],
+            "index": idx
         }
         return data
 
