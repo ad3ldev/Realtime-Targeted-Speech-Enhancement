@@ -29,4 +29,4 @@ class PFFSNWrapper(torch.nn.Module):
         return self.speech_enhancer({"noisy": noisy_audio, "reference_subbands": reference_subbands})
     
     def __deepcopy__(self, memo):
-        return PFFSNWrapper(deepcopy(self.speech_enhancer, memo))
+        return PFFSNWrapper(deepcopy(self.speech_enhancer, self.speaker_embedder, memo))
