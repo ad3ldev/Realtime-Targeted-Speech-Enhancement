@@ -26,9 +26,6 @@ class YTData(torch.utils.data.Dataset):
 
 
     def load_audio(self, path, normalize=True, crop=False):
-        if path[-1] == '/':
-            return torch.zeros(1)
-            
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         audio = audio.squeeze()
         if sr != self.sr:
@@ -52,8 +49,13 @@ class YTData(torch.utils.data.Dataset):
         ## mix AClean, BClean with one of 3 ratios (0.667, 0.444, 0.296)
         ## return ARef, mixed, AClean
         aRef   = self.load_audio(data_record['speakerAReference'])
-        aClean = self.load_audio(data_record['speakerAClean'], crop=True)
+
         bClean = self.load_audio(data_record['speakerBClean'], crop=True)
+
+        if data_record['speakerAClean'][-1] != '/':
+            aClean = self.load_audio(data_record['speakerAClean'], crop=True)
+        else:
+            aClean = 0 * bClean
 
 
         mix_level = random.choices(self.mix_levels, k=1)[0]
