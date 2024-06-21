@@ -8,6 +8,22 @@ import torchaudio.transforms as T
 
 import numpy as np
 
+class YTCollate:
+    def __init__(self):
+        pass
+    
+    def __call__(self, batch):
+        clean_audio = torch.stack([data["clean"] for data in batch])
+        noisy_audio = torch.stack([data["noisy"] for data in batch])
+        reference = [data["reference"] for data in batch]
+        index = [data["index"] for data in batch]
+        return {
+            "clean": clean_audio,
+            "noisy": noisy_audio,
+            "reference": reference,
+            "index": index
+        }
+
 class YTData(torch.utils.data.Dataset):
     def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
         self.data = data_manifest
@@ -72,8 +88,7 @@ class YTData(torch.utils.data.Dataset):
         data = {
             "clean": sample[2],
             "noisy": sample[1],
-            "reference": sample[0],
-            "index": idx
+            "reference": sample[0]
         }
         return data
 
