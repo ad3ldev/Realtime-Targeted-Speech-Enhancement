@@ -7,17 +7,14 @@ from embedders.EmbedderWrapper import EmbedderWrapper
 
 from utils.logger import get_root_logger
 
-class WaveTita(torch.nn.Module):
+class PSuperModel(torch.nn.Module):
     def __init__(self, speech_enhancer, speech_embedder: EmbedderWrapper, initial_weights=None, strict=True, *args, **kwargs) -> None:
-        super(WaveTita, self).__init__(*args, **kwargs)
+        super(PSuperModel, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = speech_embedder
         self.speech_enhancer = speech_enhancer
         if initial_weights:
-            if(self.device == 'cpu'):
-                self.speech_enhancer.load_state_dict(torch.load(initial_weights, map_location=torch.device('cpu')), strict=strict)
-            else:
-                self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)
+            self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)
             get_root_logger().info(f"Loaded weights from {initial_weights}")
 
     def detect_device(self) -> str:
@@ -33,4 +30,4 @@ class WaveTita(torch.nn.Module):
         return self.speech_enhancer(noisy_audio, labels)
     
     def __deepcopy__(self, memo):
-        return WaveTita(deepcopy(self.speech_enhancer, memo), self.speaker_embedder)
+        return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder)

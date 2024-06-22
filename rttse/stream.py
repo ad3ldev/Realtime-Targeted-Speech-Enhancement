@@ -4,11 +4,11 @@ import torch
 import hydra
 import time
 
-import keyboard
+# import keyboard
 
-from archs.WaveTita import WaveTita
+from embedders.TitaNet import TitaNet
 
-mode = "enhance"
+mode = "original"
 
 
 def select_output_device(py_audio):
@@ -16,9 +16,10 @@ def select_output_device(py_audio):
     for i in range(py_audio.get_device_count()):
         if (
             "CABLE Input" in py_audio.get_device_info_by_index(i)["name"]
-            or "VB-Cable" in py_audio.get_device_info_by_index(i)["name"]
+            or "BlackHole 2ch" in py_audio.get_device_info_by_index(i)["name"]
         ):
             output_index = i
+            print("Virtual cable found at index", i)
             break
     print("Virtual cable found at index", i)
     return output_index
@@ -56,8 +57,7 @@ def change_mode():
 
 # TODO: Use TitaNet or separate it using config
 def load_speaker_embedder():
-    wave_tita = WaveTita(None)
-    return wave_tita.speaker_embedder
+    return TitaNet()
 
 
 def setup_model(model_cfg):
@@ -87,11 +87,11 @@ def stream_pipeline(cfg):
     model = setup_model(cfg.model).to(device)
     speaker_embedder = load_speaker_embedder()
 
-    embedding = speaker_embedder.get_embedding(select_reference_audio()).to(device)
+    embedding = speaker_embedder.embed(select_reference_audio()).to(device)
 
     window_length_ms = cfg.streaming.window_size / cfg.streaming.fs * 1000
 
-    keyboard.on_press_key("m", lambda _: change_mode())
+    # keyboard.on_press_key('m', lambda _: change_mode())
 
     # Testing
     # import torchaudio
@@ -126,6 +126,8 @@ def stream_pipeline(cfg):
             output=True,
             output_device_index=output_index,
         )
+        input_stream.read(10000)
+
         i = 0
         while input_stream.is_active():
             # Read audio data from the stream

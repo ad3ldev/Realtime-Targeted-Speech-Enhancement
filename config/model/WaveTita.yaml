@@ -1,7 +1,7 @@
 _target_: models.base_model.BaseModel
 
 net:
-  _target_: archs.WaveTita.WaveTita
+  _target_: archs.PSuperModel.PSuperModel
   initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Waveformer_init_ckpt.pt
   speech_enhancer:
     _target_: archs.Waveformer.Net
