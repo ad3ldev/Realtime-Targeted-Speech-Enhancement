@@ -15,9 +15,13 @@ def select_output_device(py_audio):
     output_index = -1
     for i in range(py_audio.get_device_count()):
         if "CABLE Input" in py_audio.get_device_info_by_index(i)["name"]:
-            print("Virtual cable found at index", i)
             output_index = i
+            print("Virtual cable found at index", i)
+        elif "VB-Cable" in py_audio.get_device_info_by_index(i)["name"]:
+            output_index = i
+            print("Virtual cable found at index", i)
             break
+
     return output_index
 
 
