@@ -19,6 +19,7 @@ opt:
 
   val:
     dataset:
+      _target_: data.yt_data.YTData
       data_manifest: "scripts/yt_data/data_manifest.json"
       data_root: ""
       crop_length_sec: 3
