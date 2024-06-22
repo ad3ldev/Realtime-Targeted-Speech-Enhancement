@@ -5,10 +5,10 @@ from torch import Tensor, zeros
 class TitaNet(EmbedderWrapper):
     def __init__(self):
         super(TitaNet, self).__init__()
-        self.__load_model()
+        self.__setup_model()
         self.embedding_dim = 192
     
-    def __load_model(self):
+    def __setup_model(self):
         self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
         for param in self.speaker_embedder.parameters():
             param.requires_grad = False
