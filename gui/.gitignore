@@ -1,0 +1,20 @@
+# Exclude audio files directory
+audio_files/
+
+# Exclude sqlite_commands.txt
+sqlite_commands.txt
+
+# Python-related ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Environment-related ignores
+.env
+*.env
+
+# OS-specific ignores
+.DS_Store
+Thumbs.db
