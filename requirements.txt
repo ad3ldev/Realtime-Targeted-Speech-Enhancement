@@ -12,7 +12,7 @@ pesq
 pystoi
 wandb
 Cython
-nemo_toolkit[asr]
+# nemo_toolkit[asr]
 speechbrain
 onnxruntime
 librosa
@@ -29,3 +29,9 @@ pathlib
 
 # Streaming
 pyaudio
+keyboard
+
+# GUI
+customtkinter
+sounddevice
+

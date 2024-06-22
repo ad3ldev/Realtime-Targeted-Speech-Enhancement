@@ -2,8 +2,13 @@ from tkinter import ttk
 import tkinter as tk
 import customtkinter as ctk
 from dao import create_connection, create_table, insert_reference_audio
-from components import InputDeviceComponent, NoiseSuppressionComponent, ReferenceVoiceComponent
+from components import (
+    InputDeviceComponent,
+    NoiseSuppressionComponent,
+    ReferenceVoiceComponent,
+)
 import config.objects_placement as op
+
 
 class MainApplication:
     resize_after_id = None
@@ -24,11 +29,14 @@ class MainApplication:
 
         self.apply_initial_styles()
 
-        self.save_user_button = ttk.Button(self.root, text="Save", command=self.submit, style="Custom.TButton")
-        self.save_user_button.place(relx=op.submit_button_relx,
-                                    rely=op.submit_button_rely,
-                                    anchor=op.submit_button_anchor)
-
+        self.save_user_button = ttk.Button(
+            self.root, text="Save", command=self.submit, style="Custom.TButton"
+        )
+        self.save_user_button.place(
+            relx=op.submit_button_relx,
+            rely=op.submit_button_rely,
+            anchor=op.submit_button_anchor,
+        )
 
     def apply_initial_styles(self, font_size=12):
         style = ttk.Style()
@@ -40,7 +48,7 @@ class MainApplication:
 
     def adjust_font_size(self, width, height):
         base_font_size = 12
-        scaling_factor = min(width/400, height/300)
+        scaling_factor = min(width / 400, height / 300)
         new_font_size = int(base_font_size * scaling_factor)
         self.apply_initial_styles(new_font_size)
         self.noise_suppression_component.adjust_component_sizes(width, height)
@@ -48,23 +56,27 @@ class MainApplication:
     def on_resize(self, event):
         if self.resize_after_id is not None:
             self.root.after_cancel(self.resize_after_id)
-        self.resize_after_id = self.root.after(200, self.handle_resize, event.width, event.height)
+        self.resize_after_id = self.root.after(
+            200, self.handle_resize, event.width, event.height
+        )
 
     def handle_resize(self, width, height):
         self.root.update_idletasks()
         width = self.root.winfo_width()
-        height = self.root.winfo_height()    
+        height = self.root.winfo_height()
         # print(width, height)
         self.adjust_font_size(width, height)
 
     def submit(self):
         pass
 
+
 def main():
     root = ctk.CTk()
     ctk.set_appearance_mode("light")
     app = MainApplication(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
