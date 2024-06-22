@@ -1,0 +1,60 @@
+\section{LibriSpeech}
+LibriSpeech \cite{librispeech} is a corpus of approximately 1000 hours of 16kHz read English speech, prepared by Vassil Panayotov with the assistance of Daniel Povey. The data is derived from read audiobooks from the LibriVox project, and has been carefully segmented and aligned.
+
+The majority of the recordings are based on publicly available texts from Project Gutenberg.
+While the use of audiobooks to create synthetic voices has been studied in the past, as far as we know, there isn't a read speech corpus as large as the one we present here that is freely accessible in English and sufficient for training and testing speech recognition systems.
+
+The read speech data set LibriSpeech, which is derived from LibriVox's audiobooks, is presented in this study. The highly permissive CC BY 4.0 license makes the corpus freely available, and the open source Kaldi ASR toolbox has example scripts that show how well-performing acoustic models can be trained using this data.
+
+The dataset is mainly divided into 3 set with each of them being divided into a few different versions as shown in Table \ref{tab:librispeech-subsets}.
+
+\subsection{Training Set}
+There are 3 versions of the training set:
+\begin{itemize}
+    \item \textbf{train-clean-100}: 100 hours of “clean” speech
+    \item \textbf{train-clean-360}: 360 hours of “clean” speech
+    \item \textbf{train-other-500}: 500 hours of “other” speech
+\end{itemize}
+Where “clean” resembles a clean speech audio and “other” can have clean speech and also not so clear speech and might have noisier samples.
+
+\subsection{Development Set}
+There are 2 versions of the development set:
+\begin{itemize}
+    \item \textbf{dev-clean}: 5 hours of “clean” speech
+    \item \textbf{dev-other}: 5 hours of “other”, more challenging, speech
+\end{itemize}
+Where “clean” resembles a clean speech audio and “other” can have clean speech and also not so clear speech and might have noisier samples.
+
+\subsection{Test Set}
+There are 2 versions of the test set: 
+\begin{itemize}
+    \item \textbf{test-clean}: test set, “clean” speech
+    \item \textbf{test-other}: test set, “other” speech
+\end{itemize}
+Where “clean” resembles a clean speech audio and “other” can have clean speech and also not so clear speech and might have noisier samples.
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+      \hline
+      Subset & Hours & Per-speaker & Female   & Male     & Total \\
+             &       & Minutes     & Speakers & Speakers & Speakers \\
+      \hline
+      dev-clean & 5.4 & 8 & 20 & 20 & 40 \\
+      \hline
+      test-clean & 5.4 & 8 & 20 & 20 & 40 \\
+      \hline
+      dev-other & 5.3 & 10 & 16 & 17 & 33 \\
+      \hline
+      test-other & 5.1 & 10 & 17 & 16 & 33 \\
+      \hline
+      train-clean-100 & 100.6 & 25 & 125 & 126 & 251 \\
+      \hline
+      train-clean-360 & 363.6 & 25 & 439 & 482 & 921 \\
+      \hline
+      train-other-500 & 496.7 & 30 & 564 & 602 & 1166 \\
+      \hline
+    \end{tabular}
+    \caption{Data subsets in LibriSpeech}
+    \label{tab:librispeech-subsets}
+\end{table}

@@ -1,0 +1,24 @@
+# LaTeX temporary files
+*.aux
+*.log
+*.synctex.gz
+*.bbl
+*.blg
+*.out
+*.fdb_latexmk
+*.fls
+*.toc
+*.lot
+*.lof
+*.bcf
+*.run.xml
+
+# Compiled LaTeX documents
+*.pdf
+
+# Editor-specific files
+*.swp
+*.bak
+*~
+
+svg-inkscape/**

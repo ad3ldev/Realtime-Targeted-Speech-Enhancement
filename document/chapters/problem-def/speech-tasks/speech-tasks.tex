@@ -1,0 +1,58 @@
+% \section{Speech related tasks}
+A wide range of tasks related to speech processing exist. They revolve around manipulating and operating on spoken language signals \cite{mehrish2023}. The main challenge is to address the difficulties introduced in real-world conditions. In real-world conditions, noise and distortions take place, and fighting these conditions is the main goal of speech enhancement. Previously, algorithmic methods were used while now shifting towards deep learning-based algorithms to improve the speech signal. A related task is speech dereverberation, which removes the reverberant effect caused by enclosed areas.\\
+Another branch of tasks is audio separation tasks, where the goal is to extract specific or targeted audio sources from a mixed audio signal. This has several applications, not only in speech but also in music. Music source separation is a common application, where the goal is to extract specific sound sources such as vocals and musical instruments. Another vital example is speech separation, where the mixed signal consists of multiple speakers and the goal is to extract the voice of each speaker. It can also be targeted for a specific speaker voice, i.e., extracting that target voice exactly which is known as target speech extraction.\\
+There are other speech-related tasks that focus on operating on speech instead of manipulating it. Speech recognition translates the spoken speech into text. Speaker recognition and diarization focus on identifying and tracking speakers in the given signal. Speech embeddings attempt to convert the signal into low-dimensional vector representations, which allows tasks such as speaker verification and sentiment analysis to exist.
+
+\section{Speech Enhancement}
+Speech Enhancement is a signal processing task that involves improving the quality of speech signals captured under noisy or degraded conditions. Speech enhancement aims to improve the clarity, intelligibility, and listenability of speech signals, which can be employed for voice recognition, teleconferencing, and hearing aids, among other applications.\\ 
+The majority of recorded conversational speech signals have some kind of background noise that makes it difficult to understand, including tapping on a keyboard, dogs barking, or traffic noise. Therefore, improving speech is a crucial challenge in and of itself for hearing aids \cite{reddy2018}, audio and video calls \cite{reddy2019}, and automatic speech recognition (ASR) systems.
+In many of these applications, a fundamental requirement for a speech enhancement system is its ability to operate in real-time with minimal latency (online), preferably on cost-effective hardware integrated into communication devices.\\
+In this task, the input audio signal $i \in \mathbb{R}^T$ can be described as the summation of two signals, the clean speech signal $c \in \mathbb{R}^T$ and an additive noise signal $n \in \mathbb{R}^T$ where $T$ is the length of the signal. Meaning that $i=c+n$. The goal of this task is to find an enhancement function $f$ such that $f(i) \approx c$ \cite{defossez2020}.\\
+The significance of speech enhancement lies in its ability to improve speech signals in situations when other sources of interference, reverberation, or background noise degrade speech signals. In telecommunications, for instance, speech enhancement techniques are crucial for improving the quality of voice calls in noisy environments, ensuring seamless communication even in challenging conditions.
+Speech enhancement can be linked to audio separation tasks. However, they differ in their goals. Speech enhancement is only interested in getting an approximation of the clear speech signal, in contrast with audio separation which aims to disentangle and extract specific audio sources. The problem of Speech enhancement can be constructed as a source separation problem, with one of the sources always being a speaker and the other always being noise (the "noise" source can be modeled or disregarded entirely).
+
+% Speech enhancement finds widespread application across diverse domains, including but not limited to:
+
+% \begin{itemize}
+% \item Mobile Communication
+% \item Teleconferencing
+% \item Speech Recognition Systems
+% \item Hearing Aids
+% \end{itemize}
+
+\section{Speech Dereverberation}
+Reverberation is an audio disturbance that arises in enclosed areas due to repeated reflections and diffractions of sound off objects and walls. These numerous echoes amplify the direct sound and distort the temporal and spectral qualities of a speaker in a room. By placing a microphone close to the source of the relevant signal, its effect can be mitigated. But this isn't practical for "hand-free" applications, like men-machine communication, for example. A lot of applications that call for a distant sound pickup struggle when reverberation is present. This is true for automatic speaker verification and automatic speech recognition. Since reverberation can make speech fewer understandable, dereverberation can also be beneficial to listeners with hearing impairments \cite{lebart2001}.
+Speech dereverberation can be considered a subtask of speech enhancement since the reverberation effect can be considered as a part of the noise signal that the enhancement function is trying to eliminate.
+
+\section{Audio Source Separation}
+Audio source separation tasks are interested in the separation of a mixture of sounds into a set of separate sounds \cite{vincent2018}. These separate sounds are often from distinct sources. These sources can be humans, targeted humans, or musical instruments.
+In this task, we can say that given an input mixture signal $y(t)$ that is composed of N sources, $x_n$ (t), for $n=1..N$, such that $y(t) = \sum_{i=1}^{N} x_i(t)$. The goal of this task is to recover one or more $x(t)$.\\
+In this task, it is common for the mixture to have more sources than signals. As a result, source separation is considered an underdetermined problem, which means that there are fewer observations (the mixture) than needed outcomes (the required source(s)).\\
+There are different variations of this task which will be elaborated in the next sections.
+
+\section{Music Source Separation}
+Music source separation is one of the most popular examples of audio source separation. It aims to separate a complicated audio mixture into its component signals, isolating specific sound sources such as vocals, musical instruments, or other sound sources. The extraction of separate audio sources from a composite audio signal presents challenges and complications that cross multiple scientific fields.\\
+Music is considered a distinct problem from other types of source separation due to a variety of factors that make it notably difficult \cite{cano2019}:
+\begin{enumerate}
+    \item In music, sources are highly correlated, which means that all the sources frequently change at the same time.
+    \item Music is combined and processed in non-linear and aphysical ways. Because of modern recording techniques, any particular source in a mixture may never exist naturally in the real world. This is problematic since we rarely, if ever, know what processing was used on each source or the entire mixture.
+    \item Usually, the output of a music source separation system is employed in an end-user system making the quality bar significantly higher.
+\end{enumerate}
+
+\section{Speech Separation}
+Speech separation is by far the most common example of audio source separation. Speech separation's main goal is to separate the voices of 2 or more people who are talking at the same time. \\
+The human hearing system is extraordinary in its capacity to perceive speech even in noisy situations \cite{mesgarani2012}. To focus on the speaker we want to hear, we effortlessly filter away competing voices. This problem, known as the cocktail party problem led to the creation of advanced voice separation algorithms \cite{agrawal2023b}.\\
+Speech separation is not straightforward for machines to replicate \cite{agrawal2023a}. It has its challenges to overcome \cite{agrawal2023b}:
+\begin{enumerate}
+    \item When multiple people speak at the same time, their voices overlap and conceal each other, making it difficult to distinguish individual words. This is the main problem of speech separation, and it involves the use of algorithms to separate the overlapping audio streams.
+    \item Speech signals are dynamic, with pitch, intensity, and timbre changing all the time \cite{town2013}. Because of this non-stationarity, algorithms find it challenging to adjust and accurately distinguish various voices, especially when they share similar features.
+    \item Real-world recordings frequently include background and ambient noise such as traffic, machinery, or music, which further distort the target voice \cite{lee2015}. Algorithms must correctly recognize and filter these disturbances while not interfering with the target speech.
+    \item Speech separation algorithms must be resilient to changes in speaker characteristics such as gender, age, accent, and language. A model trained on one particular type of speaker might not operate effectively with different types, making generalized approaches difficult to develop.
+\end{enumerate}
+Several separation algorithms and techniques were developed for speech initially, and then got adopted into other fields, like music separation.
+
+\section{Target Speech Extraction}
+Speech extraction is the task to extract the human speech from a given audio signal. A variation of it is the target speech extraction (TSE) task, which extracts only the speech of a target voice. \\
+Handling interfering speakers is a key issue since target and non-target speech signals have similar features, making detection difficult. TSE isolates a target speaker's speech signal from a combination of numerous speakers with or without noises and reverberations. This makes it overlap with speech enhancement/denoising task. \\
+TSE can be possible by employing clues that identify the speaker in the mixture. A spatial indication showing the direction of the target speaker, a video of the speaker's lips, or a pre-recorded enrollment utterance from which their voice characteristics can be inferred are examples of such clues \cite{zmolikova2023}. \\
+TSE is a new topic of study that has gained popularity in recent years since it provides a practical solution to the cocktail party problem \cite{bronkhorst2015} and incorporates signal processing elements such as audio, visual, array processing, and deep learning.
