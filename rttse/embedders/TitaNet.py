@@ -5,8 +5,13 @@ from torch import Tensor, zeros
 class TitaNet(EmbedderWrapper):
     def __init__(self):
         super(TitaNet, self).__init__()
-        self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large')
+        self.__load_model()
         self.embedding_dim = 192
+    
+    def __load_model(self):
+        self.speaker_embedder = EncDecSpeakerLabelModel.from_pretrained(model_name='titanet_large').eval()
+        for param in self.speaker_embedder.parameters():
+            param.requires_grad = False
 
     def embed(self, audio_file_path: str) -> Tensor:
         return self.speaker_embedder.get_embedding(audio_file_path)
