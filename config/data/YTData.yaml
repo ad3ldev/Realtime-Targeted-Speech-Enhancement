@@ -17,17 +17,17 @@ opt:
       collate_fn:
         _target_: data.yt_data.YTCollate
 
-  # val:
-  #   dataset:
-  #     data_manifest: "scripts/yt_data/data_manifest.json"
-  #     data_root: ""
-  #     crop_length_sec: 3
-  #     take: 1000
+  val:
+    dataset:
+      data_manifest: "scripts/yt_data/data_manifest.json"
+      data_root: ""
+      crop_length_sec: 3
+      take: 1000
   
-  #   dataloader:
-  #     batch_size: 1
-  #     num_workers: 2
-  #     collate_fn:
-  #       _target_: data.yt_data.YTCollate
+    dataloader:
+      batch_size: 1
+      num_workers: 2
+      collate_fn:
+        _target_: data.yt_data.YTCollate
       # shuffle: True
       # pin_memory: True
