@@ -14,14 +14,13 @@ mode = "enhance"
 def select_output_device(py_audio):
     output_index = -1
     for i in range(py_audio.get_device_count()):
-        if "CABLE Input" in py_audio.get_device_info_by_index(i)["name"]:
+        if (
+            "CABLE Input" in py_audio.get_device_info_by_index(i)["name"]
+            or "VB-Cable" in py_audio.get_device_info_by_index(i)["name"]
+        ):
             output_index = i
-            print("Virtual cable found at index", i)
-        elif "VB-Cable" in py_audio.get_device_info_by_index(i)["name"]:
-            output_index = i
-            print("Virtual cable found at index", i)
             break
-
+    print("Virtual cable found at index", i)
     return output_index
 
 
