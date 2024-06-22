@@ -19,14 +19,11 @@ class PDNSCollate:
         clean_audio = torch.stack([data["clean"] for data in batch]) if batch[0]["clean"] is not None else None
         noisy_audio = torch.stack([data["noisy"] for data in batch])
         reference_path = [data["reference_path"] for data in batch]
-        noisy_filename = [data["noisy_filename"] for data in batch]
-        clean_filename = [data["clean_filename"] for data in batch]
-        reference_filename = [data["reference_filename"] for data in batch]
+        # references with different lengths
         if "reference" in batch[0]:
             min_length = min([data["reference"].shape[1] for data in batch])
-            reference = torch.stack([data["reference"][0, :min_length] for data in batch])
-        else:
-            reference = None
+            reference = torch.stack([data["reference"][:, :min_length] for data in batch])
+        # reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
         index = [data["index"] for data in batch]
         return {
             "clean": clean_audio,

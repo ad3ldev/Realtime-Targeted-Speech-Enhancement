@@ -1,0 +1,24 @@
+_target_: models.fullsubnet_model.FullSubNetModel
+
+net:
+  _target_: archs.FastFullSubNet.Model
+  look_ahead: 2
+  shrink_size: 2
+  sequence_model: LSTM
+  num_mels: 64
+  encoder_input_size: 257
+  bottleneck_hidden_size: 384
+  bottleneck_num_layers: 2
+  noisy_input_num_neighbors: 5
+  encoder_output_num_neighbors: 0
+  norm_type: offline_laplace_norm
+  weight_init: False
+  sr: 16000
+  n_ftt: 512
+  win_length: 512
+  hop_length: 256
+
+initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Fastfullsubnet_init_ckpt.pt
+n_ftt: ${model.net.n_ftt}
+win_length: ${model.net.win_length}
+hop_length: ${model.net.hop_length}
