@@ -103,4 +103,4 @@ class LogPredictionSamplesCallback(Callback):
             data = [wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000),
                     wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000),
                     wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)] 
-            get_wandb_logger().log({"sample_table", wandb.Table(columns=columns, data=data)})
+            wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
