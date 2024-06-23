@@ -73,6 +73,7 @@ class FullSubNetModel(BaseModel):
     
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
+        print("x:", x, "y:", y)
 
         y_hat, cRM = self.net(x)
 
