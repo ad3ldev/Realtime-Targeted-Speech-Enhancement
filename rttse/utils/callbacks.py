@@ -96,6 +96,8 @@ class LogPredictionSamplesCallback(Callback):
 
         # Let's log 20 sample image predictions from the first batch
         if batch_idx == 0:
+            print("batch: ", batch)
+            print("outputs: ", outputs)
             x, y = pl_module.batch_adapter(batch)
             columns = ["reference", "mix", "enhanced", "ground truth"]
             data = [
