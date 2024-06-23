@@ -97,11 +97,11 @@ class LogPredictionSamplesCallback(Callback):
         if batch_idx == 0:
             # print("batch: ", batch)
             # print("outputs: ", outputs)/
-            x, y = pl_module.batch_adapter(batch)
-            print("x:", x, "y:", y)
-            columns = ["reference", "mix", "enhanced"]
+            # x, y = pl_module.batch_adapter(batch)
+            print("x:", batch[1], "y:", batch[0])
+            columns = ["reference", "mix", "gt"]
             data = [
-                [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), wandb.Audio(y_i[0])] 
-                for x_i, y_i in list(zip(x[:self.num_samples], y[:self.num_samples]))
+                [wandb.Audio(b_i[2]), wandb.Audio(b_i[1]), wandb.Audio(b_i[0])] 
+                for b_i in batch[:self.num_samples]
             ]
             get_wandb_logger().log({"sample_table", wandb.Table(columns=columns, data=data)})
