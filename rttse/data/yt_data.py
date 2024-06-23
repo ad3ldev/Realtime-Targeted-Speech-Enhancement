@@ -92,7 +92,7 @@ class YTData(torch.utils.data.Dataset):
         #     "reference": sample[0],
         #     "index": idx
         # }
-        return sample[2]. sample[1], sample[0], idx
+        return sample[2], sample[1], sample[0], idx
 
     def __len__(self):
         return len(self.data)
