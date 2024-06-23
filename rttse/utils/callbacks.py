@@ -3,6 +3,9 @@ from utils.logger import get_root_logger
 from timm.utils.model import get_state_dict, unwrap_model
 from timm.utils.model_ema import ModelEmaV2
 
+from pytorch_lightning.loggers import WandbLogger
+import wandb
+
 class EMACallback(Callback):
     """
     Model Exponential Moving Average. Empirically it has been found that using the moving average
@@ -75,3 +78,28 @@ class EMACallback(Callback):
         for s_param, param in zip(shadow_parameters, parameters):
             if param.requires_grad:
                 param.data.copy_(s_param.data)
+
+
+class LogPredictionSamplesCallback(Callback):
+    def __init__(self, num_samples=20):
+        super().__init__()
+        self.logger = get_root_logger()
+        self.num_samples = num_samples
+
+    def on_validation_batch_end(
+        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx
+    ):
+        """Called when the validation batch ends."""
+
+        # `outputs` comes from `LightningModule.validation_step`
+        # which corresponds to our model predictions in this case
+
+        # Let's log 20 sample image predictions from the first batch
+        if batch_idx == 0:
+            x, y = batch
+            columns = ["reference", "mix", "enhanced", "ground truth"]
+            data = [
+                [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0], y_pred] 
+                for x_i, y_i, y_pred in list(zip(x[:self.num_samples], y[:self.num_samples], outputs[:self.num_samples])) 
+            ]
+            wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
