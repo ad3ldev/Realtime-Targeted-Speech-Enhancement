@@ -98,9 +98,12 @@ class LogPredictionSamplesCallback(Callback):
             # print("batch: ", batch)
             # print("outputs: ", outputs)/
             # x, y = pl_module.batch_adapter(batch)
-            print("x:", batch[1], "y:", batch[0])
-            columns = ["reference", "mix", "gt"]
-            data = [wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000),
-                    wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000),
-                    wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)] 
-            wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
+            # print("x:", batch[1], "y:", batch[0])
+            # columns = ["reference", "mix", "gt"]
+            # data = [wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000),
+            #         wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000),
+            #         wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)] 
+            # wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
+            wandb.log({"reference": wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"mix": wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"gt": wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)})
