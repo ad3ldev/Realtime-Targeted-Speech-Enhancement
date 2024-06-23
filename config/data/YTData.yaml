@@ -8,6 +8,8 @@ opt:
       data_manifest: "scripts/yt_data/train_data_manifest.json"
       data_root: ""
       length_sec: 3
+      output_mapper:
+        _target_: data.yt_data.TupleTransformer
 
     dataloader:
       batch_size: 2

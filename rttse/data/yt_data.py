@@ -25,18 +25,32 @@ class YTCollate:
             "index": index
         }
     
+class TupleTransform:
+    def __call__(self, sample, idx):
+        return sample[2], sample[1], sample[0], idx
+    
+class DictTransform:
+    def __call__(self, sample, idx):
+        return {
+            "clean": sample[2],
+            "noisy": sample[1],
+            "reference": sample[0],
+            "index": idx
+        }
+    
 def pad_to_length(audio, length):
     if len(audio) < length:
         return F_.pad(audio, (0, length - len(audio)))
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, sr=16000, length_sec=None, reference_length_sec=10, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
+    def __init__(self, data_manifest, data_root, output_mapper, sr=16000, length_sec=None, reference_length_sec=10, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
         self.length_sec = length_sec
         self.reference_length_sec = reference_length_sec
         self.mix_levels = mix_levels
+        self.output_mapper = output_mapper
 
         with open(data_manifest, "r") as f:
             self.data = json.load(f)
@@ -100,7 +114,7 @@ class YTData(torch.utils.data.Dataset):
         #     "index": idx
         # }
         # print("sample shape:", sample[0].shape, sample[1].shape, sample[2].shape)
-        return sample[2], sample[1], sample[0], idx
+        return self.output_mapper(sample, idx)
 
     def __len__(self):
         return len(self.data)
