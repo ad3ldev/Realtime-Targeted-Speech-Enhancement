@@ -9,7 +9,7 @@ opt:
       data_root: ""
       length_sec: 3
       output_mapper:
-        _target_: data.yt_data.TupleTransformer
+        _target_: data.yt_data.TupleTransform
 
     dataloader:
       batch_size: 2
