@@ -107,6 +107,7 @@ class BaseModel(pl.LightningModule):
 
 
     def on_train_batch_end(self, outputs, batch, batch_idx):
+        print("outputs: ", outputs)
         if self.trainer.global_step % self.trainer.log_every_n_steps == 0:
             self.console_logger.log_train_step(self.trainer, self.trainer.callback_metrics, self.optimizers())
 
