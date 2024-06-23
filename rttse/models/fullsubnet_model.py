@@ -52,13 +52,13 @@ class FullSubNetModel(BaseModel):
     
 
     def batch_adapter(self, batch):
-        print("batch:", batch)
+        # print("batch:", batch)
         return batch[1:], batch[0]
     
 
     def training_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
-        print("x:", x, "y:", y)
+        # print("x:", x, "y:", y)
         
         y_hat, cRM = self.net(x)
         
@@ -73,7 +73,7 @@ class FullSubNetModel(BaseModel):
     
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
-        print("x:", x, "y:", y)
+        # print("x:", x, "y:", y)
 
         y_hat, cRM = self.net(x)
 

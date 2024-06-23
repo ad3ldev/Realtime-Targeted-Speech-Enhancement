@@ -184,7 +184,7 @@ class PFFSNv2(FullSubNetBaseModel):
         """
         noisy = data['noisy']
         # noisy = noisy.squeeze(1)
-        print("noisy shape: ", noisy.shape)
+        # print("noisy shape: ", noisy.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4

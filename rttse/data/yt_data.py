@@ -92,7 +92,7 @@ class YTData(torch.utils.data.Dataset):
         #     "reference": sample[0],
         #     "index": idx
         # }
-        print("sample shape:", sample[0].shape, sample[1].shape, sample[2].shape)
+        # print("sample shape:", sample[0].shape, sample[1].shape, sample[2].shape)
         return sample[2], sample[1], sample[0], idx
 
     def __len__(self):
