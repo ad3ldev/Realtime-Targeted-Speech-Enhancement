@@ -232,7 +232,7 @@ class PFFSNv2(FullSubNetBaseModel):
         
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
-        enhanced = enhanced.unsqueeze(1)
+        # enhanced = enhanced.unsqueeze(1)
         return enhanced, output
         
 # fmt: on

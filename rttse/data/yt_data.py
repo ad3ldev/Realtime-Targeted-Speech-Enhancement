@@ -23,13 +23,17 @@ class YTCollate:
             "reference": reference,
             "index": index
         }
+    
+def pad_to_length(audio, length):
+    if len(audio) < length:
+        return F.pad(audio, (0, length - len(audio)))
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, reference_length_sec=9, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
+    def __init__(self, data_manifest, data_root, sr=16000, length_sec=None, reference_length_sec=10, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
-        self.crop_length_sec = crop_length_sec
+        self.length_sec = length_sec
         self.reference_length_sec = reference_length_sec
         self.mix_levels = mix_levels
 
@@ -42,22 +46,24 @@ class YTData(torch.utils.data.Dataset):
         return os.path.join(self.data_root, path)
 
 
-    def load_audio(self, path, normalize=True, crop_length_sec=None):
+    def load_audio(self, path, normalize=True, length_sec=None):
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         audio = audio.squeeze()
         if sr != self.sr:
             audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
             # audio = F.resample(audio, sr, self.sr, dtype=audio.dtype)
         
-        if crop_length_sec is not None:
-            crop_length = int(self.crop_length_sec * self.sr)
-            assert crop_length < len(audio), path
+        if length_sec is not None:
+            crop_length = int(length_sec * self.sr)
+            if crop_length > len(audio):
+                audio = pad_to_length(audio, crop_length)
+            else:
+                # Random crop
+                if crop_length > 0:
+                    start = np.random.randint(low=0, high=len(audio) - crop_length + 1)
+                    audio = audio[start:(start + crop_length)]
 
-            # Random crop
-            if crop_length > 0:
-                start = np.random.randint(low=0, high=len(audio) - crop_length + 1)
-                audio = audio[start:(start + crop_length)]
-                assert len(audio) == crop_length
+            assert len(audio) == crop_length
 
         return audio
 
@@ -67,10 +73,10 @@ class YTData(torch.utils.data.Dataset):
         ## return ARef, mixed, AClean
         aRef   = self.load_audio(data_record['speakerAReference'], crop_length_sec=self.reference_length_sec)
 
-        bClean = self.load_audio(data_record['speakerBClean'], crop_length_sec=self.crop_length_sec)
+        bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec)
 
         if data_record['speakerAClean'][-1].endswith('wav'):
-            aClean = self.load_audio(data_record['speakerAClean'], crop_length_sec=self.crop_length_sec)
+            aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec)
         else:
             aClean = 0 * bClean
 
