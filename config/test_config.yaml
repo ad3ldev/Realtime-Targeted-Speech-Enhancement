@@ -1,0 +1,15 @@
+name: 
+hydra:
+  job:
+    name: ${name}
+  run:
+    dir: results/${name}/${now:%Y-%m-%d_%H-%M-%S}
+
+logger:
+  use_tb_logger: True
+
+
+defaults:
+- data: PDNSDataSet
+- model: PDenoiser
+- testing: testing

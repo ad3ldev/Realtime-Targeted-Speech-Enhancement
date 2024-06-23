@@ -1,0 +1,16 @@
+manual_seed: 0
+save_results: True
+save_dir: experiments/${name}/${now:%Y-%m-%d_%H-%M-%S}/output
+sample_rate: 16000
+
+metrics:
+  DNSMOS:
+    _target_: metrics.dnsmos_local.DNSMOSScore
+    fs: 16000
+    personalized_MOS: True
+
+cIRM_metrics:
+
+trainer_args:
+  ckpt_path:
+  verbose: True

@@ -2,6 +2,8 @@ from collections import OrderedDict
 
 import pytorch_lightning as pl
 import hydra
+import torchaudio
+
 from utils.console_logger import ConsoleLogger
 from torch import nn
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
@@ -26,6 +28,11 @@ class BaseModel(pl.LightningModule):
         self.losses = nn.ModuleDict(hydra.utils.instantiate(cfg['train']['losses']))
 
         self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['val']['metrics']))
+    
+    def setup_testing(self, cfg):
+        self.cfg = cfg
+        self.save_hyperparameters(cfg, logger=False)
+        self.metrics = nn.ModuleDict(hydra.utils.instantiate(cfg['metrics']))
 
     @rank_zero_only
     def print_netowrk(self, stage=None):
@@ -60,12 +67,14 @@ class BaseModel(pl.LightningModule):
         return metrics_dict
 
     def batch_adapter(self, batch):
-        return batch, batch['clean']
+        # Remove the clean key from the batch as the model should not see it
+        y = batch.pop('clean')        
+        
+        return (batch, y)
     
 
     def training_step(self, batch, batch_idx):
-        x, y = self.batch_adapter(batch)
-        
+        x, y = self.batch_adapter(batch)        
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
@@ -74,22 +83,34 @@ class BaseModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
-
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
         self.log_dict(metrics_dict, sync_dist=True)
 
+    def on_test_start(self) -> None:
+        self.results = []
+        return super().on_test_start()
+
     def test_step(self,  batch, batch_idx):
         x, y = self.batch_adapter(batch)
         y_hat = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
-
+        
+        self.save_results(batch, y_hat)
 
         self.log_dict(metrics_dict, sync_dist=True)
 
+    def save_results(self, batch, y_hat):
+        if not self.cfg.save_results:
+            return
+        
+        y_hat = y_hat.cpu()
+        for i, clip in enumerate(y_hat):
+            filename = f"{batch['noisy_filename'][i]}"
+        torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", clip, self.cfg.sample_rate)
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())

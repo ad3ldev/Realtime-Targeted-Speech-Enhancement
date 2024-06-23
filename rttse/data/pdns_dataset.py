@@ -2,11 +2,13 @@ import os
 import numpy as np
 import pandas as pd
 import re
-from typing import Literal
 
 import torch
-from torch.utils.data import Dataset
 import torchaudio
+
+from typing import Literal
+from utils.path_utils import get_file_name_without_extension
+from torch.utils.data import Dataset
 
 
 class PDNSCollate:
@@ -14,21 +16,23 @@ class PDNSCollate:
         pass
     
     def __call__(self, batch):
-        clean_audio = torch.stack([data["clean"] for data in batch])
+        clean_audio = torch.stack([data["clean"] for data in batch]) if batch[0]["clean"] is not None else None
         noisy_audio = torch.stack([data["noisy"] for data in batch])
         reference_path = [data["reference_path"] for data in batch]
-        # references with different lengths
-        if "reference" in batch[0]:
-            min_length = min([data["reference"].shape[1] for data in batch])
-            reference = torch.stack([data["reference"][:, :min_length] for data in batch])
-        # reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
+        noisy_filename = [data["noisy_filename"] for data in batch]
+        clean_filename = [data["clean_filename"] for data in batch]
+        reference_filename = [data["reference_filename"] for data in batch]
+        reference = torch.stack([data["reference"] for data in batch]) if "reference" in batch[0] else None
         index = [data["index"] for data in batch]
         return {
             "clean": clean_audio,
             "noisy": noisy_audio,
             "reference_path": reference_path,
             "reference": reference,
-            "index": index
+            "index": index,
+            "noisy_filename": noisy_filename,
+            "clean_filename": clean_filename,
+            "reference_filename": reference_filename
         }
 
 class PDNSDataset(Dataset):
@@ -72,18 +76,19 @@ class PDNSDataset(Dataset):
         """
         super(PDNSDataset).__init__()
 
+        self.split = split
         self.rng = np.random.default_rng(seed) # May need to change this to torch seed
         
         self.crop_length_sec = crop_length_sec
         self.sr = sr
         self.reference_tensor = reference_tensor
         
-        clean_files = [os.path.join(clean_path, file) for clean_path in clean_paths for file in os.listdir(clean_path)]
         noisy_files = [os.path.join(noisy_path, file) for noisy_path in noisy_paths for file in os.listdir(noisy_path)]
+        clean_files = [os.path.join(clean_path, file) for clean_path in clean_paths for file in os.listdir(clean_path)] if split != 'test' else [None]*len(noisy_files) # No clean files for test
         
         # Load reference speaker csv
         if speaker_reference_paths is None:
-            assert dataset_speakers_paths is not None, "Either speaker_reference_path or reference_speakers_paths should be provided"
+            assert dataset_speakers_paths is not None, "Either speaker_reference_paths or dataset_speakers_paths should be provided"
             reference_speakers = pd.concat([pd.read_csv(reference_speakers_path) for reference_speakers_path in dataset_speakers_paths])
             reference_speakers = reference_speakers[reference_speakers['speaker_type'] == 'primary']
             self.reference_files = dict()
@@ -93,21 +98,25 @@ class PDNSDataset(Dataset):
                 else:
                     self.reference_files[row['speaker_id']].append(row['filename'])
             
-            assert synthesized_speakers_paths is not None, "speaker_reference_path or synthesized_speakers_paths should be provided"
+            assert synthesized_speakers_paths is not None, "speaker_reference_paths or synthesized_speakers_paths should be provided"
             # Load synthesized speaker csv
             synthesized_speakers_df = pd.concat([pd.read_csv(synthesized_speakers_path) for synthesized_speakers_path in synthesized_speakers_paths])
             synthesized_primary_speakers = synthesized_speakers_df['primary_speaker'].tolist()
-            
-            assert len(clean_files)*3 == len(noisy_files), "Number of clean and noisy files does not match" # 3 noisy files per clean file
-            assert len(clean_files) == len(synthesized_primary_speakers), "Number of clean files and synthesized primary speakers does not match"
         else:
             self.reference_files = [os.path.join(speaker_reference_path, file) for speaker_reference_path in speaker_reference_paths for file in os.listdir(speaker_reference_path)]
             self.reference_files.sort()
-            
+        
+        if split == 'train': # Synthesized
+            assert len(clean_files)*3 == len(noisy_files), "Number of clean and noisy files does not match" # 3 noisy files per clean file
+            assert len(clean_files) == len(synthesized_primary_speakers), "Number of clean files and synthesized primary speakers does not match"
+        elif split == 'val':
             assert len(clean_files) == len(noisy_files), "Number of clean and noisy files does not match"
             assert len(clean_files) == len(self.reference_files), "Number of clean and reference files does not match"
+        elif split == 'test':
+            assert len(noisy_files) == len(self.reference_files), "Number of noisy and reference files does not match"
         
-        clean_files = self._sort_files(clean_files)
+        if split != 'test':
+            clean_files = self._sort_files(clean_files)
         noisy_files = self._sort_files(noisy_files)
         
         if split == 'train':
@@ -161,9 +170,38 @@ class PDNSDataset(Dataset):
 
     def __getitem__(self, n):
         file = self.files[n]
-        clean_audio, clean_sr = torchaudio.load(file[0])
         noisy_audio, noisy_sr = torchaudio.load(file[1])
+        
+        # Resample the audio to the desired sample rate
+        if noisy_sr != self.sr:
+            noisy_audio = torchaudio.transforms.Resample(orig_freq=noisy_sr, new_freq=self.sr)(noisy_audio)
+        noisy_audio = noisy_audio.squeeze(0)
+        
+        crop_length = int(self.crop_length_sec * self.sr)
+        assert crop_length < len(noisy_audio), f"Crop length {crop_length} is greater than the length of the audio {len(noisy_audio)}"
+
+        # Random crop
+        if crop_length > 0:
+            start = np.random.randint(low=0, high=len(noisy_audio) - crop_length + 1)
+            noisy_audio = noisy_audio[start:(start + crop_length)]
                 
+        # Load clean audio if it exists
+        if file[0] is not None:
+            clean_audio, clean_sr = torchaudio.load(file[0])
+            if clean_sr != self.sr:
+                clean_audio = torchaudio.transforms.Resample(orig_freq=clean_sr, new_freq=self.sr)(clean_audio)
+            clean_audio = clean_audio.squeeze(0)
+            if crop_length > 0:
+                clean_audio = clean_audio[start:(start + crop_length)]
+            assert len(clean_audio) == len(noisy_audio), "Length of clean: " + file[0] + " and noisy audio: " + file[1] + " does not match"
+            clean_audio = clean_audio.unsqueeze(0)
+            clean_filename = get_file_name_without_extension(file[0])
+        else:
+            clean_audio, clean_sr = None, None 
+            clean_filename = None
+        
+        noisy_audio = noisy_audio.unsqueeze(0)
+
         # Select a random speaker from the clean speakers
         if isinstance(self.reference_files, dict):
             reference_file = self.rng.choice(self.reference_files[file[2]])
@@ -172,32 +210,15 @@ class PDNSDataset(Dataset):
             reference_file = self.reference_files[n]
         else:
             raise ValueError("Unknown reference file type")
-        
-        # Resample the audio to the desired sample rate
-        if clean_sr != self.sr:
-            clean_audio = torchaudio.transforms.Resample(orig_freq=clean_sr, new_freq=self.sr)(clean_audio)
-        if noisy_sr != self.sr:
-            noisy_audio = torchaudio.transforms.Resample(orig_freq=noisy_sr, new_freq=self.sr)(noisy_audio)
-        
-        clean_audio, noisy_audio = clean_audio.squeeze(0), noisy_audio.squeeze(0)
-        assert len(clean_audio) == len(noisy_audio), "Length of clean: " + file[0] + " and noisy audio: " + file[1] + " does not match"
-
-        crop_length = int(self.crop_length_sec * self.sr)
-        assert crop_length < len(clean_audio)
-
-        # Random crop
-        if crop_length > 0:
-            start = np.random.randint(low=0, high=len(clean_audio) - crop_length + 1)
-            clean_audio = clean_audio[start:(start + crop_length)]
-            noisy_audio = noisy_audio[start:(start + crop_length)]
-        
-        clean_audio, noisy_audio = clean_audio.unsqueeze(0), noisy_audio.unsqueeze(0)
-        
+                
         data = {
             "clean": clean_audio,
             "noisy": noisy_audio,
             "reference_path": reference_file,
-            "index": n
+            "index": n,
+            "clean_filename": clean_filename,
+            "noisy_filename": get_file_name_without_extension(file[1]),
+            "reference_filename": get_file_name_without_extension(file[2]) 
         }
         
         # Load reference audio if reference_tensor is True
