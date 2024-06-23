@@ -14,16 +14,16 @@ class ConsoleLogger():
 
     def __get_lrs_str(self, optims):
         if optims is list:
-            lrs = (f"{opt.param_groups[0]['lr']:.2e}" for opt in optims)
+            lrs = (f"{opt.param_groups[0]['lr']:.3e}" for opt in optims)
         else:
-            lrs = f"{optims.param_groups[0]['lr']:.2e}"
+            lrs = f"{optims.param_groups[0]['lr']:.3e}"
         return lrs
 
     def __get_loss_str(self, metrics):
         loss_dict = {k: v for k, v in metrics.items() if 'train' in k and 'step' in k}
         losses_str = ""
         for k, v in loss_dict.items():
-            losses_str += f"{k}: {v:.4f}, "
+            losses_str += f"{k}: {v:.3e}, "
 
         losses_str = losses_str[:-2]
         return losses_str
@@ -42,7 +42,7 @@ class ConsoleLogger():
         metrics = {k: v for k, v in metrics.items() if 'val' in k}
         metrics_str = ""
         for k, v in metrics.items():
-            metrics_str += f"{k}: {v:.4f}, "
+            metrics_str += f"{k}: {v:.3e}, "
         
         metrics_str = metrics_str[:-2]
         return metrics_str

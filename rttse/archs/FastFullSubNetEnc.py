@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torchaudio as audio
 from torch.nn import functional
 
-from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
+from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft
 
-
-class FastFullSubNet(FullSubNetBaseModel):
+class FastFullSubNetEmbedding(FullSubNetBaseModel):
     def __init__(
         self,
         look_ahead=2,
@@ -25,10 +25,10 @@ class FastFullSubNet(FullSubNetBaseModel):
         win_length=512,
         hop_length=256,
     ):
-        """Fast FullSubNet.
+        """Fast FullSubNetEnc.
 
         Notes:
-            Here, the encoder, bottleneck, and decoder are corresponding to the F_l2m, S, and F_m2l models in the paper, respectively.
+            Here, the encoder, bottleneck are corresponding to the F_l2m, S models in the paper, respectively.
         """
         super().__init__()
         assert sequence_model in ("GRU", "LSTM"), f"{self.__class__.__name__} only support GRU and LSTM."
@@ -75,28 +75,6 @@ class FastFullSubNet(FullSubNetBaseModel):
             output_activate_function="ReLU"
         )
 
-        # F_m2l
-        self.decoder_lstm = nn.Sequential(
-            SequenceModel(
-                input_size=64 + 64,
-                hidden_size=512,
-                output_size=0,
-                num_layers=1,
-                bidirectional=False,
-                sequence_model=sequence_model,
-                output_activate_function=None
-            ),
-            SequenceModel(
-                input_size=512,
-                hidden_size=512,
-                output_size=257 * 2,
-                num_layers=1,
-                bidirectional=False,
-                sequence_model=sequence_model,
-                output_activate_function=None,
-            ),
-        )
-
         self.shrink_size = shrink_size
         self.look_ahead = look_ahead
         self.num_mels = num_mels
@@ -114,6 +92,15 @@ class FastFullSubNet(FullSubNetBaseModel):
             "hop_length": self.hop_length,
             "win_length": self.win_length,
         }
+
+        self.speaker_embedder = nn.Sequential(
+            nn.Linear(128, 256),
+            nn.LayerNorm(256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.LayerNorm(128),
+            nn.Sigmoid()
+        )
 
         if weight_init:
             self.apply(self.weight_init)
@@ -151,20 +138,11 @@ class FastFullSubNet(FullSubNetBaseModel):
             input = input[..., :target_len]
 
         return input
+    
 
-    def full_band_crm_mask(self, pred_crm: torch.Tensor, noisy: torch.Tensor, noisy_real, noisy_imag):
-        pred_crm = decompress_cIRM(pred_crm)
-        enhanced_real = pred_crm[..., 0] * noisy_real - pred_crm[..., 1] * noisy_imag
-        enhanced_imag = pred_crm[..., 1] * noisy_real + pred_crm[..., 0] * noisy_imag
-        enhanced: torch.Tensor = istft(
-            (enhanced_real, enhanced_imag), length=noisy.size(-1), input_type="real_imag", **self.stft_args
-        )
-        if enhanced.dim() == 3:
-            enhanced = enhanced.squeeze(0)
-        return enhanced
     
     # fmt: off
-    def forward(self, data):
+    def forward(self, reference):
         """Forward pass.
 
         Args:
@@ -183,9 +161,9 @@ class FastFullSubNet(FullSubNetBaseModel):
             T - time
             F_s - sub-band frequency
         """
-        noisy = data['noisy']
-        noisy = noisy.squeeze(1)
-        mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
+        # reference = reference.squeeze(1)
+        # print("reference shape: ", reference.shape)
+        mix_mag, _, reference_real, reference_imag = stft(reference, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
         mix_mag = functional.pad(mix_mag, [0, self.look_ahead])  # Pad the look ahead
@@ -220,20 +198,12 @@ class FastFullSubNet(FullSubNetBaseModel):
         bn_output_shrink = bn_output_shrink.reshape(batch_size, self.num_mels, 1, -1).permute(0, 2, 1, 3)  # [B, 1, F_mel, T // shrink_size]
         bn_output = self.real_time_upsampling(bn_output_shrink, target_len=num_frames)  # [B, 1, F_mel, T]
 
-        # F_ml2
-        dec_input = torch.cat([enc_output, bn_output], dim=2)
-        dec_input = dec_input.reshape(batch_size, -1, num_frames)
-        decoder_lstm_output = self.decoder_lstm(dec_input)  # [B * C, F * 2, T]
-        dec_output = decoder_lstm_output.reshape(batch_size, 2, num_freqs, num_frames)
+        mels = torch.cat([enc_output, bn_output], dim=2)
+        b, c, f, t = mels.shape
+        reference = mels.reshape(b*c, f, t)
+        reference = F.adaptive_avg_pool1d(reference, 1).squeeze(-1)
 
-        # Output
-        output = dec_output[:, :, :, self.look_ahead:]
-        output = output.permute(0, 2, 3, 1)
-        
-        # Full band CRM mask
-        enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
-        enhanced = enhanced.unsqueeze(1)
-        return enhanced, output
+        return self.speaker_embedder(reference).unsqueeze(-1).reshape(b, c, f, 1)
         
 # fmt: on
 if __name__ == "__main__":
@@ -253,19 +223,19 @@ if __name__ == "__main__":
             noisy = noisy.unsqueeze(0)
         else:
             noisy = torch.rand(1, 1, 160000)
-
-        model = FastFullSubNet()
+        model = FastFullSubNetEmbedding()
         # Load the updated state dict into the new model
         if args.checkpoint:
             old_state_dict = torch.load(args.checkpoint, map_location="cpu")
             model.load_state_dict(old_state_dict)
         
         start = time.time()
-        enhanced, cRM = model({'noisy': noisy})
-        print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
-        end = time.time()
-        print(f'inference time: {end - start:.4f} s')
-        if args.target:
-            for i in range(enhanced.size(0)):
-                audio.save(args.target + f'_{i}.wav', enhanced[i], sr)
+        embedding = model({'noisy': noisy})
+        print(embedding.shape)
+        # print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
+        # end = time.time()
+        # print(f'inference time: {end - start:.4f} s')
+        # if args.target:
+        #     for i in range(enhanced.size(0)):
+        #         audio.save(args.target + f'_{i}.wav', enhanced[i], sr)
         summary(model, input_data={'data':{'noisy': noisy}}, device="cpu")

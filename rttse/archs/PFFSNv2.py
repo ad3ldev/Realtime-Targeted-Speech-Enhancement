@@ -5,8 +5,7 @@ from torch.nn import functional
 
 from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
 
-
-class FastFullSubNet(FullSubNetBaseModel):
+class PFFSNv2(FullSubNetBaseModel):
     def __init__(
         self,
         look_ahead=2,
@@ -184,7 +183,8 @@ class FastFullSubNet(FullSubNetBaseModel):
             F_s - sub-band frequency
         """
         noisy = data['noisy']
-        noisy = noisy.squeeze(1)
+        # noisy = noisy.squeeze(1)
+        # print("noisy shape: ", noisy.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
@@ -221,7 +221,7 @@ class FastFullSubNet(FullSubNetBaseModel):
         bn_output = self.real_time_upsampling(bn_output_shrink, target_len=num_frames)  # [B, 1, F_mel, T]
 
         # F_ml2
-        dec_input = torch.cat([enc_output, bn_output], dim=2)
+        dec_input = torch.cat([enc_output, bn_output], dim=2) * data['reference_subbands']
         dec_input = dec_input.reshape(batch_size, -1, num_frames)
         decoder_lstm_output = self.decoder_lstm(dec_input)  # [B * C, F * 2, T]
         dec_output = decoder_lstm_output.reshape(batch_size, 2, num_freqs, num_frames)
@@ -232,7 +232,7 @@ class FastFullSubNet(FullSubNetBaseModel):
         
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
-        enhanced = enhanced.unsqueeze(1)
+        # enhanced = enhanced.unsqueeze(1)
         return enhanced, output
         
 # fmt: on
@@ -253,19 +253,20 @@ if __name__ == "__main__":
             noisy = noisy.unsqueeze(0)
         else:
             noisy = torch.rand(1, 1, 160000)
+            reference = torch.rand(1, 1, 128, 1)
 
-        model = FastFullSubNet()
+        model = PFFSNv2()
         # Load the updated state dict into the new model
         if args.checkpoint:
             old_state_dict = torch.load(args.checkpoint, map_location="cpu")
             model.load_state_dict(old_state_dict)
         
         start = time.time()
-        enhanced, cRM = model({'noisy': noisy})
+        enhanced, cRM = model({'noisy': noisy, 'reference_subbands': reference})
         print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
         end = time.time()
         print(f'inference time: {end - start:.4f} s')
         if args.target:
             for i in range(enhanced.size(0)):
                 audio.save(args.target + f'_{i}.wav', enhanced[i], sr)
-        summary(model, input_data={'data':{'noisy': noisy}}, device="cpu")
+        summary(model, input_data={'data':{'noisy': noisy, 'reference_subbands':reference}}, device="cpu")

@@ -7,11 +7,16 @@ from torch import nn
 from models.base_model import BaseModel
 from utils.fastfullsubnetutils import stft, build_complex_ideal_ratio_mask
 
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
+
+import wandb
+
 class FullSubNetModel(BaseModel):
     def __init__(
             self, 
             net, 
             initial_weights=None, 
+            strict=True,
             n_ftt=512, 
             win_length=512, 
             hop_length=256
@@ -19,7 +24,7 @@ class FullSubNetModel(BaseModel):
         super().__init__(net)
         if initial_weights is not None:
             initial_weights = torch.load(initial_weights)
-            self.net.load_state_dict(initial_weights) 
+            self.net.load_state_dict(initial_weights, strict=strict) 
         self.stft_args = {
             'n_fft': n_ftt,
             'win_length': win_length,
@@ -49,31 +54,49 @@ class FullSubNetModel(BaseModel):
         
         self.use_cIRM_metrics = len(self.cIRM_metrics) > 0
     
+
+    def batch_adapter(self, batch):
+        # print("batch:", batch)
+        return batch[1:], batch[0]
+    
+
     def training_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
+        # print("x:", x, "y:", y)
         
         y_hat, cRM = self.net(x)
         
         loss_dict = self.calculate_loss(y_hat, y, 'train')
         
         if self.use_cIRM_losses:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[0], y)
             loss_dict = self.calculate_cIRM_loss(cIRM, cRM, 'train', loss_dict)
         
-        self.log_dict(loss_dict, on_step=True, on_epoch=True)
+        self.log_dict(loss_dict, on_step=True, on_epoch=True, sync_dist=True)
         return loss_dict['train/l_total']
+    
+    @rank_zero_only
+    def log_audio(self, x, y, y_hat):
+        if wandb.run is not None:
+            wandb.log({"reference": wandb.Audio(x[1].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"mix": wandb.Audio(x[0].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"enhanced": wandb.Audio(y_hat.squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"gt": wandb.Audio(y.squeeze().cpu(), sample_rate=16000)})
     
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
-
+        # print("x:", x, "y:", y)
         y_hat, cRM = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
         if self.use_cIRM_metrics:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[0], y)
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
-        self.log_dict(metrics_dict)
+        self.log_dict(metrics_dict, sync_dist=True)
+        
+        if batch_idx < self.cfg.val.log_audio_num_samples:
+            self.log_audio(x, y, y_hat)
     
     def test_step(self,  batch, batch_idx):
         x, y = self.batch_adapter(batch)
@@ -81,7 +104,7 @@ class FullSubNetModel(BaseModel):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         if self.use_cIRM_metrics:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[1], y)
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'test', metrics_dict)
         
         if self.cfg.save_results:
