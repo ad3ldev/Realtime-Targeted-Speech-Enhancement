@@ -22,8 +22,8 @@ class PFFSNWrapper(torch.nn.Module):
     
     def forward(self, data) -> Tensor:
         # print("noisy shape: ", data[1].shape, "reference shape: ", data[2].shape)
-        noisy_audio = data[1]
-        reference_audio = data[2]
+        noisy_audio = data[0]
+        reference_audio = data[1]
 
         reference_subbands = self.speaker_embedder(reference_audio)
         
