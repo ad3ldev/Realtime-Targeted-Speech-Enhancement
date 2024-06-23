@@ -96,7 +96,7 @@ class LogPredictionSamplesCallback(Callback):
 
         # Let's log 20 sample image predictions from the first batch
         if batch_idx == 0:
-            x, y = batch
+            x, y = pl_module.batch_adapter(batch)
             columns = ["reference", "mix", "enhanced", "ground truth"]
             data = [
                 [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0], y_pred] 
