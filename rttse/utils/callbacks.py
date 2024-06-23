@@ -3,7 +3,6 @@ from utils.logger import get_root_logger
 from timm.utils.model import get_state_dict, unwrap_model
 from timm.utils.model_ema import ModelEmaV2
 
-from pytorch_lightning.loggers import WandbLogger
 import wandb
 
 class EMACallback(Callback):
@@ -81,7 +80,7 @@ class EMACallback(Callback):
 
 
 class LogPredictionSamplesCallback(Callback):
-    def __init__(self, num_samples=20):
+    def __init__(self, num_samples=5):
         super().__init__()
         self.logger = get_root_logger()
         self.num_samples = num_samples
@@ -95,13 +94,13 @@ class LogPredictionSamplesCallback(Callback):
         # which corresponds to our model predictions in this case
 
         # Let's log 20 sample image predictions from the first batch
-        if outputs is not None and batch_idx == 0:
+        if batch_idx == 0:
             # print("batch: ", batch)
             # print("outputs: ", outputs)/
             x, y = pl_module.batch_adapter(batch)
-            columns = ["reference", "mix", "enhanced", "ground truth"]
+            columns = ["reference", "mix", "enhanced"]
             data = [
-                [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0], y_pred] 
-                for x_i, y_i, y_pred in list(zip(x[:self.num_samples], y[:self.num_samples], outputs[:self.num_samples])) 
+                [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0]] 
+                for x_i, y_i, y_pred in list(zip(x[:self.num_samples], y[:self.num_samples]))
             ]
             wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
