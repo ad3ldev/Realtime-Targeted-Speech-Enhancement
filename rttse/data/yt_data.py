@@ -76,7 +76,7 @@ class YTData(torch.utils.data.Dataset):
 
         bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec)
 
-        if data_record['speakerAClean'][-1].endswith('wav'):
+        if data_record['speakerAClean'].endswith('.wav'):
             aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec)
         else:
             aClean = 0 * bClean
