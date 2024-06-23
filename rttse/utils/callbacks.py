@@ -100,5 +100,5 @@ class LogPredictionSamplesCallback(Callback):
             # x, y = pl_module.batch_adapter(batch)
             print("x:", batch[1], "y:", batch[0])
             columns = ["reference", "mix", "gt"]
-            data = [wandb.Audio(batch[2]), wandb.Audio(batch[1]), wandb.Audio(batch[0])] 
+            data = [wandb.Audio(batch[2], sample_rate=16000), wandb.Audio(batch[1], sample_rate=16000), wandb.Audio(batch[0], sample_rate=16000)] 
             get_wandb_logger().log({"sample_table", wandb.Table(columns=columns, data=data)})
