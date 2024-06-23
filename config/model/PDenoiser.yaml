@@ -1,7 +1,7 @@
 _target_: models.base_model.BaseModel
 
 net:
-  _target_: archs.WaveTita.WaveTita
+  _target_: archs.PSuperModel.PSuperModel
   initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Denoiser_init_ckpt.th
   strict: false
   speech_enhancer:
@@ -23,3 +23,6 @@ net:
     freeze_encoder: false
     freeze_decoder: false
     freeze_lstm: false
+  speech_embedder:
+    _target_: embedders.ECAPATDNN.ECAPATDNN
+    

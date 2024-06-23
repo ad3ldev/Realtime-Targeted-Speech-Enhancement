@@ -5,6 +5,7 @@ from torch.nn import functional
 
 from utils.fastfullsubnetutils import FullSubNetBaseModel, SequenceModel, stft, istft, decompress_cIRM
 
+
 class FastFullSubNet(FullSubNetBaseModel):
     def __init__(
         self,
@@ -252,6 +253,7 @@ if __name__ == "__main__":
             noisy = noisy.unsqueeze(0)
         else:
             noisy = torch.rand(1, 1, 160000)
+
         model = FastFullSubNet()
         # Load the updated state dict into the new model
         if args.checkpoint:
