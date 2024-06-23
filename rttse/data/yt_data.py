@@ -26,10 +26,16 @@ class YTCollate:
         }
     
 class TupleTransform:
+    def __init__(self):
+        pass
+
     def __call__(self, sample, idx):
         return sample[2], sample[1], sample[0], idx
     
 class DictTransform:
+    def __init__(self):
+        pass
+    
     def __call__(self, sample, idx):
         return {
             "clean": sample[2],
