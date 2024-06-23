@@ -1,5 +1,5 @@
 from pytorch_lightning.callbacks import Callback
-from utils.logger import get_root_logger
+from utils.logger import get_root_logger, get_wandb_logger
 from timm.utils.model import get_state_dict, unwrap_model
 from timm.utils.model_ema import ModelEmaV2
 
@@ -103,4 +103,4 @@ class LogPredictionSamplesCallback(Callback):
                 [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0]] 
                 for x_i, y_i in list(zip(x[:self.num_samples], y[:self.num_samples]))
             ]
-            wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
+            get_wandb_logger().log({"sample_table", wandb.Table(columns=columns, data=data)})
