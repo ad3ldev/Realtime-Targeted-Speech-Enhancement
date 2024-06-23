@@ -71,7 +71,7 @@ class YTData(torch.utils.data.Dataset):
         ## load the 3 audio sample
         ## mix AClean, BClean with one of 3 ratios (0.667, 0.444, 0.296)
         ## return ARef, mixed, AClean
-        aRef   = self.load_audio(data_record['speakerAReference'], crop_length_sec=self.reference_length_sec)
+        aRef   = self.load_audio(data_record['speakerAReference'], length_sec=self.reference_length_sec)
 
         bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec)
 
