@@ -4,6 +4,7 @@ import random
 import torch
 import torchaudio
 import torchaudio.functional as F
+import torch.nn.functional as F_
 import torchaudio.transforms as T
 
 import numpy as np
@@ -26,7 +27,7 @@ class YTCollate:
     
 def pad_to_length(audio, length):
     if len(audio) < length:
-        return F.pad(audio, (0, length - len(audio)))
+        return F_.pad(audio, (0, length - len(audio)))
 
 class YTData(torch.utils.data.Dataset):
     def __init__(self, data_manifest, data_root, sr=16000, length_sec=None, reference_length_sec=10, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
