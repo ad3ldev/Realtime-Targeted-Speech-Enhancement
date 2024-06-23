@@ -87,7 +87,7 @@ class LogPredictionSamplesCallback(Callback):
         self.num_samples = num_samples
 
     def on_validation_batch_end(
-        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx
+        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
     ):
         """Called when the validation batch ends."""
 
