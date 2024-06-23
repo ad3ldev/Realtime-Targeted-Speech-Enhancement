@@ -21,6 +21,7 @@ class PFFSNWrapper(torch.nn.Module):
         return "cuda" if torch.cuda.is_available() else "cpu"
     
     def forward(self, data) -> Tensor:
+        # print("noisy shape: ", data[1].shape, "reference shape: ", data[2].shape)
         noisy_audio = data[1]
         reference_audio = data[2]
 

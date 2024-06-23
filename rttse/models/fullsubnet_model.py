@@ -52,6 +52,7 @@ class FullSubNetModel(BaseModel):
     
 
     def batch_adapter(self, batch):
+        print("batch:", batch)
         return batch[1:], batch[0]
     
 
