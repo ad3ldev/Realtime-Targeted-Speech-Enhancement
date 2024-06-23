@@ -101,6 +101,6 @@ class LogPredictionSamplesCallback(Callback):
             columns = ["reference", "mix", "enhanced"]
             data = [
                 [wandb.Audio(x_i[1]), wandb.Audio(x_i[0]), y_i[0]] 
-                for x_i, y_i, y_pred in list(zip(x[:self.num_samples], y[:self.num_samples]))
+                for x_i, y_i in list(zip(x[:self.num_samples], y[:self.num_samples]))
             ]
             wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
