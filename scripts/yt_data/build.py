@@ -2,9 +2,8 @@ from functools import reduce
 import random
 import os
 import json
+from sklearn.model_selection import train_test_split
 
-
-## TODO: add silence for AClean
 
 data_path = "/kaggle/input/arabic-clean-audio-dataset/private-data"
 
@@ -47,7 +46,11 @@ if __name__ == "__main__":
         others.remove(speaker_dir)
         train_data.extend(build_manifest(speaker_dir, others))
 
+    train_data, val_data = train_test_split(train_data, test_size=0.1, shuffle=True, random_state=42)
     print(train_data[-1], len(train_data))
 
-    with open("data_manifest.json", "w+") as fp:
+    with open("train_data_manifest.json", "w+") as fp:
         json.dump(train_data, fp)
+
+    with open("val_data_manifest.json", "w+") as fp:
+        json.dump(val_data, fp)

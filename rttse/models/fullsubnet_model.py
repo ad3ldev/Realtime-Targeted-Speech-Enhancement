@@ -50,6 +50,11 @@ class FullSubNetModel(BaseModel):
         
         self.use_cIRM_metrics = len(self.cIRM_metrics) > 0
     
+
+    def batch_adapter(self, batch):
+        return batch[1:], batch[0]
+    
+
     def training_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
         
@@ -58,7 +63,7 @@ class FullSubNetModel(BaseModel):
         loss_dict = self.calculate_loss(y_hat, y, 'train')
         
         if self.use_cIRM_losses:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[1], y)
             loss_dict = self.calculate_cIRM_loss(cIRM, cRM, 'train', loss_dict)
         
         self.log_dict(loss_dict, on_step=True, on_epoch=True, sync_dist=True)
@@ -71,7 +76,7 @@ class FullSubNetModel(BaseModel):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
         if self.use_cIRM_metrics:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[1], y)
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
         self.log_dict(metrics_dict, sync_dist=True)
@@ -82,7 +87,7 @@ class FullSubNetModel(BaseModel):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         if self.use_cIRM_metrics:
-            cIRM = self.calculate_cIRM(x['noisy'], y)
+            cIRM = self.calculate_cIRM(x[1], y)
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'test', metrics_dict)
         
         if self.cfg.save_results:

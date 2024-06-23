@@ -15,8 +15,7 @@ class YTCollate:
     def __call__(self, batch):
         clean_audio = torch.stack([data["clean"] for data in batch])
         noisy_audio = torch.stack([data["noisy"] for data in batch])
-        min_length = min([data["reference"].shape[0] for data in batch])
-        reference = torch.stack([data["reference"][:min_length] for data in batch])
+        reference = torch.stack([data["reference"] for data in batch])
         index = [data["index"] for data in batch]
         return {
             "clean": clean_audio,
@@ -26,11 +25,12 @@ class YTCollate:
         }
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
+    def __init__(self, data_manifest, data_root, sr=16000, crop_length_sec=None, reference_length_sec=9, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
         self.crop_length_sec = crop_length_sec
+        self.reference_length_sec = reference_length_sec
         self.mix_levels = mix_levels
 
         with open(data_manifest, "r") as f:
@@ -42,14 +42,14 @@ class YTData(torch.utils.data.Dataset):
         return os.path.join(self.data_root, path)
 
 
-    def load_audio(self, path, normalize=True, crop=False):
+    def load_audio(self, path, normalize=True, crop_length_sec=None):
         audio, sr = torchaudio.load(self.get_data_path(path), normalize=normalize)
         audio = audio.squeeze()
         if sr != self.sr:
             audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
             # audio = F.resample(audio, sr, self.sr, dtype=audio.dtype)
         
-        if crop and self.crop_length_sec:
+        if crop_length_sec is not None:
             crop_length = int(self.crop_length_sec * self.sr)
             assert crop_length < len(audio), path
 
@@ -65,12 +65,12 @@ class YTData(torch.utils.data.Dataset):
         ## load the 3 audio sample
         ## mix AClean, BClean with one of 3 ratios (0.667, 0.444, 0.296)
         ## return ARef, mixed, AClean
-        aRef   = self.load_audio(data_record['speakerAReference'])
+        aRef   = self.load_audio(data_record['speakerAReference'], crop_length_sec=self.reference_length_sec)
 
-        bClean = self.load_audio(data_record['speakerBClean'], crop=True)
+        bClean = self.load_audio(data_record['speakerBClean'], crop_length_sec=self.crop_length_sec)
 
         if data_record['speakerAClean'][-1].endswith('wav'):
-            aClean = self.load_audio(data_record['speakerAClean'], crop=True)
+            aClean = self.load_audio(data_record['speakerAClean'], crop_length_sec=self.crop_length_sec)
         else:
             aClean = 0 * bClean
 
@@ -86,13 +86,13 @@ class YTData(torch.utils.data.Dataset):
     
     def __getitem__(self, idx):
         sample = self.generate_sample(self.data[idx])
-        data = {
-            "clean": sample[2],
-            "noisy": sample[1],
-            "reference": sample[0],
-            "index": idx
-        }
-        return data
+        # data = {
+        #     "clean": sample[2],
+        #     "noisy": sample[1],
+        #     "reference": sample[0],
+        #     "index": idx
+        # }
+        return sample[2]. sample[1], sample[0], idx
 
     def __len__(self):
         return len(self.data)
