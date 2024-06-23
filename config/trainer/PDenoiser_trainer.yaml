@@ -22,6 +22,6 @@ callbacks:
     _target_: pytorch_lightning.callbacks.LearningRateMonitor
     logging_interval: epoch
 
-  LogPredictionSamplesCallback:
-    _target_: utils.callbacks.LogPredictionSamplesCallback
-    num_samples: 5
+  # LogPredictionSamplesCallback:
+  #   _target_: utils.callbacks.LogPredictionSamplesCallback
+  #   num_samples: 5

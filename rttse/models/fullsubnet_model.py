@@ -7,6 +7,8 @@ from torch import nn
 from models.base_model import BaseModel
 from utils.fastfullsubnetutils import stft, build_complex_ideal_ratio_mask
 
+import wandb
+
 class FullSubNetModel(BaseModel):
     def __init__(
             self, 
@@ -83,6 +85,12 @@ class FullSubNetModel(BaseModel):
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'val', metrics_dict)
 
         self.log_dict(metrics_dict, sync_dist=True)
+        
+        if batch_idx < self.cfg.val.log_audio_num_samples:
+            wandb.log({"reference": wandb.Audio(x[1].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"mix": wandb.Audio(x[0].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"enhanced": wandb.Audio(y_hat.squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"gt": wandb.Audio(y.squeeze().cpu(), sample_rate=16000)})
     
     def test_step(self,  batch, batch_idx):
         x, y = self.batch_adapter(batch)
