@@ -27,7 +27,7 @@ opt:
       output_mapper:
         _target_: data.yt_data.TupleTransform
       length_sec: 10
-      mix_levels: [0.6]
+      snrs_db: [0.6]
   
     dataloader:
       batch_size: 1
