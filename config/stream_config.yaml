@@ -10,7 +10,7 @@ logger:
 
 streaming:
   fs: 16000
-  window_size: 512
+  window_size: 30   # ms
 
 defaults:
 - model: PDenoiser
