@@ -94,11 +94,11 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
         }
 
         self.speaker_embedder = nn.Sequential(
-            nn.Linear(128, 256),
-            nn.LayerNorm(256),
+            nn.Linear(num_mels * 2, num_mels * 4),
+            nn.LayerNorm(num_mels * 4),
             nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.LayerNorm(128),
+            nn.Linear(num_mels * 4, num_mels * 2),
+            nn.LayerNorm(num_mels * 2),
             nn.Sigmoid()
         )
 
