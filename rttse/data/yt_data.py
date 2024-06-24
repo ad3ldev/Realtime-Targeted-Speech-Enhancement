@@ -49,7 +49,16 @@ def pad_to_length(audio, length):
         return F.pad(audio, (0, length - len(audio)))
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, output_mapper, sr=16000, length_sec=None, reference_length_sec=10, snrs_db=(20, 10, 3), take=None):
+    def __init__(self, 
+                 data_manifest, 
+                 data_root, 
+                 output_mapper, 
+                 sr=16000, 
+                 length_sec=None, 
+                 reference_length_sec=10, 
+                 snrs_db=(20, 10, 3),
+                 pitch_shifts=None,
+                 take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
@@ -57,6 +66,7 @@ class YTData(torch.utils.data.Dataset):
         self.reference_length_sec = reference_length_sec
         self.snrs_db = snrs_db
         self.output_mapper = output_mapper
+        self.pitch_shifts = pitch_shifts
 
         with open(data_manifest, "r") as f:
             self.data = json.load(f)
@@ -88,18 +98,25 @@ class YTData(torch.utils.data.Dataset):
         return audio
 
     def generate_sample(self, data_record):
-        aRef   = self.load_audio(data_record['speakerAReference'], length_sec=self.reference_length_sec)
+        aRef   = self.load_audio(data_record['speakerAReference'], length_sec=self.reference_length_sec).unsqueeze(0)
         
-        bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec)
+        bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec).unsqueeze(0)
 
+        if self.pitch_shifts is not None:
+            shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
+            aRef = shift(aRef)
+        
         mix_level = random.choices(self.snrs_db, k=1)
 
         if data_record['speakerAClean'].endswith('.wav'):
-            aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec)
-            mixed = Fa.add_noise(aClean.unsqueeze(0), bClean.unsqueeze(0), snr=torch.Tensor(mix_level)).squeeze(0)
+            aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec).unsqueeze(0)
+            if shift is not None:
+                aClean = shift(aClean)
+            mixed = Fa.add_noise(aClean, bClean, snr=torch.Tensor(mix_level))
         else:
             aClean = 0 * bClean
             mixed = T.Vol(gain= -mix_level[0] - T.Loudness(sample_rate=self.sr)(bClean.unsqueeze(0)), gain_type="db")(bClean)
+            
 
         return aRef, mixed, aClean
 
