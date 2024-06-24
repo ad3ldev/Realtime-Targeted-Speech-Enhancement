@@ -12,6 +12,27 @@ class NoiseSuppressionComponent:
         self.create_slider()
         self.apply_styles()
 
+        self.disable_components()
+        self.enable_components()
+        self.enabled_flag = True
+        self.on_submit()
+
+
+    def disable_components(self):
+        # self.switch.configure(state=tk.DISABLED)
+        self.slider.config(state=tk.DISABLED)
+        self.enabled_flag = False
+
+    def enable_components(self):
+        # self.switch.configure(state=tk.NORMAL)
+        self.slider.config(state=tk.NORMAL)
+        self.enabled_flag = True
+
+    # Return the value of the slider and the state of the switch
+    def on_submit(self):
+        return self.dry_set_slider_value.get(), self.switch_var.get()
+
+
     def create_switch(self):
         font = ("Helvetica", 20)
         self.switch = ctk.CTkSwitch(self.root, text="Cancel Noise", command=self.switch_event,
@@ -22,7 +43,7 @@ class NoiseSuppressionComponent:
 
     def switch_event(self):
         switch_state = self.switch_var.get()
-        if switch_state == "on":
+        if switch_state == "on" and self.enabled_flag == True:
             self.slider.config(state=tk.NORMAL)
             print("Noise Cancellation is on")
         else:

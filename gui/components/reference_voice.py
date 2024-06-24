@@ -27,8 +27,25 @@ class ReferenceVoiceComponent:
         self.create_users_section()
         self.apply_styles()
         self.create_audio_storage_dir()
-        
 
+        self.disable_components()
+        self.enable_components()
+        self.on_submit()
+
+
+    def disable_components(self):
+        self.saved_users_dropdown.configure(state="disabled")
+        self.upload_reference_button.configure(state="disabled")
+        self.save_user_button.configure(state="disabled")
+    
+    def enable_components(self):
+        self.saved_users_dropdown.configure(state="normal")
+        self.upload_reference_button.configure(state="normal")
+        self.save_user_button.configure(state="normal")
+
+    def on_submit(self):
+        return self.user_id, self.reference_audio_path.get()
+    
 
     def create_audio_storage_dir(self):
         if not os.path.exists(self.audio_storage_dir):

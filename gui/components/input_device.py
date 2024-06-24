@@ -13,6 +13,18 @@ class InputDeviceComponent:
         self.create_input_device_dropdown()
         self.apply_styles()
 
+        self.disable_components()
+        self.enable_components()
+        self.on_submit()
+
+    def disable_components(self):
+        self.input_device_dropdown.configure(state="disabled")
+    
+    def enable_components(self):
+        self.input_device_dropdown.configure(state="readonly")
+
+    def on_submit(self):
+        return self.input_device_var.get()
     
     def get_input_devices(self):
         p = pyaudio.PyAudio()
@@ -31,6 +43,7 @@ class InputDeviceComponent:
             return devices[default_device_index]['name']
         return ""
 
+    
     def create_input_device_dropdown(self):
         input_devices = self.get_input_devices()
         self.input_device_label = ttk.Label(self.root, text="Select Input Device")
