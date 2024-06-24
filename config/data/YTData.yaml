@@ -10,6 +10,7 @@ opt:
       output_mapper:
         _target_: data.yt_data.TupleTransform
       length_sec: 3
+      pitch_shifts: [-2, -1, 0, 1, 2]
 
     dataloader:
       batch_size: 2
