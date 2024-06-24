@@ -103,15 +103,16 @@ class YTData(torch.utils.data.Dataset):
         bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec).unsqueeze(0)
 
         if self.pitch_shifts is not None:
-            shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
-            aRef = shift(aRef)
+            a_shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
+            aRef = a_shift(aRef)
+            bClean = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])(bClean)
         
         mix_level = random.choices(self.snrs_db, k=1)
 
         if data_record['speakerAClean'].endswith('.wav'):
             aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec).unsqueeze(0)
-            if shift is not None:
-                aClean = shift(aClean)
+            if a_shift is not None:
+                aClean = a_shift(aClean)
             mixed = Fa.add_noise(aClean, bClean, snr=torch.Tensor(mix_level))
         else:
             aClean = 0 * bClean
