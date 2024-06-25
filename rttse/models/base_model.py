@@ -57,6 +57,8 @@ class BaseModel(pl.LightningModule):
         return loss_dict
 
     def calculate_metrics(self, y_hat, y, phase):
+        get_root_logger().info(f"y_hat shape inside BaseModel: {y_hat.shape}")
+        get_root_logger().info(f"y shape inside BaseModel: {y.shape}")
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
             result = metric_fn(y_hat, y)
@@ -74,7 +76,8 @@ class BaseModel(pl.LightningModule):
     
 
     def training_step(self, batch, batch_idx):
-        x, y = self.batch_adapter(batch)        
+        x, y = self.batch_adapter(batch)  
+        get_root_logger().info(f"Input tesnor shape inside BaseModel: {x['noisy'].shape}")      
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
