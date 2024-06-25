@@ -56,7 +56,7 @@ class YTData(torch.utils.data.Dataset):
                  sr=16000, 
                  length_sec=None, 
                  reference_length_sec=10, 
-                 snrs_db=(20, 10, 3),
+                 snrs_db=(20, 15, 10, 6, 3, 0),
                  pitch_shifts=None,
                  take=None):
         self.data = data_manifest

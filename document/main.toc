@@ -1,0 +1,120 @@
+
+\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Problem Definition}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Speech Enhancement}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Speech Dereverberation}{7}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Audio Source Separation}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Music Source Separation}{7}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Speaker Diarization}{8}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Speech Separation}{8}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Target Speech Extraction}{9}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Our Task}{9}{section.2.8}%
+\contentsline {chapter}{\numberline {3}Background}{10}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Audio Representation \blx@tocontentsinit {0}\cite {manilow2020}}{10}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Waveforms}{10}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Input Representation}{11}{subsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.1}Time-Frequency (TF) Representation}{11}{subsubsection.3.1.2.1}%
+\contentsline {subsubsection}{\numberline {3.1.2.2}Short-time Fourier Transform (STFT)}{12}{subsubsection.3.1.2.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.3}Mel-spaced Spectrograms}{14}{subsubsection.3.1.2.3}%
+\contentsline {subsection}{\numberline {3.1.3}Output Representation}{15}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Deep Learning}{15}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Convolution Neural Networks (CNNs) \blx@tocontentsinit {0}\cite {manilow2020}}{15}{subsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.1.1}Convolutional Layers}{16}{subsubsection.3.2.1.1}%
+\contentsline {subsubsection}{\numberline {3.2.1.2}Key Parameters of CNNs}{16}{subsubsection.3.2.1.2}%
+\contentsline {subsubsection}{\numberline {3.2.1.3}CNNs in Audio Processing}{17}{subsubsection.3.2.1.3}%
+\contentsline {subsection}{\numberline {3.2.2}Recurrent Neural Networks \blx@tocontentsinit {0}\cite {olah2015} \blx@tocontentsinit {0}\cite {salamon2020}}{17}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Long Short-Term Memory}{19}{subsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.3.1}LSTM's Internal Mechanism}{20}{subsubsection.3.2.3.1}%
+\contentsline {subsubsection}{\numberline {3.2.3.2}Bidirectional LSTM}{21}{subsubsection.3.2.3.2}%
+\contentsline {subsection}{\numberline {3.2.4}Multi-Head Self-Attention (MSA)}{21}{subsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.4.1}Attention}{21}{subsubsection.3.2.4.1}%
+\contentsline {subsubsection}{\numberline {3.2.4.2}Scaled Dot-Product Attention}{22}{subsubsection.3.2.4.2}%
+\contentsline {subsubsection}{\numberline {3.2.4.3}Multi-Head Attention}{23}{subsubsection.3.2.4.3}%
+\contentsline {subsection}{\numberline {3.2.5}UNet Architectures}{23}{subsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.5.1}Encoder}{23}{subsubsection.3.2.5.1}%
+\contentsline {subsubsection}{\numberline {3.2.5.2}Decoder}{24}{subsubsection.3.2.5.2}%
+\contentsline {subsubsection}{\numberline {3.2.5.3}Skip Connections}{24}{subsubsection.3.2.5.3}%
+\contentsline {subsubsection}{\numberline {3.2.5.4}Speech Enhancement with U-Net}{24}{subsubsection.3.2.5.4}%
+\contentsline {chapter}{\numberline {4}Datasets}{26}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Valentini \blx@tocontentsinit {0}\cite {valentini2016}}{26}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Training Dataset}{26}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Testing Dataset}{27}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}DNS 2020 \blx@tocontentsinit {0}\cite {reddy2020}}{27}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Clean Dataset}{27}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Noise Dataset}{27}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Noisy Dataset}{27}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}LibriSpeech}{28}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Training Set}{28}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Development Set}{28}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Test Set}{28}{subsection.4.3.3}%
+\contentsline {chapter}{\numberline {5}Evaluation Metrics}{30}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Objective Metrics}{30}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Signal-to-Noise Ratio (SNR)}{30}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Perceptual Evaluation of Speech Quality (PESQ)}{30}{subsection.5.1.2}%
+\contentsline {subsection}{\numberline {5.1.3}Short-Time Objective Intelligibility (STOI)}{31}{subsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.1.4}Mean Opinion Score (MOS)}{31}{subsection.5.1.4}%
+\contentsline {subsection}{\numberline {5.1.5}Real-time Factor (RTF)}{32}{subsection.5.1.5}%
+\contentsline {subsection}{\numberline {5.1.6}Word Error Rate (WER)}{32}{subsection.5.1.6}%
+\contentsline {section}{\numberline {5.2}Subjective Metrics}{32}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Subjective Mean Opinion Score (SMOS)}{32}{subsection.5.2.1}%
+\contentsline {chapter}{\numberline {6}Related Work}{33}{chapter.6}%
+\save@tocdepth \setcounter {tocdepth}{3}
+\contentsline {section}{\numberline {6.1}DEMUCS}{33}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Model Architecture}{33}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}Experimental Setup}{34}{subsection.6.1.2}%
+\contentsline {subsubsection}{\numberline {6.1.2.1}Dataset}{34}{subsubsection.6.1.2.1}%
+\contentsline {subsubsection}{\numberline {6.1.2.2}Training}{34}{subsubsection.6.1.2.2}%
+\contentsline {subsection}{\numberline {6.1.3}Conclusion}{35}{subsection.6.1.3}%
+\contentsline {section}{\numberline {6.2}CleanUNet}{35}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Model Architecture}{35}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Experimental Setup}{37}{subsection.6.2.2}%
+\contentsline {subsubsection}{\numberline {6.2.2.1}Datasets}{37}{subsubsection.6.2.2.1}%
+\contentsline {paragraph}{\numberline {6.2.2.1.1}DNS}{37}{paragraph.6.2.2.1.1}%
+\contentsline {paragraph}{\numberline {6.2.2.1.2}Valentini}{37}{paragraph.6.2.2.1.2}%
+\contentsline {paragraph}{\numberline {6.2.2.1.3}Internal Dataset}{37}{paragraph.6.2.2.1.3}%
+\contentsline {subsubsection}{\numberline {6.2.2.2}Training}{37}{subsubsection.6.2.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Conclusion}{38}{subsection.6.2.3}%
+\contentsline {section}{\numberline {6.3}Inter-Subnet}{38}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Model Architecture}{38}{subsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.1.1}Subband units}{38}{subsubsection.6.3.1.1}%
+\contentsline {subsubsection}{\numberline {6.3.1.2}SubInter module}{39}{subsubsection.6.3.1.2}%
+\contentsline {subsection}{\numberline {6.3.2}Experimental Setup}{39}{subsection.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.3.2.1}Dataset}{39}{subsubsection.6.3.2.1}%
+\contentsline {subsubsection}{\numberline {6.3.2.2}Training}{39}{subsubsection.6.3.2.2}%
+\contentsline {subsection}{\numberline {6.3.3}Conclusion}{40}{subsection.6.3.3}%
+\contentsline {section}{\numberline {6.4}VoiceFilter}{40}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Model Architecture}{40}{subsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.1.1}Speaker Encoder}{41}{subsubsection.6.4.1.1}%
+\contentsline {subsubsection}{\numberline {6.4.1.2}VoiceFilter}{41}{subsubsection.6.4.1.2}%
+\contentsline {subsection}{\numberline {6.4.2}Experimental Setup}{42}{subsection.6.4.2}%
+\contentsline {subsubsection}{\numberline {6.4.2.1}Dataset}{42}{subsubsection.6.4.2.1}%
+\contentsline {subsubsection}{\numberline {6.4.2.2}Evaluation}{42}{subsubsection.6.4.2.2}%
+\contentsline {paragraph}{\numberline {6.4.2.2.1}Word Error Rate (WER)}{42}{paragraph.6.4.2.2.1}%
+\contentsline {paragraph}{\numberline {6.4.2.2.2}Source-to-Distortion Ratio (SDR)}{43}{paragraph.6.4.2.2.2}%
+\contentsline {section}{\numberline {6.5}VoiceFilter-Lite}{43}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Model Architecture}{44}{subsection.6.5.1}%
+\contentsline {subsubsection}{\numberline {6.5.1.1}Model Quantization}{44}{subsubsection.6.5.1.1}%
+\contentsline {subsection}{\numberline {6.5.2}Experimental Setup}{44}{subsection.6.5.2}%
+\contentsline {subsubsection}{\numberline {6.5.2.1}Model and Data}{44}{subsubsection.6.5.2.1}%
+\contentsline {subsection}{\numberline {6.5.3}Conclusion}{45}{subsection.6.5.3}%
+\save@tocdepth \setcounter {tocdepth}{4}
+\contentsline {chapter}{\numberline {7}Progress and Next Steps}{46}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Progress}{46}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Project Stack}{46}{subsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.1.1}PyTorch}{46}{subsubsection.7.1.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.1.2}PyTorch Lightning}{47}{subsubsection.7.1.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.1.3}Hydra}{47}{subsubsection.7.1.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.1.4}Weights and Biases}{47}{subsubsection.7.1.1.4}%
+\contentsline {subsubsection}{\numberline {7.1.1.5}TensorBoard}{48}{subsubsection.7.1.1.5}%
+\contentsline {subsection}{\numberline {7.1.2}Model Integration}{48}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}Dataset Preparation}{49}{subsection.7.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.3.1}DNS}{49}{subsubsection.7.1.3.1}%
+\contentsline {subsubsection}{\numberline {7.1.3.2}Valentini Dataset}{49}{subsubsection.7.1.3.2}%
+\contentsline {subsection}{\numberline {7.1.4}Experiments}{49}{subsection.7.1.4}%
+\contentsline {subsubsection}{\numberline {7.1.4.1}CleanUNet}{49}{subsubsection.7.1.4.1}%
+\contentsline {subsubsection}{\numberline {7.1.4.2}Denoiser}{50}{subsubsection.7.1.4.2}%
+\contentsline {subsubsection}{\numberline {7.1.4.3}VoiceFilter}{50}{subsubsection.7.1.4.3}%
+\contentsline {section}{\numberline {7.2}Next Steps}{51}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Machine Learning Model}{51}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Building the Application}{51}{subsection.7.2.2}%
+\contentsline {chapter}{References}{52}{chapter*.32}%
