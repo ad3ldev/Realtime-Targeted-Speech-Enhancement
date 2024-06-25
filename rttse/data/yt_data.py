@@ -122,7 +122,7 @@ class YTData(torch.utils.data.Dataset):
             mixed = T.Vol(gain= -mix_level[0] - T.Loudness(sample_rate=self.sr)(bClean.unsqueeze(0)), gain_type="db")(bClean)
             
 
-        return aRef, mixed, aClean, data_record['speakerAReference']
+        return aRef, mixed, aClean, self.get_data_path(data_record['speakerAReference'])
 
     
     def __getitem__(self, idx):
