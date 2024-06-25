@@ -9,6 +9,8 @@ import torchaudio.transforms as T
 
 import numpy as np
 
+from utils.logger import get_root_logger
+
 class YTCollate:
     def __init__(self):
         pass
@@ -37,6 +39,9 @@ class DictTransform:
         pass
 
     def __call__(self, sample, idx):
+        get_root_logger().info(f"Clean audio shape (before unsqueeze(1)) inside DictTransform: {sample[2].shape}")
+        get_root_logger().info(f"Noisy audio shape (before unsqueeze(1)) inside DictTransform: {sample[1].shape}")
+        get_root_logger().info(f"Reference audio shape (before unsqueeze(1)) inside DictTransform: {sample[0].shape}")
         return {
             "clean": sample[2].unsqueeze(1),
             "noisy": sample[1].unsqueeze(1),
