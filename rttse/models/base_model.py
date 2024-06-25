@@ -9,6 +9,8 @@ from torch import nn
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 from utils.logger import get_root_logger
 
+import wandb
+
 class BaseModel(pl.LightningModule):
     def __init__(self, net) -> None:
         super().__init__()
@@ -80,6 +82,14 @@ class BaseModel(pl.LightningModule):
         loss_dict = self.calculate_loss(y_hat, y, 'train')
         self.log_dict(loss_dict, on_step=True, on_epoch=True, sync_dist=True)
         return loss_dict['train/l_total']
+    
+    @rank_zero_only
+    def log_audio(self, x, y, y_hat):
+        if wandb.run is not None:
+            wandb.log({"reference": wandb.Audio(x["reference"].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"mix": wandb.Audio(x["noisy"].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"enhanced": wandb.Audio(y_hat.squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"gt": wandb.Audio(y.squeeze().cpu(), sample_rate=16000)})
 
     def validation_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)
@@ -88,6 +98,9 @@ class BaseModel(pl.LightningModule):
         metrics_dict = self.calculate_metrics(y_hat, y, 'val')
 
         self.log_dict(metrics_dict, sync_dist=True)
+
+        if batch_idx < self.cfg.val.log_audio_num_samples:
+            self.log_audio(x, y, y_hat)
 
     def on_test_start(self) -> None:
         self.results = []
