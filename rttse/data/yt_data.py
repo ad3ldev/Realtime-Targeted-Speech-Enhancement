@@ -43,8 +43,8 @@ class DictTransform:
         get_root_logger().info(f"Noisy audio shape (before unsqueeze(1)) inside DictTransform: {sample[1].shape}")
         get_root_logger().info(f"Reference audio shape (before unsqueeze(1)) inside DictTransform: {sample[0].shape}")
         return {
-            "clean": sample[2].unsqueeze(1),
-            "noisy": sample[1].unsqueeze(1),
+            "clean": sample[2].unsqueeze(0),
+            "noisy": sample[1].unsqueeze(0),
             "reference_path": sample[3],
             "reference": sample[0],
             "index": idx
@@ -127,7 +127,7 @@ class YTData(torch.utils.data.Dataset):
             mixed = T.Vol(gain= -mix_level[0] - T.Loudness(sample_rate=self.sr)(bClean.unsqueeze(0)), gain_type="db")(bClean)
             
 
-        return aRef, mixed, aClean, self.get_data_path(data_record['speakerAReference'])
+        return aRef.squeeze(0), mixed.squeeze(0), aClean.squeeze(0), self.get_data_path(data_record['speakerAReference'])
 
     
     def __getitem__(self, idx):
