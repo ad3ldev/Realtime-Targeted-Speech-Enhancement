@@ -75,7 +75,6 @@ class BaseModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = self.batch_adapter(batch)  
-        get_root_logger().info(f"Input tesnor shape inside BaseModel: {x['noisy'].shape}")      
         y_hat = self.net(x)
 
         loss_dict = self.calculate_loss(y_hat, y, 'train')
