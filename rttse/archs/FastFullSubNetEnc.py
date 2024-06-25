@@ -161,7 +161,7 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
             T - time
             F_s - sub-band frequency
         """
-        reference = reference.squeeze(1)
+        # reference = reference.squeeze(1)
         # print("reference shape: ", reference.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(reference, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
