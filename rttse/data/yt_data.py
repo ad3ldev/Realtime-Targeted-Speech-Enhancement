@@ -39,9 +39,6 @@ class DictTransform:
         pass
 
     def __call__(self, sample, idx):
-        get_root_logger().info(f"Clean audio shape (before unsqueeze(1)) inside DictTransform: {sample[2].shape}")
-        get_root_logger().info(f"Noisy audio shape (before unsqueeze(1)) inside DictTransform: {sample[1].shape}")
-        get_root_logger().info(f"Reference audio shape (before unsqueeze(1)) inside DictTransform: {sample[0].shape}")
         return {
             "clean": sample[2].unsqueeze(0),
             "noisy": sample[1].unsqueeze(0),

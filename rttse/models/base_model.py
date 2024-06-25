@@ -57,8 +57,6 @@ class BaseModel(pl.LightningModule):
         return loss_dict
 
     def calculate_metrics(self, y_hat, y, phase):
-        get_root_logger().info(f"y_hat shape inside BaseModel: {y_hat.shape}")
-        get_root_logger().info(f"y shape inside BaseModel: {y.shape}")
         metrics_dict = OrderedDict()
         for metric_name, metric_fn in self.metrics.items():
             result = metric_fn(y_hat, y)

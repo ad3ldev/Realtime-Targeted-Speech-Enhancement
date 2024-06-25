@@ -13,7 +13,6 @@ from torch import nn
 from torch.nn import functional as F
 
 from utils.demucs_utils import downsample2, upsample2, capture_init
-from utils.logger import get_root_logger
 
 class BLSTM(nn.Module):
     def __init__(self, dim, layers=2, bi=True):
@@ -186,9 +185,6 @@ class PDenoiser(nn.Module):
     def forward(self, mix, reference):
         if mix.dim() == 2:
             mix = mix.unsqueeze(1)
-
-        get_root_logger().info(f"mix shape inside PDenoiser: {mix.shape}")
-        get_root_logger().info(f"reference shape inside PDenoiser: {reference.shape}")
 
         if self.normalize:
             mono = mix.mean(dim=1, keepdim=True)
