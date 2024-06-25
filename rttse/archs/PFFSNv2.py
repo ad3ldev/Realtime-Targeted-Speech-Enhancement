@@ -183,7 +183,7 @@ class PFFSNv2(FullSubNetBaseModel):
             F_s - sub-band frequency
         """
         noisy = data['noisy']
-        # noisy = noisy.squeeze(1)
+        noisy = noisy.squeeze(1)
         # print("noisy shape: ", noisy.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
