@@ -40,6 +40,7 @@ class DictTransform:
         return {
             "clean": sample[2],
             "noisy": sample[1],
+            "reference_path": sample[3],
             "reference": sample[0],
             "index": idx
         }
@@ -103,7 +104,7 @@ class YTData(torch.utils.data.Dataset):
         bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec).unsqueeze(0)
 
         a_shift = None
-        
+
         if self.pitch_shifts is not None:
             a_shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
             aRef = a_shift(aRef)
@@ -121,7 +122,7 @@ class YTData(torch.utils.data.Dataset):
             mixed = T.Vol(gain= -mix_level[0] - T.Loudness(sample_rate=self.sr)(bClean.unsqueeze(0)), gain_type="db")(bClean)
             
 
-        return aRef, mixed, aClean
+        return aRef, mixed, aClean, data_record['speakerAReference']
 
     
     def __getitem__(self, idx):
