@@ -38,8 +38,8 @@ class DictTransform:
 
     def __call__(self, sample, idx):
         return {
-            "clean": sample[2],
-            "noisy": sample[1],
+            "clean": sample[2].unsqueeze(1),
+            "noisy": sample[1].unsqueeze(1),
             "reference_path": sample[3],
             "reference": sample[0],
             "index": idx
@@ -131,3 +131,4 @@ class YTData(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.data)
+    
