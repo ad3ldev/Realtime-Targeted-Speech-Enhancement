@@ -102,6 +102,8 @@ class YTData(torch.utils.data.Dataset):
         
         bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec).unsqueeze(0)
 
+        a_shift = None
+        
         if self.pitch_shifts is not None:
             a_shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
             aRef = a_shift(aRef)
