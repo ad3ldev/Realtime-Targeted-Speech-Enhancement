@@ -163,7 +163,7 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
         """
         # reference = reference.squeeze(1)
         # print("reference shape: ", reference.shape)
-        mix_mag, _ = stft(reference, **self.stft_args)
+        mix_mag, _, noisy_real, noisy_imag = stft(reference, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
         mix_mag = functional.pad(mix_mag, [0, self.look_ahead])  # Pad the look ahead
