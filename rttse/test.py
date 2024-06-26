@@ -28,8 +28,8 @@ def setup_model(model_cfg, testing_cfg):
 def setup_checkpoint(testing_cfg):
     if testing_cfg.trainer_args['ckpt_path'] is None:
         return
-    
-    chkpt = torch.load(testing_cfg.trainer_args['ckpt_path'])
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    chkpt = torch.load(testing_cfg.trainer_args['ckpt_path'], map_location=device)
     
     # Remove keys starting with 'losses.' from the state_dict and save it
     state_dict = {k: v for k, v in chkpt['state_dict'].items() if not k.startswith('losses.')}
