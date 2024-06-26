@@ -188,6 +188,8 @@ class PFFSNv2(FullSubNetBaseModel):
 
         if reference.dim() == 3:
             reference = reference.squeeze(1)
+        elif reference.dim() == 1:
+            reference = reference.unsqueeze(0).unsqueeze(0).unsqueeze(-1)
             
         # print("noisy shape: ", noisy.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
