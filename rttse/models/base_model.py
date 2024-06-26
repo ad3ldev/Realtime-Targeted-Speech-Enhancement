@@ -112,18 +112,16 @@ class BaseModel(pl.LightningModule):
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
         
-        self.save_results(batch, y_hat)
+        self.save_results(batch, y_hat, batch_idx)
 
         self.log_dict(metrics_dict, sync_dist=True)
 
-    def save_results(self, batch, y_hat):
+    def save_results(self, batch, y_hat, batch_idx):
         if not self.cfg.save_results:
             return
         
-        y_hat = y_hat.cpu()
-        for i, clip in enumerate(y_hat):
-            filename = f"{self.cfg.save_dir}/{i}.wav"
-            torchaudio.save(filename, clip, self.cfg.sample_rate)
+        if self.cfg.save_results:
+            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
