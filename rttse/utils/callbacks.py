@@ -1,7 +1,9 @@
 from pytorch_lightning.callbacks import Callback
-from utils.logger import get_root_logger
+from utils.logger import get_root_logger, get_wandb_logger
 from timm.utils.model import get_state_dict, unwrap_model
 from timm.utils.model_ema import ModelEmaV2
+
+import wandb
 
 class EMACallback(Callback):
     """
@@ -75,3 +77,34 @@ class EMACallback(Callback):
         for s_param, param in zip(shadow_parameters, parameters):
             if param.requires_grad:
                 param.data.copy_(s_param.data)
+
+
+class LogPredictionSamplesCallback(Callback):
+    def __init__(self, num_samples=5):
+        super().__init__()
+        self.logger = get_root_logger()
+        self.num_samples = num_samples
+
+    def on_validation_batch_end(
+        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
+    ):
+        """Called when the validation batch ends."""
+
+        # `outputs` comes from `LightningModule.validation_step`
+        # which corresponds to our model predictions in this case
+
+        # Let's log 20 sample image predictions from the first batch
+        if batch_idx < self.num_samples:
+            print("output: ", outputs)
+            # print("batch: ", batch)
+            # print("outputs: ", outputs)/
+            # x, y = pl_module.batch_adapter(batch)
+            # print("x:", batch[1], "y:", batch[0])
+            # columns = ["reference", "mix", "gt"]
+            # data = [wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000),
+            #         wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000),
+            #         wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)] 
+            # wandb.log({"sample_table", wandb.Table(columns=columns, data=data)})
+            wandb.log({"reference": wandb.Audio(batch[2].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"mix": wandb.Audio(batch[1].squeeze().cpu(), sample_rate=16000)})
+            wandb.log({"gt": wandb.Audio(batch[0].squeeze().cpu(), sample_rate=16000)})

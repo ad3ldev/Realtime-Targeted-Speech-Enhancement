@@ -1,0 +1,44 @@
+_target_: models.fullsubnet_model.FullSubNetModel
+
+net:
+  _target_: archs.PFFSNWrapper.PFFSNWrapper
+  speech_enhancer:
+      _target_: archs.PFFSNv2.PFFSNv2
+      look_ahead: 2
+      shrink_size: 2
+      sequence_model: LSTM
+      num_mels: 64
+      encoder_input_size: 257
+      bottleneck_hidden_size: 384
+      bottleneck_num_layers: 2
+      noisy_input_num_neighbors: 5
+      encoder_output_num_neighbors: 0
+      norm_type: offline_laplace_norm
+      weight_init: False
+      sr: 16000
+      n_ftt: 512
+      win_length: 512
+      hop_length: 256
+
+  speaker_embedder:
+      _target_: archs.FastFullSubNetEnc.FastFullSubNetEmbedding
+      num_mels: 64
+      encoder_input_size: 257
+      bottleneck_hidden_size: 384
+      bottleneck_num_layers: 2
+      noisy_input_num_neighbors: 5
+      encoder_output_num_neighbors: 0
+      norm_type: offline_laplace_norm
+      weight_init: False
+      sr: 16000
+      n_ftt: 512
+      win_length: 512
+      hop_length: 256
+
+
+  initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Fastfullsubnet_init_ckpt.pt
+  
+strict: True
+n_ftt: ${model.net.speech_enhancer.n_ftt}
+win_length: ${model.net.speech_enhancer.win_length}
+hop_length: ${model.net.speech_enhancer.hop_length}

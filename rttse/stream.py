@@ -5,7 +5,6 @@ from sounddevice import InputStream, OutputStream, query_devices
 import torch
 import hydra
 
-from archs.WaveTita import WaveTita
 from utils.stream_utils import upsample2, downsample2
 
 def _valid_length(length, depth, resample, kernel_size, stride):
@@ -191,10 +190,8 @@ def parse_audio_device(device):
     except ValueError:
         return device
     
-# TODO: Use TitaNet or separate it using config
-def load_speaker_embedder():
-    wave_tita = WaveTita(None, device='cpu')
-    return wave_tita.speaker_embedder
+def load_speaker_embedder(speech_embedder_cfg):
+    return hydra.utils.instantiate(speech_embedder_cfg)
 
 def setup_model(model_cfg) -> torch.nn.Module:
     model = hydra.utils.instantiate(model_cfg)
@@ -207,9 +204,9 @@ def stream_pipeline(cfg):
 
         device = cfg.streaming.device
 
-        speaker_embedder = load_speaker_embedder()
+        speaker_embedder = load_speaker_embedder(cfg.speech_embedder)
         print("Speaker embedder loaded.")
-        embedding = speaker_embedder.get_embedding(cfg.streaming.reference_audio).to(device)
+        embedding = speaker_embedder.embed(cfg.streaming.reference_audio).to(device)
         del speaker_embedder
         
         model = setup_model(cfg.model).to(device)
@@ -275,7 +272,7 @@ def stream_pipeline(cfg):
                 out = out[:, None].repeat(1, channels_out)
                 mx = out.abs().max().item()
                 if mx > 1:
-                    print("Clipping!!\n")
+                    print("\nClipping!!")
                 out.clamp_(-1, 1)
                 out = out.cpu().numpy()
                 underflow = stream_out.write(out)
@@ -283,10 +280,10 @@ def stream_pipeline(cfg):
                     if current_time >= last_error_time + cooldown_time:
                         last_error_time = current_time
                         tpf = 1000 * streamer.time_per_frame
-                        print(f"Not processing audio fast enough, time per frame is {tpf:.1f}ms "
-                              f"(should be less than {stride_ms:.1f}ms).\n")
+                        print(f"\nNot processing audio fast enough, time per frame is {tpf:.1f}ms "
+                              f"(should be less than {stride_ms:.1f}ms).")
             except KeyboardInterrupt:
-                print("Stopping")
+                print("\nStopping")
                 break
         stream_out.stop()
         stream_in.stop()
