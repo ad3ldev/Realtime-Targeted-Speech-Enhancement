@@ -42,4 +42,4 @@ class PSuperModel(torch.nn.Module):
         return self.speech_enhancer(noisy_audio, self.speaker_embedding(labels))
     
     def __deepcopy__(self, memo):
-        return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder)
+        return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder, self.reference_embedding, self.target_embedding)

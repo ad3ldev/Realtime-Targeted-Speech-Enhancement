@@ -4,6 +4,8 @@ net:
   _target_: archs.PSuperModel.PSuperModel
   initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Fastfullsubnet_init_ckpt.pt
   strict: false
+  reference_embedding: 192
+  target_embedding: 128
   speech_enhancer:
     _target_: archs.PFFSNv2.PFFSNv2
     look_ahead: 2
@@ -24,6 +26,4 @@ net:
   speech_embedder:
     _target_: embedders.ECAPATDNN.ECAPATDNN
 
-  reference_embedding: 192
-  target_embedding: 128
     
