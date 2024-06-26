@@ -15,8 +15,8 @@ class PSuperModel(torch.nn.Module):
         self.device = self.detect_device()
         self.speaker_embedder = speech_embedder
         self.speech_enhancer = speech_enhancer
-        self.reference_embedding = reference_embedding
-        self.target_embedding = target_embedding
+        self.reference_embedding = reference_embedding.to(self.device)
+        self.target_embedding = target_embedding.to(self.device)
         if initial_weights:
             self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)
             get_root_logger().info(f"Loaded weights from {initial_weights}")
