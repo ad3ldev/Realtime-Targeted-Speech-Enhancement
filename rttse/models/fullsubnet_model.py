@@ -56,7 +56,8 @@ class FullSubNetModel(BaseModel):
     
 
     def batch_adapter(self, batch):
-        # print("batch:", batch)
+        if isinstance(batch, dict):
+            return (batch['noisy'].squeeze(1), batch['reference'].squeeze(1), batch['index']), batch['clean'].squeeze(1) if batch['clean'] is not None else None
         return batch[1:], batch[0]
     
 

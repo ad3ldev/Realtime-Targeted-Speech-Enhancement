@@ -232,10 +232,15 @@ class PDNSDataset(Dataset):
             reference_audio, reference_sr = torchaudio.load(reference_file)
             if reference_sr != self.sr:
                 reference_audio = torchaudio.transforms.Resample(orig_freq=reference_sr, new_freq=self.sr)(reference_audio)
-            if reference_audio.shape[1] > self.reference_length:
+            if self.reference_length == 0:
+                pass
+            elif reference_audio.shape[1] > self.reference_length:
                 reference_audio = reference_audio[:, :self.reference_length]
+            elif reference_audio.shape[1] < self.reference_length:
+                reference_audio = torch.cat([reference_audio]*int(np.ceil(self.reference_length/reference_audio.shape[1])), dim=1)
+            
             data["reference"] = reference_audio
-        
+
         return data
 
     def __len__(self):
