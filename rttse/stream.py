@@ -1,161 +1,295 @@
-import pyaudio
-import numpy as np
+import time
+import math
+
+from sounddevice import InputStream, OutputStream, query_devices
 import torch
 import hydra
-import time
-
-import keyboard
 
 from archs.WaveTita import WaveTita
+from utils.stream_utils import upsample2, downsample2
 
-mode = 'enhance'
+def _valid_length(length, depth, resample, kernel_size, stride):
+        """
+        Return the nearest valid length to use with the model so that
+        there is no time steps left over in a convolutions, e.g. for all
+        layers, size of the input - kernel_size % stride = 0.
 
-def select_output_device(py_audio):
-    output_index = -1
-    for i in range(py_audio.get_device_count()):
-        if('CABLE Input' in py_audio.get_device_info_by_index(i)['name']):
-            print('Virtual cable found at index', i)
-            output_index = i
-            break
-    return output_index
+        If the mixture has a valid length, the estimated sources
+        will have exactly the same length.
+        """
+        length = math.ceil(length * resample)
+        for idx in range(depth):
+            length = math.ceil((length - kernel_size) / stride) + 1
+            length = max(length, 1)
+        for idx in range(depth):
+            length = (length - 1) * stride + kernel_size
+        length = int(math.ceil(length / resample))
+        return int(length)
 
-def select_input_device(p):
-    print('Available audio devices:')
-    for i in range(p.get_device_count()):
-        device_info = p.get_device_info_by_index(i)
-        if(device_info['maxInputChannels'] > 0 and device_info['hostApi'] == 0):
-            print(f"{i}: {device_info['name']}")
-    
-    print('Please select the index of the input device you want to stream: ')
-    input_index = int(input())
-    
-    if(input_index == -1):
-        input_index = p.get_default_input_device_info()['index']
-    return input_index
+class Streamer:
+    """
+    Streaming implementation for Demucs. It supports being fed with any amount
+    of audio at a time. You will get back as much audio as possible at that
+    point.
 
-def select_reference_audio():
-    print('Please enter the path to the reference audio file: ')
-    reference_audio_path = input()
-    return reference_audio_path
+    Args:
+        - demucs (Demucs): Demucs model.
+        - dry (float): amount of dry (e.g. input) signal to keep. 0 is maximum
+            noise removal, 1 just returns the input signal. Small values > 0
+            allows to limit distortions.
+        - num_frames (int): number of frames to process at once. Higher values
+            will increase overall latency but improve the real time factor.
+        - resample_lookahead (int): extra lookahead used for the resampling.
+        - resample_buffer (int): size of the buffer of previous inputs/outputs
+            kept for resampling.
+    """
+    def __init__(self,
+                 model,
+                 embedding,
+                 dry=0.0,
+                 num_frames=1,
+                 resample_lookahead=64,
+                 resample_buffer=256,
+                 chin=1,
+                 depth=5,
+                 kernel_size=8,
+                 stride=4,
+                 resample=1,
+                 normalize=True,
+                 floor=1e-3,
+                 device = 'cpu'):
+        # self.demucs = demucs
+        self.model = model
+        self.embedding = embedding
+        self.chin = chin
+        self.normalize = normalize
+        self.floor = floor
+        self.device = device
+        self.enhance = True
+        
+        total_stride = stride ** depth // resample
+        self.lstm_state = None
+        self.conv_state = None
+        self.dry = dry
+        self.resample_lookahead = resample_lookahead
+        resample_buffer = min(total_stride, resample_buffer)
+        self.resample_buffer = resample_buffer
+        self.frame_length = _valid_length(1, depth=depth, resample=resample, kernel_size=kernel_size, stride=stride) + total_stride * (num_frames - 1)
+        self.total_length = self.frame_length + self.resample_lookahead
+        self.stride = total_stride * num_frames
+        self.resample = resample
+        self.resample_in = torch.zeros(chin, resample_buffer, device=device)
+        self.resample_out = torch.zeros(chin, resample_buffer, device=device)
 
-def change_mode():
-    global mode
-    if mode == 'enhance':
-        mode = 'original'
-    else:
-        mode = 'enhance'
-    print(f'\nMode changed to {mode}')
+        self.frames = 0
+        self.total_time = 0
+        self.variance = 0
+        self.pending = torch.zeros(chin, 0, device=device)
+
+        # bias = demucs.decoder[0][2].bias
+        # weight = demucs.decoder[0][2].weight
+        # chin, chout, kernel = weight.shape
+        # self._bias = bias.view(-1, 1).repeat(1, kernel).view(-1, 1)
+        # self._weight = weight.permute(1, 2, 0).contiguous()
+
+    def reset_time_per_frame(self):
+        self.total_time = 0
+        self.frames = 0
+
+    @property
+    def time_per_frame(self):
+        return self.total_time / self.frames
+
+    def flush(self):
+        """
+        Flush remaining audio by padding it with zero and initialize the previous
+        status. Call this when you have no more input and want to get back the last
+        chunk of audio.
+        """
+        self.lstm_state = None
+        self.conv_state = None
+        pending_length = self.pending.shape[1]
+        padding = torch.zeros(self.chin, self.total_length, device=self.pending.device)
+        out = self.feed(padding)
+        return out[:, :pending_length]
+
+    def feed(self, wav):
+        """
+        Apply the model to mix using true real time evaluation.
+        Normalization is done online as is the resampling.
+        """
+        begin = time.time()
+        resample_buffer = self.resample_buffer
+        stride = self.stride
+        resample = self.resample
+
+        if wav.dim() != 2:
+            raise ValueError("input wav should be two dimensional.")
+        chin, _ = wav.shape
+        if chin != self.chin:
+            raise ValueError(f"Expected {self.chin} channels, got {chin}")
+
+        self.pending = torch.cat([self.pending, wav], dim=1)
+        outs = []
+        while self.pending.shape[1] >= self.total_length:
+            self.frames += 1
+            frame = self.pending[:, :self.total_length]
+            dry_signal = frame[:, :stride]
+            if self.normalize:
+                mono = frame.mean(0)
+                variance = (mono**2).mean()
+                self.variance = variance / self.frames + (1 - 1 / self.frames) * self.variance
+                frame = frame / (self.floor + math.sqrt(self.variance))
+            padded_frame = torch.cat([self.resample_in, frame], dim=-1)
+            self.resample_in[:] = frame[:, stride - resample_buffer:stride]
+            frame = padded_frame
+
+            if resample == 4:
+                frame = upsample2(upsample2(frame))
+            elif resample == 2:
+                frame = upsample2(frame)
+            frame = frame[:, resample * resample_buffer:]  # remove pre sampling buffer
+            frame = frame[:, :resample * self.frame_length]  # remove extra samples after window
+
+            out = self._separate_frame(frame)
+            padded_out = torch.cat([self.resample_out, out], 1)
+            self.resample_out[:] = out[:, -resample_buffer:]
+            if resample == 4:
+                out = downsample2(downsample2(padded_out))
+            elif resample == 2:
+                out = downsample2(padded_out)
+            else:
+                out = padded_out
+
+            out = out[:, resample_buffer // resample:]
+            out = out[:, :stride]
+
+            if self.normalize:
+                out *= math.sqrt(self.variance)
+            out = self.dry * dry_signal + (1 - self.dry) * out
+            outs.append(out)
+            self.pending = self.pending[:, stride:]
+
+        self.total_time += time.time() - begin
+        if outs:
+            out = torch.cat(outs, 1)
+        else:
+            out = torch.zeros(chin, 0, device=wav.device)
+        return out
+
+    def _separate_frame(self, frame):
+        if self.enhance:
+            return self.model(frame, self.embedding)[0]
+        else:
+            return frame
+
+def parse_audio_device(device):
+    if device is None:
+        return device
+    try:
+        return int(device)
+    except ValueError:
+        return device
     
 # TODO: Use TitaNet or separate it using config
 def load_speaker_embedder():
-    wave_tita = WaveTita(None)
+    wave_tita = WaveTita(None, device='cpu')
     return wave_tita.speaker_embedder
 
-def setup_model(model_cfg):
+def setup_model(model_cfg) -> torch.nn.Module:
     model = hydra.utils.instantiate(model_cfg)
-    return model
+    return model.net.speech_enhancer
 
 @hydra.main(version_base=None, config_path="../config", config_name="stream_config")
 def stream_pipeline(cfg):
-    py_audio = pyaudio.PyAudio()
+        if cfg.streaming.num_threads:
+            torch.set_num_threads(cfg.streaming.num_threads)
 
-    # Select the input device
-    input_index = select_input_device(py_audio)
-    
-    # Select the output device (virtual cable)
-    output_index = select_output_device(py_audio)
-    
-    if(output_index == -1):
-        print('No virtual cable found')
-        print('Please install VB-Audio Virtual Cable and try again')
-        return
-    
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    print(f"Using device: {device}")
+        device = cfg.streaming.device
 
-    model = setup_model(cfg.model).to(device)
-    speaker_embedder = load_speaker_embedder()
-    
-    embedding = speaker_embedder.get_embedding(select_reference_audio()).to(device)
-    
-    window_length_ms = cfg.streaming.window_size / cfg.streaming.fs * 1000
-    
-    keyboard.on_press_key('m', lambda _: change_mode())
-    
-    # Testing
-    # import torchaudio
-    # test, fs = torchaudio.load("C:/Users/imoha/Downloads/test.wav")
-    # if fs != cfg.streaming.fs:
-    #     test = torchaudio.transforms.Resample(fs, cfg.streaming.fs)(test)
-    # test = test.to(device)
-    # # Change number of channels to 1
-    # if test.shape[0] > 1:
-    #     test = test.mean(dim=0, keepdim=True)
-    
-    # with torch.no_grad():
-    #     test_enhanced = model.net.speech_enhancer(test, embedding)
-    # torchaudio.save('test_enhanced.wav', test_enhanced[0].cpu(), cfg.streaming.fs)
-    
-    # Open a stream with the selected input device as the input
-    # and the virtual cable as the output device and stream the audio
-    try:
-        input_stream = py_audio.open(format=pyaudio.paFloat32,
-                        channels=1,
-                        rate=cfg.streaming.fs,
-                        input=True,
-                        input_device_index=input_index)
+        speaker_embedder = load_speaker_embedder()
+        print("Speaker embedder loaded.")
+        embedding = speaker_embedder.get_embedding(cfg.streaming.reference_audio).to(device)
+        del speaker_embedder
         
-        # Open a stream with the virtual cable as the output device
-        output_stream = py_audio.open(format=pyaudio.paFloat32,
-                        channels=1,
-                        rate=cfg.streaming.fs,
-                        output=True,
-                        output_device_index=output_index)
-        i = 0
-        while input_stream.is_active():
-            # Read audio data from the stream
-            audio_data = input_stream.read(cfg.streaming.window_size)
-            
-            # If the mode is original, just stream the audio data
-            if mode == 'original':
-                output_stream.write(audio_data)
-                continue
-                        
-            # Convert the audio data to a numpy array
-            audio_data = np.frombuffer(audio_data, dtype=np.float32)
-            audio_data = np.copy(audio_data)
-            
-            # Convert the numpy array to a PyTorch tensor
-            audio_tensor = torch.from_numpy(audio_data).to(device).unsqueeze(0)
-                        
-            # save the audio tensor to a file
-            # torchaudio.save(f'output/{time.time()}.wav', audio_tensor, 16000)
-            
-            start_time = time.time()
-            with torch.no_grad():
-                enhanced = model.net.speech_enhancer(audio_tensor, embedding)
-            processing_time = (time.time() - start_time) * 1000
-            rtf = processing_time / window_length_ms
-            
-            if i % 100 == 0:
-                print(f"\rProcessing time: {processing_time:.2f} ms\tRTF: {rtf:.3f}", end="")            
-            
-            output_stream.write(enhanced[0].cpu().numpy().tobytes())
-            
-            i += 1
-            
-            # Stream the fake audio data
-            # output_stream.write(audio_tensor.numpy().tobytes())
-    except KeyboardInterrupt:
-        pass
-    
-    # Close the stream and PyAudio
-    output_stream.stop_stream()
-    output_stream.close()
-    input_stream.stop_stream()
-    input_stream.close()
-    py_audio.terminate()
+        model = setup_model(cfg.model).to(device)
+        print("Model loaded.")
+        model.eval()
 
+        streamer = Streamer(model, 
+                            embedding, 
+                            dry=cfg.streaming.dry, 
+                            num_frames=cfg.streaming.num_frames,
+                            device=device)
+        print("Streamer initialized.")
+
+        device_in = parse_audio_device(cfg.streaming.in_device)
+        caps = query_devices(device_in, "input")
+        channels_in = min(caps['max_input_channels'], 2)
+        stream_in = InputStream(
+            device=device_in,
+            samplerate=cfg.streaming.fs,
+            channels=channels_in)
+        print("Audio input initialized.")
+
+        device_out = parse_audio_device(cfg.streaming.out_device)
+        caps = query_devices(device_out, "output")
+        channels_out = min(caps['max_output_channels'], 2)
+        stream_out = OutputStream(
+            device=device_out,
+            samplerate=cfg.streaming.fs,
+            channels=channels_out)
+        print("Audio output initialized.")
+
+        stream_in.start()
+        stream_out.start()
+        first = True
+        current_time = 0
+        last_log_time = 0
+        last_error_time = 0
+        cooldown_time = 2
+        log_delta = 10
+        sr_ms = cfg.streaming.fs / 1000
+        stride_ms = streamer.stride / sr_ms
+        print(f"Ready to process audio, total lag: {streamer.total_length / sr_ms:.1f}ms.")
+        while True:
+            try:
+                if current_time > last_log_time + log_delta:
+                    last_log_time = current_time
+                    tpf = streamer.time_per_frame * 1000
+                    rtf = tpf / stride_ms
+                    print(f"\rtime per frame: {tpf:.1f}ms, RTF: {rtf:.2f}", end='')
+                    streamer.reset_time_per_frame()
+
+                length = streamer.total_length if first else streamer.stride
+                first = False
+                current_time += length / model.sample_rate
+                frame, overflow = stream_in.read(length)
+                frame = torch.from_numpy(frame).mean(dim=1).to(device)
+                with torch.no_grad():
+                    out = streamer.feed(frame[None])[0]
+                if not out.numel():
+                    continue
+                if cfg.streaming.compressor:
+                    out = 0.99 * torch.tanh(out)
+                out = out[:, None].repeat(1, channels_out)
+                mx = out.abs().max().item()
+                if mx > 1:
+                    print("Clipping!!\n")
+                out.clamp_(-1, 1)
+                out = out.cpu().numpy()
+                underflow = stream_out.write(out)
+                if overflow or underflow:
+                    if current_time >= last_error_time + cooldown_time:
+                        last_error_time = current_time
+                        tpf = 1000 * streamer.time_per_frame
+                        print(f"Not processing audio fast enough, time per frame is {tpf:.1f}ms "
+                              f"(should be less than {stride_ms:.1f}ms).\n")
+            except KeyboardInterrupt:
+                print("Stopping")
+                break
+        stream_out.stop()
+        stream_in.stop()
+    
 if __name__ == "__main__":
     stream_pipeline()

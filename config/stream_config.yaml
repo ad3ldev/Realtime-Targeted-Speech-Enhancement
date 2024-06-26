@@ -9,8 +9,15 @@ logger:
   use_tb_logger: True
 
 streaming:
+  in_device:
+  out_device: "CABLE Input"
+  reference_audio:
   fs: 16000
-  window_size: 512
+  dry: 0.04
+  num_frames: 2
+  num_threads: 2
+  compressor: True
+  device: cpu
 
 defaults:
 - model: PDenoiser

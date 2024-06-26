@@ -8,9 +8,9 @@ from nemo.collections.asr.models import EncDecSpeakerLabelModel
 from utils.logger import get_root_logger
 
 class WaveTita(torch.nn.Module):
-    def __init__(self, speech_enhancer, initial_weights=None, strict=True, *args, **kwargs) -> None:
+    def __init__(self, speech_enhancer, initial_weights=None, strict=True, device=None, *args, **kwargs) -> None:
         super(WaveTita, self).__init__(*args, **kwargs)
-        self.device = self.detect_device()
+        self.device = device if device else self.detect_device()
         self.speaker_embedder = self.load_speaker_embedder()
         self.speech_enhancer = speech_enhancer
         if initial_weights:

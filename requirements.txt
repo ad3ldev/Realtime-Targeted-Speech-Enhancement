@@ -28,4 +28,4 @@ pandas
 pathlib
 
 # Streaming
-pyaudio
+sounddevice
