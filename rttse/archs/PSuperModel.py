@@ -38,8 +38,10 @@ class PSuperModel(torch.nn.Module):
         references = data["reference"]
 
         labels = self.speaker_embedder.embed_batch(reference_pathes, references).to(self.device)
-
-        return self.speech_enhancer(noisy_audio, self.speaker_embedding(labels))
+        out = self.speech_enhancer(noisy_audio, self.speaker_embedding(labels))
+        if type(out) == tuple:
+            return out[0]
+        return out
     
     def __deepcopy__(self, memo):
         return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder, self.reference_embedding, self.target_embedding)
