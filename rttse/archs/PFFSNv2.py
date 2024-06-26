@@ -230,6 +230,7 @@ class PFFSNv2(FullSubNetBaseModel):
         bn_output = self.real_time_upsampling(bn_output_shrink, target_len=num_frames)  # [B, 1, F_mel, T]
 
         # F_ml2
+        assert reference.dim() == 4, f"reference shape is {reference.shape}, but expected to be [B, 1, F, 1]."
         dec_input = torch.cat([enc_output, bn_output], dim=2) * reference
         dec_input = dec_input.reshape(batch_size, -1, num_frames)
         decoder_lstm_output = self.decoder_lstm(dec_input)  # [B * C, F * 2, T]
