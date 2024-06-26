@@ -143,13 +143,13 @@ class PDenoiser(nn.Module):
             chin = hidden
             hidden = min(int(growth * hidden), max_hidden)
 
-        self.speaker_embedding = nn.Sequential(
-            nn.Linear(reference_embedding, 512),
-            nn.LayerNorm(512),
-            nn.ReLU(),
-            nn.Linear(512, chin),
-            nn.LayerNorm(chin),
-            nn.ReLU())
+        # self.speaker_embedding = nn.Sequential(
+        #     nn.Linear(reference_embedding, 512),
+        #     nn.LayerNorm(512),
+        #     nn.ReLU(),
+        #     nn.Linear(512, chin),
+        #     nn.LayerNorm(chin),
+        #     nn.ReLU())
         
         self.lstm = BLSTM(chin, bi=not causal)
         if freeze_lstm:
@@ -207,7 +207,7 @@ class PDenoiser(nn.Module):
             skips.append(x)
 
 
-        reference = self.speaker_embedding(reference).unsqueeze(-1)
+        reference = reference.unsqueeze(-1)
         # print(reference.shape)  
         # print(x.shape)
 

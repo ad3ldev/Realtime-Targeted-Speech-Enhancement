@@ -38,8 +38,8 @@ class DictTransform:
 
     def __call__(self, sample, idx):
         return {
-            "clean": sample[2].unsqueeze(1),
-            "noisy": sample[1].unsqueeze(1),
+            "clean": sample[2].unsqueeze(0),
+            "noisy": sample[1].unsqueeze(0),
             "reference_path": sample[3],
             "reference": sample[0],
             "index": idx

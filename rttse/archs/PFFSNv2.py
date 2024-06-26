@@ -163,7 +163,7 @@ class PFFSNv2(FullSubNetBaseModel):
         return enhanced
     
     # fmt: off
-    def forward(self, data):
+    def forward(self, noisy, reference):
         """Forward pass.
 
         Args:
@@ -182,8 +182,13 @@ class PFFSNv2(FullSubNetBaseModel):
             T - time
             F_s - sub-band frequency
         """
-        noisy = data['noisy']
-        # noisy = noisy.squeeze(1)
+        # noisy = data
+        if noisy.dim() == 3:
+            noisy = noisy.squeeze(1)
+
+        if reference.dim() == 3:
+            reference = reference.squeeze(1)
+            
         # print("noisy shape: ", noisy.shape)
         mix_mag, _, noisy_real, noisy_imag = stft(noisy, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
@@ -221,7 +226,7 @@ class PFFSNv2(FullSubNetBaseModel):
         bn_output = self.real_time_upsampling(bn_output_shrink, target_len=num_frames)  # [B, 1, F_mel, T]
 
         # F_ml2
-        dec_input = torch.cat([enc_output, bn_output], dim=2) * data['reference_subbands']
+        dec_input = torch.cat([enc_output, bn_output], dim=2) * reference
         dec_input = dec_input.reshape(batch_size, -1, num_frames)
         decoder_lstm_output = self.decoder_lstm(dec_input)  # [B * C, F * 2, T]
         dec_output = decoder_lstm_output.reshape(batch_size, 2, num_freqs, num_frames)
