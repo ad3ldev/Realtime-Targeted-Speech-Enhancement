@@ -10,24 +10,27 @@ from utils.logger import get_root_logger
 
 class PSuperModel(torch.nn.Module):
     def __init__(self, speech_enhancer, speech_embedder: EmbedderWrapper, reference_embedding, 
-                 target_embedding, initial_weights=None, strict=True, *args, **kwargs) -> None:
+                 target_embedding, embedding_projection=None, initial_weights=None, strict=True, *args, **kwargs) -> None:
         super(PSuperModel, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
         self.speaker_embedder = speech_embedder
         self.speech_enhancer = speech_enhancer
-        self.reference_embedding = reference_embedding.to(self.device)
-        self.target_embedding = target_embedding.to(self.device)
+        # self.reference_embedding = reference_embedding
+        # self.target_embedding = target_embedding
         if initial_weights:
             self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)
             get_root_logger().info(f"Loaded weights from {initial_weights}")
 
-        self.speaker_embedding = nn.Sequential(
-            nn.Linear(reference_embedding, 512),
-            nn.LayerNorm(512),
-            nn.ReLU(),
-            nn.Linear(512, target_embedding),
-            nn.LayerNorm(target_embedding),
-            nn.ReLU())
+        if embedding_projection is None:
+            self.embedding_projection = nn.Sequential(
+                nn.Linear(reference_embedding, 512),
+                nn.LayerNorm(512),
+                nn.ReLU(),
+                nn.Linear(512, target_embedding),
+                nn.LayerNorm(target_embedding),
+                nn.ReLU())
+        else:
+            self.embedding_projection = embedding_projection
 
     def detect_device(self) -> str:
         return "cuda" if torch.cuda.is_available() else "cpu"
@@ -44,4 +47,4 @@ class PSuperModel(torch.nn.Module):
         return out
     
     def __deepcopy__(self, memo):
-        return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder, self.reference_embedding, self.target_embedding)
+        return PSuperModel(deepcopy(self.speech_enhancer, memo), self.speaker_embedder, deepcopy(self.embedding_projection, memo))
