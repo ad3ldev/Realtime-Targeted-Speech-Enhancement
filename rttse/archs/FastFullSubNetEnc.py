@@ -99,7 +99,7 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
             nn.ReLU(),
             nn.Linear(num_mels * 4, num_mels * 2),
             nn.LayerNorm(num_mels * 2),
-            nn.Sigmoid()
+            nn.Relu()
         )
 
         if weight_init:
