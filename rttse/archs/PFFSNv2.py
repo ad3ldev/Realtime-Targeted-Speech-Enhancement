@@ -188,6 +188,8 @@ class PFFSNv2(FullSubNetBaseModel):
 
         if reference.dim() == 3:
             reference = reference.squeeze(1)
+        elif reference.dim() == 2:
+            reference = reference.unsqueeze(1).unsqueeze(-1)
         elif reference.dim() == 1:
             reference = reference.unsqueeze(0).unsqueeze(0).unsqueeze(-1)
             
