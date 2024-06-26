@@ -3,20 +3,26 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import os
 import config.objects_placement as op
+import config.color_modes as cm
 from dao.database import create_connection, create_table, select_all_users, save_user, get_path_from_file_name, get_file_name_by_user_id, update_reference, get_file_path_by_user_id
 from tkinter import font
 
 
 class ReferenceVoiceComponent:
-    padding_val = 5
-
+    '''
+    Class to create a dropdown menu to select the reference voice.
+    '''
     def __init__(self, root, db_file, user_id):
+        '''
+        Initialize the Reference Voice Component with the root window, database file, and user id.
+        '''
         self.root = root
         self.reference_audio_path = tk.StringVar()
         self.reference_voice_name_var = tk.StringVar(value="No one selected!")
         self.new_username_var = tk.StringVar(value="")
         self.bold_font = font.Font(family="Helvetica", size=12, weight="bold")
 
+        self.new_reference_name_var = tk.StringVar(value="No file selected!")
         self.db_file = db_file
         self.user_id = user_id
         self.selected_reference = None
@@ -25,40 +31,62 @@ class ReferenceVoiceComponent:
         # self.create_saved_references_dropdown()
         # self.create_references_section()
         self.create_users_section()
-        self.apply_styles()
         self.create_audio_storage_dir()
 
         self.disable_components()
         self.enable_components()
         self.on_submit()
 
+        self.apply_styles()
+
 
     def disable_components(self):
+        '''
+        Disable the components of the Reference Voice Component.
+        '''
         self.saved_users_dropdown.configure(state="disabled")
         self.upload_reference_button.configure(state="disabled")
         self.save_user_button.configure(state="disabled")
     
+
     def enable_components(self):
+        '''
+        Enable the components of the Reference Voice Component.
+        '''
         self.saved_users_dropdown.configure(state="normal")
         self.upload_reference_button.configure(state="normal")
         self.save_user_button.configure(state="normal")
 
+
     def on_submit(self):
+        '''
+        Return the user id and the reference audio path.
+        '''
         return self.user_id, self.reference_audio_path.get()
     
 
     def create_audio_storage_dir(self):
+        '''
+        Create the audio storage directory if it does not exist.
+        '''
         if not os.path.exists(self.audio_storage_dir):
             os.makedirs(self.audio_storage_dir)
 
 
     def get_path_from_file_name(self, file_name):
+        '''
+        Get the path of the audio file from the file name.
+        '''
         conn = create_connection(self.db_file)
         with conn:
             path = get_path_from_file_name(conn, file_name)
         return path
 
+
     def on_reference_selected(self, event):
+        '''
+        Get the reference audio path when a reference is selected from the dropdown.
+        '''
         self.selected_reference = self.saved_references_var.get()
         print(f"Selected reference: {self.selected_reference}")
         path = self.get_path_from_file_name(self.selected_reference)
@@ -67,12 +95,18 @@ class ReferenceVoiceComponent:
 
     
     def on_user_selected(self, event):
+        '''
+        Get the user id when a user is selected from the dropdown.
+        '''
         self.user_id = self.saved_users_var.get()
         self.reference_voice_name_var.set(get_file_name_by_user_id(create_connection(self.db_file), self.user_id))
         print(f"Selected user: {self.user_id}")
 
 
     def create_users_section(self):
+        '''
+        Initialize and place all widgets related to user selection and reference voice configuration in the main window.
+        '''
         # Username Section
         # Label
         self.username_label = ttk.Label(self.root, text="Select User")
@@ -125,11 +159,17 @@ class ReferenceVoiceComponent:
         # self.load_saved_references()
 
 
-    def create_new_account(self):
+    def create_new_account(self, bg_color=cm.bg_color_dark): # CHANGE THIS INDEPENDENTLY FOR NEW WINDOW MODE.
+        '''
+        Create a new account for a new user: username - audio file.
+        '''
         self.newuser_window = tk.Toplevel(self.root)
         self.newuser_window.title("New User")
-        self.newuser_window.geometry("300x110") # Adjut the secondary window size
-        self.new_reference_name_var = tk.StringVar(value="No file selected!")
+        self.newuser_window.geometry("300x130") # Adjut the secondary window size
+        self.newuser_window.resizable(False, False)
+        self.newuser_window.configure(bg=bg_color)
+
+        # self.newuser_window.configure(bg=bg_color)
         self.last_uploaded_audio = None
 
         # Username Field
@@ -138,14 +178,13 @@ class ReferenceVoiceComponent:
         self.new_username_entry = ttk.Entry(self.newuser_window, textvariable=self.new_username_var)
         self.new_username_entry.pack(fill='x', padx=10, pady=5)
 
-
-        self.new_user_frame = tk.Frame(self.newuser_window)
+        self.new_user_frame = tk.Frame(self.newuser_window, bg=bg_color)
         
-        self.upload_frame = tk.Frame(self.new_user_frame)
+        self.upload_frame = tk.Frame(self.new_user_frame, bg=bg_color)
         self.upload_frame.columnconfigure(0, weight=4)
         self.upload_frame.columnconfigure(1, weight=8)
         
-        self.submit_frame = tk.Frame(self.new_user_frame)
+        self.submit_frame = tk.Frame(self.new_user_frame, bg=bg_color)
         self.submit_frame.columnconfigure(0, weight=4)
         
         # Upload Audio Button
@@ -153,7 +192,7 @@ class ReferenceVoiceComponent:
         self.upload_button.grid(row=0, column=0)
         self.new_reference_name_label = ttk.Label(self.upload_frame, textvariable=self.new_reference_name_var)
         self.new_reference_name_label.grid(row=0, column=1)
-        self.upload_frame.pack(fill='x')
+        self.upload_frame.pack(fill='x', pady=5)
 
         # Ok Button
         self.ok_button = tk.Button(self.submit_frame, text="   Ok   ", command=self.submit_new_user)
@@ -166,6 +205,9 @@ class ReferenceVoiceComponent:
 
 
     def upload_audio(self):
+        '''
+        Upload the reference audio of the new user.
+        '''
         file_path = filedialog.askopenfilename(filetypes=[("Audio Files", "*.mp3 *.wav *.m4a")])
         if file_path:
             file_name = os.path.basename(file_path)
@@ -177,7 +219,11 @@ class ReferenceVoiceComponent:
             self.new_reference_name_var.set(os.path.basename(self.new_file_path))
             self.last_uploaded_audio = self.new_file_path
 
+
     def update_audio(self):
+        '''
+        Update the reference audio of the selected user.
+        '''
         if self.user_id == "default":
             print("Please select a user first!")
             return
@@ -201,14 +247,19 @@ class ReferenceVoiceComponent:
 
 
     def submit_new_user(self):
+        '''
+        Submit the new user details to the database.
+        '''
         # Get the username
         username = self.new_username_var.get()
+        print(f"Username: {username}")
+        print(f"File Path: {self.reference_audio_path.get()}")
 
         # Check if all fields are filled
         if not username:
             print("Username cannot be empty!")
             return
-        if not self.reference_audio_path:
+        if self.reference_audio_path.get() == "":
             print("Audio file not uploaded!")
             return
         
@@ -238,10 +289,14 @@ class ReferenceVoiceComponent:
             return
         self.load_saved_users()
         self.newuser_window.destroy()
-
+        self.reference_audio_path = tk.StringVar()
+        self.new_username_var = tk.StringVar(value="")
 
 
     def load_saved_users(self):
+        '''
+        Load all saved users from the database.
+        '''
         conn = create_connection(self.db_file)
         with conn:
             users = select_all_users(conn)
@@ -249,16 +304,36 @@ class ReferenceVoiceComponent:
         self.saved_users_dropdown['values'] = user_names
 
 
-    def apply_styles(self):
+    def apply_styles(self, bg_color=cm.bg_color_light, fg_color=cm.fg_color_light):
+        '''
+        Apply styles to the components of the Reference Voice Component.
+        '''
         style = ttk.Style()
-        style.configure("TButton", font=("Helvetica", 12))
-        style.configure("TLabel", font=("Helvetica", 12))
-        # style.configure("TEntry", font=("Helvetica", 12))
-        # self.upload_button.configure(style="TButton")
-        # self.reference_audio_label.configure(style="TLabel")
-        # self.saved_references_dropdown.configure(style="TCombobox")
-        # self.username_entry.configure(style="TEntry")
-        # self.username_label.configure(style="TLabel")
+        style.configure("TButton", font=("Helvetica", 12), background=bg_color, foreground=fg_color)
+        style.configure("TLabel", font=("Helvetica", 12), background=bg_color, foreground=fg_color)
+        style.configure("TCombobox", font=("Helvetica", 12))
+        style.configure("Custom.TButton", font=("Helvetica", 12), background=bg_color, foreground=fg_color)
+
+        self.username_label.configure(style="TLabel")
+        self.saved_users_dropdown.configure(style="TCombobox")
+        self.new_username_label.configure(style="TLabel")
+        self.save_user_button.configure(style="Custom.TButton")
+        self.reference_voice_label.configure(style="TLabel")
+        self.reference_voice_name.configure(style="TLabel")
+        self.change_reference_label.configure(style="TLabel")
+        self.upload_reference_button.configure(style="Custom.TButton")
+        self.new_username_label.configure(style="TLabel")
+
+    
+    def change_color_mode(self, mode):
+        '''
+        Change the color mode of the Reference Voice Component.
+        '''
+        if mode == "dark":
+            self.apply_styles(cm.bg_color_dark, cm.fg_color_dark)
+        elif mode == "light":
+            self.apply_styles(cm.bg_color_light, cm.fg_color_light)
+
 
     def init_database(self):
         conn = create_connection(self.db_file)

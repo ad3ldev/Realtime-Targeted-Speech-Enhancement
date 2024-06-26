@@ -11,7 +11,7 @@ NoiseSuppression_switch_relx = 0.95
 NoiseSuppression_switch_rely = 0.05
 NoiseSuppression_switch_anchor = 'ne'
 
-NoiseSuppression_slider_pady = 50
+NoiseSuppression_slider_pady = 55
 
 
 ReferenceVoice_SelectUser_Label_relx = 0.05
