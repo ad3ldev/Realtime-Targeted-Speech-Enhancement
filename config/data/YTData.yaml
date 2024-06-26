@@ -10,7 +10,6 @@ opt:
       output_mapper:
         _target_: data.yt_data.TupleTransform
       length_sec: 3
-      pitch_shifts: [-2, -1, 0, 1, 2]
 
     dataloader:
       batch_size: 2
@@ -37,3 +36,18 @@ opt:
       #   _target_: data.yt_data.YTCollate
       # shuffle: True
       # pin_memory: True
+
+
+  test:
+    dataset:
+      _target_: data.yt_data.YTData
+      data_manifest: "scripts/yt_data/test_data_manifest.json"
+      data_root: ""
+      output_mapper:
+        _target_: data.yt_data.TupleTransform
+      length_sec: 10
+      snrs_db: [6]
+  
+    dataloader:
+      batch_size: 1
+      num_workers: 4
