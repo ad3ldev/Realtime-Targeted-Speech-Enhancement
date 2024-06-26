@@ -122,8 +122,8 @@ class BaseModel(pl.LightningModule):
         
         y_hat = y_hat.cpu()
         for i, clip in enumerate(y_hat):
-            filename = f"{batch['noisy_filename'][i]}"
-        torchaudio.save(f"{self.cfg.save_dir}/{filename}.wav", clip, self.cfg.sample_rate)
+            filename = f"{self.cfg.save_dir}/{i}.wav"
+            torchaudio.save(filename, clip, self.cfg.sample_rate)
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self.hparams.train.optim, params=self.get_bare_model().parameters())
