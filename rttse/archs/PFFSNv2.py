@@ -242,8 +242,10 @@ class PFFSNv2(FullSubNetBaseModel):
         
         # Full band CRM mask
         enhanced = self.full_band_crm_mask(output, noisy, noisy_real, noisy_imag)
-        if enhanced.dim() == 3:
-            enhanced = enhanced.squeeze(1)
+        # if enhanced.dim() == 3:
+            # print("squeeze")
+            # enhanced = enhanced.squeeze(1)
+        enhanced = enhanced.unsqueeze(1)
         return enhanced, output
         
 # fmt: on
@@ -265,7 +267,7 @@ if __name__ == "__main__":
             noisy, sr = audio.load(args.source)
             noisy = noisy.unsqueeze(0)
         else:
-            noisy = torch.rand(1, 1, 160000)
+            noisy = torch.rand(1, 1, 48000)
             reference = torch.rand(1, 1, 128, 1)
 
         model = PFFSNv2()
@@ -275,11 +277,11 @@ if __name__ == "__main__":
             model.load_state_dict(old_state_dict)
         
         start = time.time()
-        enhanced, cRM = model({'noisy': noisy, 'reference_subbands': reference})
+        enhanced, cRM = model(noisy, reference)
         print(f'input shape: {noisy.shape}, output shape: {enhanced.shape}')
         end = time.time()
         print(f'inference time: {end - start:.4f} s')
         if args.target:
             for i in range(enhanced.size(0)):
                 audio.save(args.target + f'_{i}.wav', enhanced[i], sr)
-        summary(model, input_data={'data':{'noisy': noisy, 'reference_subbands':reference}}, device="cpu")
+        # summary(model, input_data={'data':{'noisy': noisy, 'reference_subbands':reference}}, device="cpu")

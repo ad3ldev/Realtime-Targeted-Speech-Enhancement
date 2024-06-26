@@ -253,4 +253,5 @@ def fast_conv(conv, x):
 
 if __name__ == "__main__":
     model = PDenoiser()
-    model(th.randn(1, 1, 16000), th.randn(1, 192))
+    out = model(th.randn(1, 1, 16000), th.randn(1, 768))
+    print(out.shape)

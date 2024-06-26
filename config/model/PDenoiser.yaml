@@ -4,6 +4,8 @@ net:
   _target_: archs.PSuperModel.PSuperModel
   initial_weights: /kaggle/working/Realtime-Targeted-Speech-Enhancement/rttse/archs/Denoiser_init_ckpt.th
   strict: false
+  reference_embedding: 192
+  target_embedding: 768
   speech_enhancer:
     _target_: archs.PDenoiser.PDenoiser
     reference_embedding: 192
