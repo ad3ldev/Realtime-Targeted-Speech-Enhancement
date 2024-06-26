@@ -5,6 +5,8 @@ from components import InputDeviceComponent, NoiseSuppressionComponent, Referenc
 import config.objects_placement as op
 import config.color_modes as cm
 
+color_mode = "light"
+
 class MainApplication:
     resize_after_id = None
 
@@ -29,11 +31,11 @@ class MainApplication:
         user_id = "default"
 
         # Initialize components
-        self.noise_suppression_component = NoiseSuppressionComponent(root)
-        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id)
+        self.noise_suppression_component = NoiseSuppressionComponent(root, color_mode)
+        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id, color_mode)
         self.input_device_component = InputDeviceComponent(root)
 
-        self.set_mode("dark")
+        self.set_mode(color_mode)
 
         self.get_components_values()
         self.apply_initial_styles()
@@ -145,9 +147,36 @@ def main():
     """
     The main function to initialize and run the application.
     """
+    ctk.set_appearance_mode(color_mode)
     root = ctk.CTk()
     app = MainApplication(root)
     root.mainloop()
 
 if __name__ == "__main__":
     main()
+
+
+# import customtkinter as ctk
+
+# # Set the appearance mode to "light"
+# ctk.set_appearance_mode("light")  # Other options are "dark" and "system"
+
+# # Create the main window
+# root = ctk.CTk()
+
+# # Set the window title
+# root.title("Light Mode Window")
+
+# # Set the window size
+# root.geometry("400x300")
+
+# # Create a label with some text
+# label = ctk.CTkLabel(root, text="This is a light mode window!", font=("Arial", 20))
+# label.pack(pady=20)
+
+# # Create a button
+# button = ctk.CTkButton(root, text="Click Me")
+# button.pack(pady=10)
+
+# # Run the application
+# root.mainloop()

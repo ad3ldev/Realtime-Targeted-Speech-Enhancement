@@ -12,7 +12,7 @@ class ReferenceVoiceComponent:
     '''
     Class to create a dropdown menu to select the reference voice.
     '''
-    def __init__(self, root, db_file, user_id):
+    def __init__(self, root, db_file, user_id, bg_color):
         '''
         Initialize the Reference Voice Component with the root window, database file, and user id.
         '''
@@ -21,6 +21,7 @@ class ReferenceVoiceComponent:
         self.reference_voice_name_var = tk.StringVar(value="No one selected!")
         self.new_username_var = tk.StringVar(value="")
         self.bold_font = font.Font(family="Helvetica", size=12, weight="bold")
+        self.bg_color = bg_color
 
         self.new_reference_name_var = tk.StringVar(value="No file selected!")
         self.db_file = db_file
@@ -129,7 +130,10 @@ class ReferenceVoiceComponent:
                                       rely=op.ReferenceVoice_NewUser_Label_rely,
                                       anchor=op.ReferenceVoice_NewUser_Label_anchor)
         # Button
-        self.save_user_button = ttk.Button(self.root, text="Create new Account", command=self.create_new_account, style="Custom.TButton")
+        if(self.bg_color == "dark"):
+            self.save_user_button = ttk.Button(self.root, text="Create new Account", command=lambda:self.create_new_account(cm.bg_color_dark), style="Custom.TButton")
+        elif(self.bg_color == "light"):
+            self.save_user_button = ttk.Button(self.root, text="Create new Account", command=lambda:self.create_new_account(cm.bg_color_light), style="Custom.TButton")
         self.save_user_button.place(relx=op.ReferenceVoice_SaveUser_Button_relx,
                                     rely=op.ReferenceVoice_SaveUser_Button_rely,
                                     anchor=op.ReferenceVoice_SaveUser_Button_anchor)

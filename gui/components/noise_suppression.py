@@ -8,7 +8,7 @@ class NoiseSuppressionComponent:
     """
     Class to create a slider to set the noise suppression level and a switch to enable or disable noise suppression.
     """
-    def __init__(self, root):
+    def __init__(self, root, bg_color):
         self.root = root
         self.dry_set_slider_value = tk.DoubleVar()
         self.dry_set_slider_old_value = 0
@@ -16,7 +16,7 @@ class NoiseSuppressionComponent:
         self.create_switch()
         self.create_slider()
         self.apply_styles()
-        self.change_color_mode()
+        self.change_color_mode(bg_color)
 
         self.disable_components()
         self.enable_components()
