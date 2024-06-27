@@ -6,9 +6,9 @@
     \caption{A time-frequency representation. Time runs along one axis, frequency along the other. Each point's brightness reveals the sound's energy at that specific time and frequency.}
     \label{fig:tf}
 \end{figure}
-The TF representation can be thought of as a two-dimensional map, where one axis tracks time and the other maps frequency, like the different notes played. Each tiny square on the map shown in Figure \ref{fig:tf}, called a "TF bin," captures the energy (loudness) of the sound at that precise moment and frequency.
+The TF representation can be thought of as a two-dimensional map, where one axis tracks time and the other maps frequency like the different notes played. Each tiny square on the map shown in Figure \ref{fig:tf}, called a "TF bin," captures the energy (loudness) of the sound at that precise moment and frequency.
 
-It can be visualized as a heatmap, where brighter colors usually hint at louder sounds, while darker shades whisper quieter ones. Some heatmaps even have a colorbar, like a legend, to clearly explain which colors correspond to which sound levels. So, by peering into this colorful landscape, we can learn how frequencies changes and shift over time, unlocking valuable insights into the inner workings of sound.
+It can be visualized as a heatmap, where brighter colors usually hint at louder sounds, while darker shades whisper quieter ones. Some heatmaps even have a color bar, like a legend, to clearly explain which colors correspond to which sound levels. So, by peering into this colorful landscape, we can learn how frequencies change and shift over time, unlocking valuable insights into the inner workings of sound.
 
 \subsubsection{Short-time Fourier Transform (STFT)}
 \begin{figure} [H]
@@ -35,7 +35,7 @@ The STFT is a reversible transformation, meaning we can reconstruct the original
 In speech enhancement applications, the STFT's ability to decompose audio into its constituent frequencies over time proves invaluable for identifying and manipulating noise patterns, ultimately leading to clearer and more intelligible speech.\\
 When computing STFT there exist multiple parameters to take into consideration here are some of them: 
 \begin{itemize}
-    \item \textbf{Window Types:} When analyzing audio for speech enhancement, the window type acts like a lens, shaping how frequencies are captured in short segments before the DFT. Different window shapes can highlight or downplay certain frequencies, influencing the final STFT representation. Figure \ref{fig:stft-windows} shows the most widely used windows when calculation STFT.
+    \item \textbf{Window Types:} When analyzing audio for speech enhancement, the window type acts like a lens, shaping how frequencies are captured in short segments before the DFT. Different window shapes can highlight or downplay certain frequencies, influencing the final STFT representation. Figure \ref{fig:stft-windows} shows the most widely used windows when calculating STFT.
     \item \textbf{Window Length:} Window length dictates how many samples of audio are captured within each short segment before applying the DFT. This choice directly affects the frequency resolution of the resulting STFT representation; the longer the window the higher the frequency resolution and vice versa as shown in figure \ref{fig:window-len}.
     \item \textbf{Hop Length:} The hop length dictates the separation in samples, between successive short-time windows. Figure \ref{fig:hop-len} shows how adjusting the hop length can either extend or compress the time axis in a STFT.
     \item \textbf{Overlap-Add:} When converting a signal to an STFT and back to a waveform, certain parameter values for window type, window length, and hop length may not precisely recreate the original signal. A certain set of parameters, on the other hand, is theoretically guaranteed to properly reconstruct any signal. These parameter sets are known as Constant Overlap-Add (COLA) because they add up to a constant value when subsequent windows are applied.
@@ -51,20 +51,20 @@ When computing STFT there exist multiple parameters to take into consideration h
 \begin{figure} [H]
     \centering
     \includegraphics[width=0.75\linewidth]{images/audiorep/window-hop.png}
-    \caption{Window length represents the numbers of samples taken per windows. A trade-off between the window length and the frequency resolution is shown.}
+    \caption{Window length represents the number of samples taken per window. A trade-off between the window length and the frequency resolution is shown.}
     \label{fig:window-len}
 \end{figure}
 
 \begin{figure} [H]
     \centering
     \includegraphics[width=0.75\linewidth]{images/audiorep/window-len.png}
-    \caption{The hop length determines the distances in samples between contiguous short-time windows. The smaller the hop length the more times a portion of the audio signal in present in the STFT.}
+    \caption{The hop length determines the distances in samples between contiguous short-time windows. The smaller the hop length the more times a portion of the audio signal is present in the STFT.}
     \label{fig:hop-len}
 \end{figure}
 
 \subsubsection{Mel-spaced Spectrograms}
 In terms of frequencies, human hearing is logarithmic! The Mel scale approximates this characteristic and is a simple technique to create a spectrogram's frequency axis. Because the number of Mel-spaced frequency bins is generally less than the number of linearly-spaced frequency bins, this is also commonly used to reduce the computational load on deep learning-based techniques.\\
-Figure \ref{fig:specto} shows how the Mel-spectrogram compress higher frequencies and leave more space for lower frequencies.
+Figure \ref{fig:specto} shows how the Mel-spectrogram compresses higher frequencies and leaves more space for lower frequencies.
 
 \begin{figure} [H]
     \centering
