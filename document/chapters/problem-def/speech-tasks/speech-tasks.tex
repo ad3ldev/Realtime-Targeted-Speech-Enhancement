@@ -3,10 +3,6 @@ A wide range of tasks related to speech processing exist. They revolve around ma
 Another branch of tasks is audio separation tasks, where the goal is to extract specific or targeted audio sources from a mixed audio signal. This has several applications, not only in speech but also in music. Music source separation is a common application, where the goal is to extract specific sound sources such as vocals and musical instruments. Another vital example is speech separation, where the mixed signal consists of multiple speakers and the goal is to extract the voice of each speaker. It can also be targeted for a specific speaker voice, i.e., extracting that target voice exactly which is known as target speech extraction.\\
 There are other speech-related tasks that focus on operating on speech instead of manipulating it. Speech recognition translates the spoken speech into text. Speaker recognition and diarization focus on identifying and tracking speakers in the given signal. Speech embeddings attempt to convert the signal into low-dimensional vector representations, which allows tasks such as speaker verification and sentiment analysis to exist.
 
-\section{Speaker Verification}
-Speaker verification is the process of verifying the identity of the speaker according to the characteristics of their voice. \\
-There are two types of speaker verification \cite{itsp2022}: text-dependent and text-independent. Text-dependent methods assume that the user will speak the text that has been pre-programmed into the speaker verification system. On the other hand, in a text-independent system, the user is not expected to cooperate and the system does not have any prior knowledge about the text to be spoken.
-
 \section{Speech Enhancement}
 Speech Enhancement is a signal processing task that involves improving the quality of speech signals captured under noisy or degraded conditions. Speech enhancement aims to improve the clarity, intelligibility, and listenability of speech signals, which can be employed for voice recognition, teleconferencing, and hearing aids, among other applications.\\ 
 The majority of recorded conversational speech signals have some kind of background noise that makes it difficult to understand, including tapping on a keyboard, dogs barking, or traffic noise. Therefore, improving speech is a crucial challenge in and of itself for hearing aids \cite{reddy2018}, audio and video calls \cite{reddy2019}, and automatic speech recognition (ASR) systems.
@@ -42,6 +38,19 @@ Music is considered a distinct problem from other types of source separation due
     \item Music is combined and processed in non-linear and aphysical ways. Because of modern recording techniques, any particular source in a mixture may never exist naturally in the real world. This is problematic since we rarely, if ever, know what processing was used on each source or the entire mixture.
     \item Usually, the output of a music source separation system is employed in an end-user system making the quality bar significantly higher.
 \end{enumerate}
+
+\section{Speaker Embedding}
+Speaker embeddings play a crucial role in converting a speech signal into a low-dimensional vector representation. This compressed format captures the essence of a speaker's characteristics, enabling various speech processing tasks. It lays the groundwork for applications like speaker verification and sentiment analysis.
+
+The process of using speech embeddings can be broken down into several steps. First, a raw speech signal is fed as input. This signal is then processed by an embedding model, typically a deep neural network trained to analyze speech and extract speaker-specific information. The model then generates a fixed-length vector representation, also known as the embedding. This embedding vector essentially encodes speaker characteristics such as pitch, timbre, and speaking style. Interestingly, embeddings for similar speakers will reside closer together in a vector space, whereas embeddings for distinct speakers will be further apart \cite{li2022speakerrepresentationlearningcontrastive}.
+
+Speech embeddings open doors to a variety of speech processing applications. One prominent example is speaker verification. In this task, the system determines whether a speaker's voice matches a claimed identity. This is achieved by comparing the embedding of the claimed speaker with the embedding of a captured voice sample. Another application is speaker diarization \cite{kwon2021adaptingspeakerembeddingsspeaker}. Here, the goal is to segment an audio recording into sections and identify the speaker in each segment. By analyzing the embeddings throughout the recording, the system can achieve this diarization task. Speech embeddings can even be incorporated into sentiment analysis. In this case, the emotional tone of speech is analyzed by considering both the speech content and the speaker embeddings.
+
+By learning and representing speaker characteristics in a compressed format, speech embeddings offer a powerful tool for various speech processing tasks. This technology paves the way for advancements in applications that rely on understanding the who and the how behind spoken language.
+
+\section{Speaker Verification}
+Speaker verification is the process of verifying the identity of the speaker according to the characteristics of their voice. \\
+There are two types of speaker verification \cite{itsp2022}: text-dependent and text-independent. Text-dependent methods assume that the user will speak the text that has been pre-programmed into the speaker verification system. On the other hand, in a text-independent system, the user is not expected to cooperate and the system does not have any prior knowledge about the text to be spoken.
 
 \section{Speaker Diarization}
 Speaker diarization involves dividing audio recordings into segments labeled with speaker identities, addressing the question of "who spoke when?"
