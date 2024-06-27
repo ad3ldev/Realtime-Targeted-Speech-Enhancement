@@ -1,10 +1,10 @@
 \subsection{Multi-Head Self-Attention (MSA)}
-Introduced in \cite{vaswani2017}. MSA based networks have shown to be very effective in NLP tasks, such as machine translation, language modeling, and text classification.
+Introduced in \cite{vaswani2017}. MSA-based networks have shown to be very effective in NLP tasks, such as machine translation, language modeling, and text classification.
 
 \subsubsection{Attention}
-The attention function can be understood as a method that takes a query and a collection of key-value pairs, and produces an output. All of these elements - the query, keys, values, and output - are vector forms. The output is determined by a weighted sum of the values. Each value's weight is calculated using a compatibility function that matches the query with its associated key.
+The attention function can be understood as a method that takes a query and a collection of key-value pairs and produces an output. All of these elements - the query, keys, values, and output - are vector forms. The output is determined by a weighted sum of the values. Each value's weight is calculated using a compatibility function that matches the query with its associated key.
 
-We can break down the concept of an attention function to:
+We can break down the concept of an attention function into:
 \begin{itemize}
     \item \textbf{Query, Keys, Values:} These are all vectors. In the context of a transformer model, for example, these vectors are created by multiplying the input vectors (like word embeddings in NLP) with weight matrices that the model learns during training.
     \item \textbf{Mapping:} The attention function maps a query and a set of key-value pairs to an output. This is done through a series of mathematical operations.
@@ -14,7 +14,7 @@ We can break down the concept of an attention function to:
 
 This mechanism allows a model to focus on different parts of the input when producing each part of the output, hence the term "attention". It's a crucial part of many modern neural network architectures, especially in the field of natural language processing.
 
-Attention mechanisms have also been adopted in audio signal processing, particularly in tasks like speech recognition and sound classification. In these tasks, attention mechanisms can help the model focus on certain parts of the audio signal that are more relevant for the task at hand. For instance, in speech recognition, an attention mechanism can allow the model to focus more on the parts of the audio signal where the speech is present and less on the background noise.
+Attention mechanisms have also been adopted in audio signal processing, particularly in tasks like speech recognition and sound classification. In these tasks, attention mechanisms can help the model focus on certain parts of the audio signal that are more relevant to the task at hand. For instance, in speech recognition, an attention mechanism can allow the model to focus more on the parts of the audio signal where the speech is present and less on the background noise.
 
 \subsubsection{Scaled Dot-Product Attention}
 Scaled dot-product attention is a type of attention function that has been used in many NLP models, including the original transformer model. It takes a query and a set of key-value pairs and produces an output. The query, keys, values, and output are all vectors. The output is calculated as a weighted sum of the values, where the weight assigned to each value is calculated using a compatibility function that matches the query with its associated key.
@@ -46,6 +46,7 @@ Here, the projections are parameter matrices  $W^Q_i \in \mathbb{R}^{d_{model} \
     \centering
     \includegraphics[width=0.75\linewidth]{images/dl/dotproduct.png}
     \caption{(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several
-    attention layers running in parallel.}
+        attention layers running in parallel.}
     \label{fig:attention}
 \end{figure}
+
