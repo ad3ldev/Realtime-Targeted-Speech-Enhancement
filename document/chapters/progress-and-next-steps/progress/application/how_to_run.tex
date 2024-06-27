@@ -1,17 +1,11 @@
 \subsubsection{Running the Application}
 
-To run the application, the user needs to ensure that Python is installed on their device. The application requires specific libraries which are listed in the \texttt{requirements.txt} file. These libraries can be installed by executing the provided setup script. After the required libraries are installed, user can then run the main application script.
+To run the application, the user needs to ensure that Python is installed on their device. Also, they need to install VB-CABLE Virtual Audio Device software.
 
-To begin, navigate to the directory containing the project files. Execute the setup script \texttt{dependencies/setup.py} to install the necessary dependencies. This can be done by opening a terminal or command prompt and running the following command:
+Also, the application requires specific libraries which are listed in the \texttt{requirements.txt} file. These libraries can be installed by executing the provided setup script. After the required libraries are installed, user can then run the main application script.
 
-\begin{verbatim}
-	python dependencies/setup.py
-\end{verbatim}
+To begin, navigate to the directory containing the project files. Execute the setup script \texttt{setup.py} to install the necessary dependencies.
 
-Once the setup script has completed successfully, navigate to the \texttt{gui} directory and run the main application script by executing the following command:
+Once the setup script has completed successfully, navigate to the \texttt{gui} directory and run the main application script. Alternatively, for convenience, the user can execute the batch file \texttt{Application.bat}. This batch file will sequentially run the setup script and the main application script for automating the process. 
 
-\begin{verbatim}
-	python gui/main.py
-\end{verbatim}
-
-Alternatively, for convenience, the user can execute the batch file \texttt{Application.bat}. This batch file will sequentially run the setup script and the main application script for automating the process. This will ensure that all necessary dependencies are installed and the application is executed correctly.
+This will ensure that all necessary dependencies are installed and the application is executed correctly.
