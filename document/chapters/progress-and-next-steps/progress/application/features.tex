@@ -1,0 +1,68 @@
+\subsection{App Features}
+\subsubsection{Design Decisions}
+
+In developing the application, several key design decisions were made to ensure efficiency, ease of use, and robust functionality. This subsection outlines the choices of libraries and tools utilized for the graphical user interface (GUI) and database management.
+
+\paragraph{Graphical User Interface: Tkinter and CustomTkinter}
+
+The GUI of the application is developed using \texttt{Tkinter} and \texttt{CustomTkinter}. \texttt{Tkinter} is the standard Python interface to the Tk GUI toolkit. It is widely used due to its simplicity and ease of integration with Python applications. \texttt{Tkinter} provides a powerful object-oriented interface to the Tk GUI toolkit, enabling the development of responsive GUI applications.
+
+To enhance the visual appeal and functionality of the application, \texttt{CustomTkinter} is employed alongside \texttt{Tkinter}. \texttt{CustomTkinter} is an extension of \texttt{Tkinter} that allows for more advanced customization and theming options, such as color mode support, fancy switches and menus. This combination of \texttt{Tkinter} and \texttt{CustomTkinter} ensures that the application not only performs well but also provides a modern and user-friendly interface.
+
+\paragraph{Database Management: SQLite}
+
+For database management, the application utilizes SQLite, a lightweight and self-contained SQL database engine. SQLite is integrated into Python via the \texttt{sqlite3} module, which provides a straightforward interface for database operations. SQLite is our choice for our application since it requires a reliable, serverless, and zero-configuration database solution.
+
+SQLite's primary advantage lies in its simplicity and ease of use and organize. It stores the entire database in a single file on the disk, making it highly portable and easy to manage. And since our stored data is not that complex, SQLite was the perfect choice for us.
+
+The \texttt{sqlite3} module in Python allows for efficient execution of SQL queries, management of database connections, and handling of transactions. This makes SQLite an ideal choice for applications that need a robust database solution without the overhead of a full-fledged database server.
+
+By leveraging \texttt{Tkinter}, \texttt{CustomTkinter}, and SQLite, the application achieves a balance of functionality, performance, and user experience.
+
+
+\subsubsection{Technical Details}
+First of all, the app’s main target is to feed the model with the reference audio of the user, as our speech enhancement is targeted. Therefore, if it is the client's first time using our app, they will need to provide their name and upload a reference audio of their clear voice from their local device. 
+
+Following this, the client needs to choose the input device that will receive and enhance their voice in real-time. Currently, only the VB cable is available, but we plan to provide more options in the future. 
+
+The user can toggle the ‘Cancel Noise’ switch on and off to start and stop noise cancellation. Additionally, they can control the percentage of noise to keep or remove using the dry/wet slider.
+
+Multiple users are allowed to use our app, but each user is mapped to one and only one reference audio. If a user wants to replace their reference audio, they can do so by uploading another audio file; the new one will be stored and the old one will be discarded. 
+
+After setting the above values, the user needs to press ‘Save’ to start noise cancellation. The ‘Save’ button toggles when pressed: when the user presses ‘Save’, its text changes to ‘Edit’ and all other components are disabled since the user is not allowed to change their values while the app is running, except for the ‘Cancel Noise’ switch button which remains enabled.
+
+If the user presses ‘Edit’ then, components are enabled again, ‘Edit’ text toggles back to ‘Save’, and noise cancellation is stopped until the user edits their necessary data and presses ‘Save’ again to resume.
+
+Finally, The app is provided in both light mode and dark mode for user preferences.
+
+\begin{figure}[h]
+	\centering
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/application/app_dark_mode.png}
+		\caption{App in Dark Mode}
+		\label{fig:dark_mode}
+	\end{minipage}\hfill
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/application/app_light_mode.png}
+		\caption{App in Light Mode}
+		\label{fig:light_mode}
+	\end{minipage}
+	\caption{Figure showing the appearance of our GUI in both: dark \& light mode}
+	\label{fig:app_modes}
+\end{figure}
+
+Here is a recap of the features or components provided by our GUI:
+\begin{itemize}
+	\item \textbf{Select Input Device}: Dropdown menu that displays current audio inputs from the device, although currently only the VB cable is supported.
+	\item \textbf{Cancel Noise}: Switch button that can be toggled on and off.
+	\item \textbf{Select User}: Dropdown menu that displays current saved usernames on the device. Once a user is selected, their reference voice’s name appears next to the menu in bold.
+	\item \textbf{Reference Voice}: Label that displays the user’s reference audio once a user is chosen from the ‘Select User’ dropdown.
+	\item \textbf{Create New Account}: Button that leads to another window, allowing the user to provide their name and upload their reference audio for the first time. Once this data is submitted, the user’s name and reference audio remain saved in the app.
+	\item \textbf{Upload Audio}: Button that enables a user to change their stored reference audio by uploading a new one.
+	\item \textbf{Dry/Wet Slider}: Controls the amount of noise to keep or remove from the provided audio.
+    \item \textbf{Save}: Button to save the given values and pass them to the model to start working.
+\end{itemize}
+
+
