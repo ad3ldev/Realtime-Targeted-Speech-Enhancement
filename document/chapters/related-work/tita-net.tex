@@ -35,7 +35,7 @@ The high level features computed by the encoder are then passed to decoder to ge
 Attentive statistics pooling layer is used to get a time-independent feature representation $S$ of size $B \times 3072$.
 These features are then passed to 2 linear layers:
 \begin{itemize}
-    \item $l_1$: Output a fixed size embedding of 192
+    \item $l_1$: Output a fixed-size embedding of size 192
     \item $l_2$: Output a vector of probabilities that the given utterance belongs to one of the training set speakers
 \end{itemize}
 

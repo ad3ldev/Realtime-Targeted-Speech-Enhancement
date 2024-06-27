@@ -3,6 +3,10 @@ A wide range of tasks related to speech processing exist. They revolve around ma
 Another branch of tasks is audio separation tasks, where the goal is to extract specific or targeted audio sources from a mixed audio signal. This has several applications, not only in speech but also in music. Music source separation is a common application, where the goal is to extract specific sound sources such as vocals and musical instruments. Another vital example is speech separation, where the mixed signal consists of multiple speakers and the goal is to extract the voice of each speaker. It can also be targeted for a specific speaker voice, i.e., extracting that target voice exactly which is known as target speech extraction.\\
 There are other speech-related tasks that focus on operating on speech instead of manipulating it. Speech recognition translates the spoken speech into text. Speaker recognition and diarization focus on identifying and tracking speakers in the given signal. Speech embeddings attempt to convert the signal into low-dimensional vector representations, which allows tasks such as speaker verification and sentiment analysis to exist.
 
+\section{Speaker Verification}
+Speaker verification is the process of verifying the identity of the speaker according to the characteristics of their voice. \\
+There are two types of speaker verification \cite{itsp2022}: text-dependent and text-independent. Text-dependent methods assume that the user will speak the text that has been pre-programmed into the speaker verification system. On the other hand, in a text-independent system, the user is not expected to cooperate and the system does not have any prior knowledge about the text to be spoken.
+
 \section{Speech Enhancement}
 Speech Enhancement is a signal processing task that involves improving the quality of speech signals captured under noisy or degraded conditions. Speech enhancement aims to improve the clarity, intelligibility, and listenability of speech signals, which can be employed for voice recognition, teleconferencing, and hearing aids, among other applications.\\ 
 The majority of recorded conversational speech signals have some kind of background noise that makes it difficult to understand, including tapping on a keyboard, dogs barking, or traffic noise. Therefore, improving speech is a crucial challenge in and of itself for hearing aids \cite{reddy2018}, audio and video calls \cite{reddy2019}, and automatic speech recognition (ASR) systems.
@@ -39,6 +43,18 @@ Music is considered a distinct problem from other types of source separation due
     \item Usually, the output of a music source separation system is employed in an end-user system making the quality bar significantly higher.
 \end{enumerate}
 
+\section{Speaker Diarization}
+Speaker diarization involves dividing audio recordings into segments labeled with speaker identities, addressing the question of "who spoke when?"
+This process contrasts with speech recognition, which focuses on transcribing spoken content.
+
+Speaker diarization and speaker identification share common ground in their approaches to analyzing audio signals for speaker-related information.
+Both tasks involve segmenting audio recordings to discern speaker boundaries and characteristics. Speaker diarization focuses on partitioning the entire recording into segments
+associated with different speakers without prior knowledge of their identities, addressing the question of "who spoke when?" Speaker identification, on the other hand, aims to identify specific
+speakers within shorter segments of audio, assuming the number of speakers is known or can be determined. Both tasks rely on extracting features such as pitch, timbre, and prosody from the audio,
+and utilize machine learning techniques including clustering, Gaussian mixture models, and deep learning approaches. These tasks are essential in applications such as automated transcription, surveillance, and speaker verification systems,
+where understanding both the structure of conversations (diarization) and the specific identity of speakers (identification) are crucial for accurate analysis and decision-making.
+
+
 \section{Speech Separation}
 Speech separation is by far the most common example of audio source separation. Speech separation's main goal is to separate the voices of 2 or more people who are talking at the same time. \\
 The human hearing system is extraordinary in its capacity to perceive speech even in noisy situations \cite{mesgarani2012}. To focus on the speaker we want to hear, we effortlessly filter away competing voices. This problem, known as the cocktail party problem led to the creation of advanced voice separation algorithms \cite{agrawal2023b}.\\
@@ -50,6 +66,7 @@ Speech separation is not straightforward for machines to replicate \cite{agrawal
     \item Speech separation algorithms must be resilient to changes in speaker characteristics such as gender, age, accent, and language. A model trained on one particular type of speaker might not operate effectively with different types, making generalized approaches difficult to develop.
 \end{enumerate}
 Several separation algorithms and techniques were developed for speech initially, and then got adopted into other fields, like music separation.
+
 
 \section{Target Speech Extraction}
 Speech extraction is the task to extract the human speech from a given audio signal. A variation of it is the target speech extraction (TSE) task, which extracts only the speech of a target voice. \\
