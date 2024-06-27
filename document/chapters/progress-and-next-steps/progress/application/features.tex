@@ -1,7 +1,6 @@
-\subsection{App Features}
-\subsubsection{Design Decisions}
+\subsubsection{App Features}
 
-In developing the application, several key design decisions were made to ensure efficiency, ease of use, and robust functionality. This subsection outlines the choices of libraries and tools utilized for the graphical user interface (GUI) and database management.
+In developing the application, several key design decisions were made to ensure efficiency, ease of use, and robust functionality. This subsection outlines the choices of libraries and tools utilized for the graphical user interface (GUI) and database management, and shows technical details and components of our user interface.
 
 \paragraph{Graphical User Interface: Tkinter and CustomTkinter}
 
@@ -19,8 +18,8 @@ The \texttt{sqlite3} module in Python allows for efficient execution of SQL quer
 
 By leveraging \texttt{Tkinter}, \texttt{CustomTkinter}, and SQLite, the application achieves a balance of functionality, performance, and user experience.
 
+\paragraph{Technical Details} 
 
-\subsubsection{Technical Details}
 First of all, the app’s main target is to feed the model with the reference audio of the user, as our speech enhancement is targeted. Therefore, if it is the client's first time using our app, they will need to provide their name and upload a reference audio of their clear voice from their local device. 
 
 Following this, the client needs to choose the input device that will receive and enhance their voice in real-time. Currently, only the VB cable is available, but we plan to provide more options in the future. 
