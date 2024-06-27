@@ -1,20 +1,20 @@
 \section{Collected Dataset}
 \subsection{Motivation}
 The personalized DNS dataset was massively collected, and its training samples were not a clear representation of the problem that we tried to solve. DNS dataset follows the quantity over quality principle
-which have been frequently used in the deep learning for a fast and cheap data collection process.
+which have been frequently used in deep learning for a fast and cheap data collection process.
 Due to limited computing resources, we started by training our models on only 100 hours from 500 hours of the personalized DNS dataset. The results of these experiments
 were not satisfying since the underlying dataset had neither quality nor quantity.
 
 \subsection{Data Collection}
 The dataset simulates the interference between the voices of two speakers: speakerA and speakerB, and provides a different clean reference speech for speakerA.
 \subsubsection{Train-val split}
-The train-val split was used to train the model upon and to verify that the model is learning. The split consists of 30 speakers each having 10 clean utterances of 10 seconds.
+The train-val split was used to train the model and to verify that the model is learning. The split consists of 30 speakers each having 10 clean utterances of 10 seconds.
 The split contains 22 male speakers and 8 female speakers. The spoken language is Arabic.
-For each speaker, all the pairs of speakerA and reference for speakerA were generated, furthermore pairs of silence and refernce for speakerA were added. 
-For each pair, 10 samples from other speakers were chosen for speakerB. The total number of samples in the train-val split is 30000 samples.
+For each speaker, all the pairs of speakerA and reference for speakerA were generated, furthermore, pairs of silence and reference for speakerA were added.
+For each pair, 10 samples from other speakers were chosen for speaker B. The total number of samples in the train-val split is 30000 samples.
 The validation set represents 1\% of the train-val split, i.e., 300 samples.
 
 \subsubsection{Test split}
 The test split was used to evaluate the model against new speakers. The split consists of 6 speakers each having 5 clean utterances of 10 seconds.
-The split contains 2 male Arabic speakers, 3 female Arabic speakers and 1 female English speaker. This distribution was chosen to test the generalization of the model to different speakers.
-The generation procedure is similar to the train-val split except for the silence samples. The total number of sample in the test split is 1200 samples.
+The split contains 2 male Arabic speakers, 3 female Arabic speakers, and 1 female English speaker. This distribution was chosen to test the generalization of the model to different speakers.
+The generation procedure is similar to the train-val split except for the silence samples. The total number of samples in the test split is 1200 samples.

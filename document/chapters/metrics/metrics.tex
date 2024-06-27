@@ -14,26 +14,26 @@ Signal-to-Noise Ratio (SNR) is a measure of the ratio of the power of a signal t
 Where $P_{signal}$ is the power of the signal and $P_{noise}$ is the power of the noise. SNR is usually measured in decibels (dB). The higher the SNR, the better the quality of the signal. SNR is a common metric used in speech enhancement tasks. It is used to measure the quality of the enhanced speech signal by comparing it to the original clean speech signal. The higher the SNR, the better the quality of the enhanced speech signal.
 
 \subsection{Perceptual Evaluation of Speech Quality (PESQ)}
-Perceptual Evaluation of Speech Quality (PESQ) is a method for assessing the quality of speech signals. It is a standardized method for evaluating the quality of speech signals. It is widely used to assess narrow-band telephone network and speech codec quality. PESQ compares processed speech to the original, focusing on characteristics like sharpness, noise, clipping, and volume. Scores range from -0.5 to 4.5, with higher values indicating better quality. The calculations steps are as follows:
+Perceptual Evaluation of Speech Quality (PESQ) is a method for assessing the quality of speech signals. It is a standardized method for evaluating the quality of speech signals. It is widely used to assess narrow-band telephone network and speech codec quality. PESQ compares processed speech to the original, focusing on characteristics like sharpness, noise, clipping, and volume. Scores range from -0.5 to 4.5, with higher values indicating better quality. The calculation steps are as follows:
 
 \begin{itemize}
-    \item Reference audio and processed speech signals are time-aligned. 
-    \item A perceptual model is employed to translate signals into an auditory representation. This model relies on power distributions across the time-frequency domain, it relies on compressive loudness scaling too. 
+    \item Reference audio and processed speech signals are time-aligned.
+    \item A perceptual model is employed to translate signals into an auditory representation. This model relies on power distributions across the time-frequency domain, it relies on compressive loudness scaling too.
     \item Differences between signals and their mappings are considered, where positive variances suggest the presence of components like noise, while negative variances suggest the omission of components.
 \end{itemize}
 
-This metric offers a limited assessment of transmission quality, focusing only on one-way speech distortion and noise in speech quality. So, factors such as loudness loss, delay, side-tone, and echo are not accounted for in the PESQ scores.
+This metric offers a limited assessment of transmission quality, focusing only on one-way speech distortion and noise in speech quality. So, factors such as loudness loss, delay, sidetone, and echo are not accounted for in the PESQ scores.
 
 As we will see in the paper's results, PESQ scores are sometimes represented as WB, and sometimes as NB. WB stands for wide bandwidth, while NB represents narrow bandwidth. While the initial PESQ algorithm was designed for narrow-band speech (8 kHz sampling rate), the experiments utilized extensions for wideband speech (16 kHz).
 
 
 \subsection{Short-Time Objective Intelligibility (STOI)}
-Short-Time Objective Intelligibility (STOI) is a method for assessing the intelligibility of speech signals. It predicts the intelligibility of noisy speech, not overall quality. STOI exhibits strong correlation with intelligibility in various distorted speech scenarios such as those affected by additive noise, single-channel noise reduction, multi-channel noise reduction, binary masking, and vocoded speech.
+Short-Time Objective Intelligibility (STOI) is a method for assessing the intelligibility of speech signals. It predicts the intelligibility of noisy speech, not overall quality. STOI exhibits a strong correlation with intelligibility in various distorted speech scenarios such as those affected by additive noise, single-channel noise reduction, multi-channel noise reduction, binary masking, and vocoded speech.
 
-It is calculated by taking the mean of the Pearson's correlation coefficient between the clean and the distorted envelopes for each sort-time frame and frequency band. Steps are as follows:
+It is calculated by taking the mean of Pearson's correlation coefficient between the clean and the distorted envelopes for each sort-time frame and frequency band. The steps are as follows:
 
 \begin{itemize}
-    \item Signals are decomposed by a 1/3-octave filter band, then segmented into short-time windows.
+    \item Signals are decomposed by a 1/3-octave filter band and then segmented into short-time windows.
     \item They are then normalized, to compensate for different playback levels.
     \item They are then clipped, to set an upper bound on the severity of degradation a unit of speech time frequency can be.
     \item Finally, signals are compared using the correlation coefficient as stated above.
@@ -46,7 +46,7 @@ Available in both objective and subjective forms. Subjective MOS reflects the av
 
 MOS can be used to assess the comprehensive voice quality in calls and video sessions, it can be utilized for various audio codecs (e.g., MP3, Vorbis, AAC, Opus), video codecs (e.g., H.264, VP8), and in streaming sessions where network effects may impact communication quality negatively.
 
-It cares for characteristics such as bandwidth, latency, packet loss and compression ratio in codec version. Its score ranges from 1 to 5, where 1 means the worst score and 5 is the highest. Below 3.1 represents poor call quality, while above 4.34 represents the best call quality range.
+It cares for characteristics such as bandwidth, latency, packet loss, and compression ratio in the codec version. Its score ranges from 1 to 5, where 1 means the worst score and 5 is the highest. Below 3.1 represents poor call quality, while above 4.34 represents the best call quality range.
 
 MOS is calculated by taking the arithmetic mean over single ratings. The most objective MOS context we care for is DNSMOS, which stands for ‘deep noise suppression MOS’, while the subjective MOS we care for depends on predictions concerning that same context.
 
@@ -67,20 +67,20 @@ Real-time Factor (RTF) is a measure of the ratio of the time required to process
 RTF compares simulated processing time to real-time, with values above 1 indicating faster than real-time processing and lower RTF favors real-time.
 
 \subsection{Word Error Rate (WER)}
-It assesses the accuracy of speech-to-text transcription by calculating the ratio of errors (substitutions, insertions, deletions) to the total number of spoken words. 
+It assesses the accuracy of speech-to-text transcription by calculating the ratio of errors (substitutions, insertions, deletions) to the total number of spoken words.
 
-Errors in transcription could be substitutions, insertions, or deletions. And since WER is defined as the ratio between the number of errors in a transcript to the total words spoken, then it can be calculated as follows: 
+Errors in transcription could be substitutions, insertions, or deletions. And since WER is defined as the ratio between the number of errors in a transcript to the total words spoken, then it can be calculated as follows:
 \begin{equation}
-\text{Word Error Rate} = \frac{\text{Substitutions} + \text{Insertions} + \text{Deletions}} {\text{Number of Words Spoken}}
+    \text{Word Error Rate} = \frac{\text{Substitutions} + \text{Insertions} + \text{Deletions}} {\text{Number of Words Spoken}}
 \end{equation}
 A lower WER indicates better accuracy, with state-of-the-art systems achieving error rates close to human transcriptionists (around 4\%).
 
 
 \section{Subjective Metrics}
 \subsection{Subjective Mean Opinion Score (SMOS)}
-Subjective MOS is a metric used to assess the perceived quality of audio in telecommunications and related fields. It differs from objective MOS, which relies on algorithms and calculations, by relying on the judgment of human listeners. This human evaluation provides insight into how users actually experience the quality of the media, which can be crucial in optimizing systems and algorithms for real-world application.
+Subjective MOS is a metric used to assess the perceived quality of audio in telecommunications and related fields. It differs from objective MOS, which relies on algorithms and calculations, by relying on the judgment of human listeners. This human evaluation provides insight into how users actually experience the quality of the media, which can be crucial in optimizing systems and algorithms for real-world applications.
 
-Subjective MOS is evaluated through listening tests. These tests can vary in format, but often involve a group of listeners rating the quality of audio or video samples on a predefined scale (e.g., from 1 to 5). The test environment needs to be controlled to minimize external influences, ensuring consistency and accurate results.
+Subjective MOS is evaluated through listening tests. These tests can vary in format but often involve a group of listeners rating the quality of audio or video samples on a predefined scale (e.g., from 1 to 5). The test environment needs to be controlled to minimize external influences, ensuring consistency and accurate results.
 
 Subjective MOS collects three scores:
 
