@@ -1,0 +1,27 @@
+\subsection{Personalized Fast FullSubNet}
+
+\subsubsection{Motivation}
+
+The Fast FullSubNet (FFSN) model \cite{hao2023fast} offers a lightweight and efficient subband-based speech enhancement model that maintains high performance in noise reduction tasks.
+However, the model is trained on a large dataset with a wide range of noise types and SNR levels, which may not be optimal for personalized speech enhancement.
+To introduce personalization, we propose a personalized Fast FullSubNet (PFFSN) model leveraging the model ability to process subbands. PFFSN consists of two major modules: a speaker embedding module and a denoising module.
+The speaker embedding module is responsible for extracting speaker-specific features from the input speech signal, while the denoising module is responsible for enhancing the speech signal based on the extracted speaker features.
+The architecture of the PFFSN model is shown in Figure \ref{fig:pffsn-architecture}.
+
+\subsubsection{Speaker Embedding Module}
+The speaker embedding module consists of the encoder and bottleneck layers of FFSN followed by a simple feedforward network.
+The encoder and bottleneck layers are responsible for extracting subband features of the speaker given a clean speech signal.
+The feedforward network aims to classify whether the targeted speaker voice resides in a subband or not.
+The feedforward network consists of two fully connected layers with LayerNorms and ReLU activation functions and a sigmoid activation function in the output layer. 
+The output of the sigmoid activation is the probability of the speaker voice residing in the subband.
+
+\subsubsection{Denoising Module}
+The denoising module is a regular FFSN model in which its decoder inputs subbands are scaled based on the speaker embedding module's output.
+Subbands in which the speaker voice is detected are amplified, while subbands in which the speaker voice is not detected are suppressed.
+This process aims to help the decoder focus on enhancing the speaker voice while suppressing the noise.
+
+
+\subsubsection{Experimental Setup}
+We trained the PFFSN model on the training set of our dataset for 43 epochs with a batch size of 16 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
+The Adam optimizer was used with a learning rate of $5 \times 10^{-5}$ with Cosine Decay and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
+We employed a mixture of loss functions, including L1 loss, Multi Resolution STFT loss, complex Ration Mask (cRM) loss and TAP loss with weights 1, 0.5, 1 and 0.3 respectively.
