@@ -43,6 +43,15 @@ Music is considered a distinct problem from other types of source separation due
     \item Usually, the output of a music source separation system is employed in an end-user system making the quality bar significantly higher.
 \end{enumerate}
 
+\section{Speaker Embedding}
+Speaker embeddings play a crucial role in converting a speech signal into a low-dimensional vector representation. This compressed format captures the essence of a speaker's characteristics, enabling various speech processing tasks. It lays the groundwork for applications like speaker verification and sentiment analysis.
+
+The process of using speech embeddings can be broken down into several steps. First, a raw speech signal is fed as input. This signal is then processed by an embedding model, typically a deep neural network trained to analyze speech and extract speaker-specific information. The model then generates a fixed-length vector representation, also known as the embedding. This embedding vector essentially encodes speaker characteristics such as pitch, timbre, and speaking style. Interestingly, embeddings for similar speakers will reside closer together in a vector space, whereas embeddings for distinct speakers will be further apart \cite{li2022speakerrepresentationlearningcontrastive}.
+
+Speech embeddings open doors to a variety of speech processing applications. One prominent example is speaker verification. In this task, the system determines whether a speaker's voice matches a claimed identity. This is achieved by comparing the embedding of the claimed speaker with the embedding of a captured voice sample. Another application is speaker diarization \cite{kwon2021adaptingspeakerembeddingsspeaker}. Here, the goal is to segment an audio recording into sections and identify the speaker in each segment. By analyzing the embeddings throughout the recording, the system can achieve this diarization task. Speech embeddings can even be incorporated into sentiment analysis. In this case, the emotional tone of speech is analyzed by considering both the speech content and the speaker embeddings.
+
+By learning and representing speaker characteristics in a compressed format, speech embeddings offer a powerful tool for various speech processing tasks. This technology paves the way for advancements in applications that rely on understanding the who and the how behind spoken language.
+
 \section{Speaker Diarization}
 Speaker diarization involves dividing audio recordings into segments labeled with speaker identities, addressing the question of "who spoke when?"
 This process contrasts with speech recognition, which focuses on transcribing spoken content.
