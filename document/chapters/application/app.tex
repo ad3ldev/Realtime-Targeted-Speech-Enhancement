@@ -1,4 +1,8 @@
-\subsection{Application}
+\chapter{Application}
+\label{chap:application}
+\begingroup
+\let\clearpage\relax
+
 This section provides an overview of the application, detailing its primary components and functionality. The app is designed to facilitate user interaction through a graphical user interface (GUI), stream audio input for real-time processing, and apply our machine learning model to process the streamed audio. The workflow of the application is divided into two main stages before reaching the ML model: the GUI app and the streamer.
 
 The first stage involves the GUI app, which serves as the interface for user interaction. Users input their data through this intuitive and user-friendly interface. The GUI is responsible for capturing user inputs and passing them to the subsequent stages of the application. It ensures that users can easily and effectively interact with the system, providing the necessary inputs required for further processing.
@@ -7,5 +11,7 @@ The second stage is the streamer, which handles real-time audio input. This comp
 
 Below, we can find a detailed explanation of our application's streamer and features.
 
-\input{chapters/progress-and-next-steps/progress/application/features.tex}
+\input{chapters/application/features.tex}
+\endgroup
+
 

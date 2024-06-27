@@ -1,6 +1,6 @@
-\subsection{Dataset Preparation}
+\section{Dataset Preparation}
 
-\subsubsection{DNS}
+\subsection{DNS}
 As mentioned in Chapter \ref{chap:datasets}, DNS \cite{reddy2020} is equipped with synthetization scripts to generate noisy speech clips. We used the scripts and the DNS dataset to generate 100 hours of noisy clips. Each clip in the synthesized data was 30 seconds long with a sampling rate of 16 kHz, resulting in 12,000 pair clips.
 
 We added a silence length of 0.2 seconds between clean speech utterances. We used SNR bounds of -5 dB and 25 dB, with a total of 31 levels of SNR. Furthermore, we capped the clean activity threshold at 60\%.
@@ -8,5 +8,5 @@ We added a silence length of 0.2 seconds between clean speech utterances. We use
 The dataset is hosted on Kaggle as a public dataset and can be accessed here: \texttt{\url{https://www.kaggle.com/datasets/karimalaa19/DNS-2020-100Hrs/}}.
 
 
-\subsubsection{Valentini Dataset}
+\subsection{Valentini Dataset}
 The Valentini dataset \cite{valentini2016}, originally available on Edinburgh DataShare, faced accessibility and speed issues on its current hosting platform. To address this, we have made the complete dataset publicly accessible on Kaggle. It can now be accessed here: \texttt{\url{https://www.kaggle.com/datasets/muhmagdy/valentini-noisy}}.

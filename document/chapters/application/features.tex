@@ -1,14 +1,14 @@
-\subsubsection{App Features}
+\section{App Features}
 
-In developing the application, several key design decisions were made to ensure efficiency, ease of use, and robust functionality. This subsection outlines the choices of libraries and tools utilized for the graphical user interface (GUI) and database management and shows the technical details and components of our user interface.
+In developing the application, several key design decisions were made to ensure efficiency, ease of use, and robust functionality. This section outlines the choices of libraries and tools utilized for the graphical user interface (GUI) and database management and shows the technical details and components of our user interface.
 
-\paragraph{Graphical User Interface: Tkinter and CustomTkinter}
+\subsection{Graphical User Interface: Tkinter and CustomTkinter}
 
 The GUI of the application is developed using \texttt{Tkinter} and \texttt{CustomTkinter}. \texttt{Tkinter} is the standard Python interface to the Tk GUI toolkit. It is widely used due to its simplicity and ease of integration with Python applications. \texttt{Tkinter} provides a powerful object-oriented interface to the Tk GUI toolkit, enabling the development of responsive GUI applications.
 
 To enhance the visual appeal and functionality of the application, \texttt{CustomTkinter} is employed alongside \texttt{Tkinter}. \texttt{CustomTkinter} is an extension of \texttt{Tkinter} that allows for more advanced customization and theming options, such as color mode support, fancy switches, and menus. This combination of \texttt{Tkinter} and \texttt{CustomTkinter} ensures that the application not only performs well but also provides a modern and user-friendly interface.
 
-\paragraph{Database Management: SQLite}
+\subsection{Database Management: SQLite}
 
 For database management, the application utilizes SQLite, a lightweight and self-contained SQL database engine. SQLite is integrated into Python via the \texttt{sqlite3} module, which provides a straightforward interface for database operations. SQLite is our choice for our application since it requires a reliable, serverless, and zero-configuration database solution.
 
@@ -18,7 +18,7 @@ The \texttt{sqlite3} module in Python allows for efficient execution of SQL quer
 
 By leveraging \texttt{Tkinter}, \texttt{CustomTkinter}, and SQLite, the application achieves a balance of functionality, performance, and user experience.
 
-\paragraph{Technical Details}
+\subsection{Technical Details}
 
 First of all, the app’s main target is to feed the model with the reference audio of the user, as our speech enhancement is targeted. Therefore, if it is the client's first time using our app, they will need to provide their name and upload a reference audio of their clear voice from their local device.
 
@@ -57,7 +57,7 @@ Here is a recap of the features or components provided by our GUI:
 	\item \textbf{Select Input Device}: A dropdown menu that displays current audio inputs from the device, although currently only the VB cable is supported.
 	\item \textbf{Cancel Noise}: Switch button that can be toggled on and off.
 	\item \textbf{Select User}: A dropdown menu that displays current saved usernames on the device. Once a user is selected, their reference voice’s name appears next to the menu in bold.
-	\item \textbf{Reference Voice}: Label that displays the user’s reference audio once a user is chosen from the ‘Select User’ dropdown.
+	\item \textbf{Reference Voice}: Label that displays the user's reference audio once a user is chosen from the 'Select User' dropdown.
 	\item \textbf{Create New Account}: Button that leads to another window, allowing the user to provide their name and upload their reference audio for the first time. Once this data is submitted, the user’s name and reference audio remain saved in the app.
 	\item \textbf{Upload Audio}: Button that enables a user to change their stored reference audio by uploading a new one.
 	\item \textbf{Dry/Wet Slider}: Controls the amount of noise to keep or remove from the provided audio.

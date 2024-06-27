@@ -1,6 +1,6 @@
-\subsection{Personalized Fast FullSubNet}
+\section{Personalized Fast FullSubNet}
 
-\subsubsection{Motivation}
+\subsection{Motivation}
 
 The Fast FullSubNet (FFSN) model \cite{hao2023fast} offers a lightweight and efficient subband-based speech enhancement model that maintains high performance in noise reduction tasks.
 However, the model was not designed for personalized speech enhancement.
@@ -15,20 +15,20 @@ The architecture of the PFFSN model is shown in Figure \ref{fig:pffsn-arch}.
     \label{fig:pffsn-arch}
 \end{figure}
 
-\subsubsection{Speaker Embedding Module}
+\subsection{Speaker Embedding Module}
 The speaker embedding module consists of the encoder and bottleneck layers of FFSN followed by a simple feedforward network.
 The encoder and bottleneck layers are responsible for extracting subband features of the speaker given a clean speech signal.
 The feedforward network aims to classify whether the targeted speaker voice resides in a subband or not.
 The feedforward network consists of two fully connected layers with LayerNorms and ReLU activation functions and a sigmoid activation function in the output layer.
 The output of the sigmoid activation is the probability of the speaker's voice residing in the subband.
 
-\subsubsection{Denoising Module}
+\subsection{Denoising Module}
 The denoising module is a regular FFSN model in which its decoder input subbands are scaled based on the speaker embedding module's output.
 Subbands in which the speaker's voice is detected are amplified, while the others are suppressed.
 This process aims to help the decoder focus on enhancing the speaker's voice while suppressing the noise.
 
 
-\subsubsection{Experimental Setup}
+\subsection{Experimental Setup}
 
 We trained the PFFSN model on the training set of our dataset for 43 epochs with a batch size of 16 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
 The noisy audio clips were generated on the fly by mixing speakerA and speakerB clean audio clips. The SNR of the noisy audio clips was randomly selected from values of 0, 3, 6, 10, 20.
@@ -37,7 +37,7 @@ The Adam optimizer was used with a learning rate of $5 \times 10^{-5}$ with Cosi
 We employed a mixture of loss functions, including L1 loss, Multi-Resolution STFT loss, complex Ration Mask (cRM) loss, and TAP loss with weights 1, 0.5, 1, and 0.3 respectively.
 The weights of the Speaker Embedding Module and Denoising Module were initialized using weights from an FFSN model trained on DNS 2021 data to overcome limited data availability.
 
-\subsubsection{Results}
+\subsection{Results}
 We tested the model on two test sets: a personalized DNS blind test set and the test set of our dataset. Results are shown in table \ref{tab:pffsn-results}.
 
 \begin{table}[]
@@ -62,7 +62,7 @@ We tested the model on two test sets: a personalized DNS blind test set and the 
 \end{table}
 
 
-\subsubsection{Limitations}
+\subsection{Limitations}
 After listening to some outputs, one can notice that the performance of the model degrades when the tones of the voice in the input change frequently.
 This is due that the model follows the subband approach that focuses on the removal of stationary noises.
 One can also notice that the model performs well when the interfering voice or noises reside in frequency ranges different from the ones where the main voice lies e.g., male and female interference,
