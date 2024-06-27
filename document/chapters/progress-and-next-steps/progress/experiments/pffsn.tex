@@ -35,5 +35,5 @@ We tested the model on two test sets: personalized DNS blind test set and the te
 After listening to some outputs, one can notice that the performance of the model degrades when the tones of the voice in the input change frequently.
 This is due that the model follows the subband approach that focuses on the removal of stationary noises.
 One can also notice that the model performs well when the interfering voice or noises resides in frequency ranges different from the ones where the main voice lies e.g., male and female interference,
-due to the ease of subband classification. On the hand, the model finds hard times when the voices are in the same ranges e.g., male and male interference.
+due to the ease of subband classification. On the other hand, the model finds hard times when the voices are in the same ranges e.g., male and male interference.
 Furthermore, low SNR audio clips are harder to enhance, low SNR audio might simulate scenarios where the two speakers  are within the same proximity to the microphone which might not be the case in teleconferencing scenario.
