@@ -33,7 +33,7 @@ Each element within this matrix, called a TF bin, holds complex-valued informati
 \end{itemize}
 The STFT is a reversible transformation, meaning we can reconstruct the original audio waveform from its STFT representation using a process called the inverse STFT (iSTFT).\\
 In speech enhancement applications, the STFT's ability to decompose audio into its constituent frequencies over time proves invaluable for identifying and manipulating noise patterns, ultimately leading to clearer and more intelligible speech.\\
-When computing STFT there exist multiple parameters to take into consideration here are some of them: 
+When computing STFT there exist multiple parameters to take into consideration here are some of them:
 \begin{itemize}
     \item \textbf{Window Types:} When analyzing audio for speech enhancement, the window type acts like a lens, shaping how frequencies are captured in short segments before the DFT. Different window shapes can highlight or downplay certain frequencies, influencing the final STFT representation. Figure \ref{fig:stft-windows} shows the most widely used windows when calculating STFT.
     \item \textbf{Window Length:} Window length dictates how many samples of audio are captured within each short segment before applying the DFT. This choice directly affects the frequency resolution of the resulting STFT representation; the longer the window the higher the frequency resolution and vice versa as shown in figure \ref{fig:window-len}.

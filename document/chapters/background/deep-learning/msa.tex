@@ -23,7 +23,7 @@ The compatibility function used in scaled dot-product attention is the dot produ
 
 The scaled dot-product attention function can be expressed as:
 \begin{equation} \label{eq:dot-product-attention}
- \text{Attention}(Q, K, V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
+    \text{Attention}(Q, K, V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V
 \end{equation}
 where $Q$ is the query vector, $K$ is the matrix of key vectors, $V$ is the matrix of value vectors, and $d_k$ is the dimension of the query vector.
 
@@ -35,7 +35,7 @@ This approach, known as multi-head attention, allows the model to attend to info
 Multi-head attention can be expressed as:
 
 \begin{equation} \label{eq:multi-head-attention}
- \text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O
+    \text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O
 \end{equation}
 
 Where $\text{head}_i = \text{Attention}(QW^Q_i, KW^K_i, VW^V_i)$.
@@ -46,7 +46,7 @@ Here, the projections are parameter matrices  $W^Q_i \in \mathbb{R}^{d_{model} \
     \centering
     \includegraphics[width=0.75\linewidth]{images/dl/dotproduct.png}
     \caption{(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several
- attention layers running in parallel.}
+        attention layers running in parallel.}
     \label{fig:attention}
 \end{figure}
 

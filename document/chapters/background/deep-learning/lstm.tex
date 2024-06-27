@@ -27,16 +27,16 @@ An LSTM employs three distinct gates to safeguard and manage the cell state:
 The first stage involves determining which information to discard from the previous cell state $C_{t-1}$. This critical decision is facilitated by a "forget gate" implemented as a sigmoid layer. This layer analyzes both the previous hidden state $h_{t-1}$ and the current input $x_t$ to generate a forget vector $f_t$ with values between 0 and 1 for each element of $C_{t-1}$ as illustrated in Equation \ref{eq:lstm-forget}. A $f_t$ value of 1 indicates complete retention, while 0 signifies absolute removal.
 The following equation describes the forget gate's operation:
 \begin{equation} \label{eq:lstm-forget}
- f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
+    f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
 \end{equation}
 Consider an LSTM-based language model predicting the next word in a sentence. The cell state might hold information like subject gender for pronoun agreement. When encountering a new subject, the forget gate activates to discard the irrelevant gender information about the previous subject.\\
 The second stage focuses on incorporating new information into the cell state. This process unfolds in two steps. First, an "input gate" sigmoid layer generates an update vector $i_t$ specifying which state elements require modification. Subsequently, a tanh layer creates a candidate update vector $\tilde{C}_t$ containing potential new values as shown in Equations \ref{eq:lstm-input} and \ref{eq:lstm-candidate}. These two vectors are then combined to form the state update.
 The equations governing this stage are as follows:
 \begin{equation} \label{eq:lstm-input}
- i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)
+    i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)
 \end{equation}
 \begin{equation} \label{eq:lstm-candidate}
- \tilde{C}_t = tanh(W_C \cdot [h_{t-1}, x_t] + b_C)
+    \tilde{C}_t = tanh(W_C \cdot [h_{t-1}, x_t] + b_C)
 \end{equation}
 Here, the intent is to integrate the gender of the new subject into the cell state, replacing the discarded information about the previous subject. The input gate determines which aspects of the state require an update (e.g., subject gender), while the tanh layer generates potential new values for those elements.\\
 The third stage bridges the gap between the old and the updated cell state $C_t$. Building upon the decisions made in the previous stages, it implements the actual state update. First, Ct-1 is multiplied by ft, effectively discarding the elements marked for removal by the forget gate. Next, the scaled candidate update vector $i_t * \tilde{C}_t$ is added to the filtered Ct-1, resulting in the new cell state $C_t$.\\
@@ -51,7 +51,7 @@ The motivation behind BiLSTMs is that the output at time $t$ may not only depend
 The two separate hidden layers of a BiLSTM are typically referred to as the forward and backward layers. The forward layer passes over the sequence from left to right and the backward layer passes over the sequence from right to left. The outputs of these two layers are usually concatenated at each time step, although there are other options, e.g., summation.
 The output of a BiLSTM at time $t$ is a concatenation of the forward hidden state $h_t^f$ and the backward hidden state $h_t^b$:
 \begin{equation}
- h_t = [h_t^f, h_t^b]
+    h_t = [h_t^f, h_t^b]
 \end{equation}
 where $h_t^f$ is the hidden state of the forward layer at time $t$ and $h_t^b$ is the hidden state of the backward layer at time $t$. This bidirectional configuration allows the model to effectively "anticipate" future information by starting from the end of a sequence, such as an audio clip.
 \begin{figure} [h]
