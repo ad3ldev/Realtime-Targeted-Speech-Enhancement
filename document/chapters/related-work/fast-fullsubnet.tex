@@ -1,11 +1,11 @@
 \section{Fast FullSubNet}
 \label{sec:fast-fullsubnet}
-Subbands approaches have been widely used in speech enhancement tasks, as they allow the model to focus on local spectral patterns. 
+Subband approaches have been widely used in speech enhancement tasks, as they allow the model to focus on local spectral patterns.
 Many variants of the subband approach have been proposed, focusing on improving the model's ability in noise reduction and speech enhancement.
-However, these approaches often suffers from high computational complexity and slow inference speed.
+However, these approaches often suffer from high computational complexity and slow inference speed.
 To address this issue, Hao and Li\cite{hao2023fast} proposed a novel, lightweight framework called Fast FullSubNet.
-Fast FullSubNet is a subband-based speech enhancement model that is designed to be fast and efficient, while maintaining high performance in noise reduction tasks.
-It utilizes mel-frequency domain to reduce the number of frequency bands while maintaining the spectral information.
+Fast FullSubNet is a subband-based speech enhancement model that is designed to be fast and efficient while maintaining high performance in noise reduction tasks.
+It utilizes the mel-frequency domain to reduce the number of frequency bands while maintaining the spectral information.
 The Mel-frequency representation effectively condenses speech spectra while concurrently maintaining spectral information crucial for human auditory perception.
 
 \subsection{Model Architecture}
@@ -16,8 +16,8 @@ Sub-band model $S$ (bottleneck) and Full-band model $F_{m2l}$ (decoder). Figure 
     \centering
     \includegraphics[width=0.8\textwidth]{images/related_work/ffsn/arch.png}
     \caption{Diagram of Fast FullSubNet. The right parts of rectangle boxes
-    show feature dimensions, e.g., “1 (F)” represents a F-dimension vector.
-    “Fmel(2N + 2)” denotes Fmel independent (2N + 1)-dimensional vectors.}
+        show feature dimensions, e.g., “1 (F)” represents a F-dimension vector.
+        “Fmel(2N + 2)” denotes Fmel independent (2N + 1)-dimensional vectors.}
     \label{fig:fast-fullsubnet}
 \end{figure}
 
@@ -26,7 +26,7 @@ The mel-scale spectral magnitude undergoes initial processing by the full-band m
 and long-range dependencies across bands. Specifically, the linear frequency signal \( x(t, f) \) is transformed into the mel-frequency domain
 as \( x_{\text{mel}}(t, f) \), where \( f \in [0, \ldots, F_{\text{mel}} - 1] \)
 and \( F_{\text{mel}} \) denotes the number of mel frequencies.
-The input vector to Fl2m at time \( t \) is represented as 
+The input vector to Fl2m at time \( t \) is represented as
 \[ x(t) = [x_{\text{mel}}(t, 0), \ldots, x_{\text{mel}}(t, F_{\text{mel}} - 1)]^T \in \mathbb{R}^{F_{\text{mel}}} \]
 This feature vector sequence is then processed by two layers of LSTM. The full-band model produces a spectral embedding of the same dimension as \( x(t) \),
 with each mel-frequency corresponding to one hidden unit. This spectral embedding complements the subsequent sub-band model by providing additional informative features.
@@ -36,15 +36,15 @@ The sub-band model operates on mel-frequencies independently within a shared net
 the stationary nature of signals and the local spectral patterns specific to speech. Each input to the sub-band model incorporates two main sources.
 Firstly, for a given frequency \( f \), the input consists of the noisy mel-spectra at that frequency and \( N \) adjacent frequencies on each side.
 Secondly, it includes the output of the full-band model at frequency \( f \), denoted as \( \text{Fl2m}(x(t))(f) \). These sources are concatenated
-to form the input vector 
+to form the input vector
 \[ x_{\text{sub}}(t, f) = [x_{\text{mel}}(t, f - N), \ldots, x_{\text{mel}}(t, f + N), \text{Fl2m}(x(t))(f)]^T \in \mathbb{R}^{2N+2} \]
-This feature vector sequence is uniformly processed using two LSTM layers across all frequencies. Each mel frequency processed by the sub-band model yields a
+This feature vector sequence is uniformly processed using two LSTM layers across all frequencies. Each mel-frequency processed by the sub-band model yields a
 single-dimensional hidden unit output.
 To accelerate inference speed, the feature sequence is downsampled by a factor of \( m \) before being processed by the bottleneck, exploiting redundancies among
 successive samples.
 
 \subsubsection{Decoder}
-The full-band model Fm2l reverses the mel-frequency transformation to obtain linear-frequency representations. It combines the outputs of the full-band model Fl2m and the sub-band model S into a concatenated input vector xm2l(t) for Fm2l:
+The full-band model Fm2l reverses the mel-frequency transformation to obtain linear-frequency representations. It combines the outputs of the full-band model Fl2m and the sub-band Model S into a concatenated input vector xm2l(t) for Fm2l:
 \[ x_{m2l}(t) = [Fl2m(x(t))^T, S(x_{\text{sub}}(t, 0)), \ldots, S(x_{\text{sub}}(t, F_{\text{mel}} - 1))]^T \in \mathbb{R}^{2F_{\text{mel}}} \]
 This input is processed by two layers of LSTM followed by a linear layer to predict the final linear-frequency output. The model aims to predict the real-valued complex-valued Ideal Ratio Mask (cIRM) y(t) for each time-frequency bin:
 \[ y(t) = [R\{y(t, 0)\}, I\{y(t, 0)\}, \ldots, R\{y(t, F - 1)\}, I\{y(t, F - 1)\}]^T \in \mathbb{R}^{2F} \]
@@ -54,9 +54,9 @@ representations to linear-frequency representations, with the capability to enha
 \subsection{Experimental Setup}
 \subsubsection{Dataset}
 To ensure a fair comparison with FullSubNet, experiments were conducted on the DNS challenge dataset \cite{reddy2020} from INTERSPEECH 2020.
-Training involved synthesizing noisy-clean speech pairs using dynamic mixing strategies similar to FullSubNet. Before each epoch, 75\% 
+The training involved synthesizing noisy-clean speech pairs using dynamic mixing strategies similar to FullSubNet. Before each epoch, 75\%
 of clean speech clips were mixed with room impulse responses from two databases, and combined with noise at varying SNR levels (-5 dB to 20 dB).
-Training over ten epochs exposed the model to over 5000 hours of data. Evaluation used the DNS Challenge test dataset, consisting of 150 noisy clips each with and without reverberation,
+Training over ten epochs exposed the model to over 5000 hours of data. The evaluation used the DNS Challenge test dataset, consisting of 150 noisy clips each with and without reverberation,
 and SNRs ranging from 0 dB to 20 dB.
 
 \subsubsection{Training}
@@ -66,8 +66,8 @@ a two-frame output delay (equating to 32 ms) is implemented to allow the model t
 The training sequence length is set at T = 192 frames (about 3 seconds). Mean Squared Error (MSE) is employed as the loss function throughout the study.
 
 
-\subsection{Conclusion} 
+\subsection{Conclusion}
 Fast FullSubNet is a lightweight, efficient subband-based speech enhancement model that maintains high performance in noise reduction tasks.
-The model utilizes mel-frequency domain to reduce the number of frequency bands while preserving spectral information.
-The Fast FullSubNet model consists of three main components: Full-band model $F_{l2m}$ (encoder), Sub-band model $S$ (bottleneck) and Full-band model $F_{m2l}$ (decoder).
+The model utilizes the mel-frequency domain to reduce the number of frequency bands while preserving spectral information.
+The Fast FullSubNet model consists of three main components: Full-band model $F_{l2m}$ (encoder), Sub-band model $S$ (bottleneck), and Full-band model $F_{m2l}$ (decoder).
 The model was trained on the DNS Challenge dataset from INTERSPEECH 2020, and evaluation was conducted on the DNS Challenge test dataset.

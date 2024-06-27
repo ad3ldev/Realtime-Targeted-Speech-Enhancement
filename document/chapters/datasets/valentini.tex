@@ -1,16 +1,16 @@
 \section{Valentini \cite{valentini2016}}
-Also known as: Noisy speech database for training speech enhancement algorithms and TTS models.
+Also known as the Noisy speech database for training speech enhancement algorithms and TTS models.
 
 \subsection{Training Dataset}
-The training dataset consists of clean and noisy parallel speech audio tracks. It was designed for training and testing speech enhancement methods operating at 48kHz. It consists of 2 datasets. They are described as bellow:
+The training dataset consists of clean and noisy parallel speech audio tracks. It was designed for training and testing speech enhancement methods operating at 48kHz. It consists of 2 datasets. They are described as below:
 \begin{enumerate}
-    \item 28 Speakers dataset: 14 male and 14 female from the same region and accent, which was England.
-    \item 56 Speakers dataset: 28 male and 28 female from 2 regions, which were United Status and Scotland.
+    \item 28 Speakers dataset: 14 males and 14 females from the same region and accent, which was England.
+    \item 56 Speakers dataset: 28 males and 28 females from 2 regions, which were the United States and Scotland.
 \end{enumerate}
-Valentini dataset contained around 400 sentences per each speaker, and it used 10 different noise types:
+Valentini dataset contained around 400 sentences per speaker, and it used 10 different noise types:
 \begin{enumerate}
     \item Speech-shaped noise, which was created by filtering white noise through a frequency response filter matching the speech level of a male speaker.
-    \item Babble noise, which was created by adding selected speech from 6 speakers whom were not used in training or testing data.
+    \item Babble noise, which was created by adding selected speech from 6 speakers who were not used in training or testing data.
     \item A real home domestic noise from inside a kitchen.
     \item A real office noise from a meeting room.
     \item A real public space noise from a cafeteria.
@@ -21,7 +21,8 @@ Valentini dataset contained around 400 sentences per each speaker, and it used 1
     \item Street noise from a busy traffic intersection.
 \end{enumerate}
 The real noises were chosen from the DEMAND dataset \cite{thiemann2013}.
-Four different signal-to-noise ratios (SNR) were chosen: 15 dB, 10 dB, 5 dm, and 0 dB. Which resulted in 40 different noise conditions. There were around 10 different sentences in each condition, resulting in the 400 sentences when mixed with noise. After normalizing the clean waveforms, they were mixed in with the noise, and silent segments longer than 200 ms were removed from the beginning and the end of each sentence.
+Four different signal-to-noise ratios (SNR) were chosen: 15 dB, 10 dB, 5 dm, and 0 dB. Which resulted in 40 different noise conditions. There were around 10 different sentences in each condition, resulting in 400 sentences when mixed with noise. After normalizing the clean waveforms, they were mixed in with the noise, and silent segments longer than 200 ms were removed from the beginning and the end of each sentence.
 
 \subsection{Testing Dataset}
 For the testing dataset, 2 other voices from England were chosen. New 5 noises were chosen: a living room noise, an office space noise, a bus noise, an open cafeteria noise, and a public square noise. Slightly higher SNR values were used: 17.5 dB, 12.5 dB, 7.5 dB, and 2.5 dB. This resulted in 20 different noise conditions which were added to the clean testing dataset as described before.
+

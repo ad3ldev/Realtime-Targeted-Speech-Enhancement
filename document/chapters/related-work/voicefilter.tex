@@ -12,20 +12,20 @@ VoiceFilter \cite{wang2019voicefilter} aims to solve the issue of The Cocktail P
 The architecture has two models built in which are found in Figure \ref{fig:voicefilter-architecture}:
 
 1. Speaker Encoder (Red):
-   \begin{itemize}
-      \item[a.] Input: An Utterance (a sound of the speaker we target)
-      \item[b.] Output: Speaker-discriminative embedding
-   \end{itemize}
+\begin{itemize}
+    \item[a.] Input: An Utterance (a sound of the speaker we target)
+    \item[b.] Output: Speaker-discriminative embedding
+\end{itemize}
 
 2. VoiceFilter (Blue):
-   \begin{itemize}
-      \item[a.] Inputs:
-         \begin{enumerate}
-            \item[i.] Magnitude Spectrogram
-            \item[ii.] Speaker-discriminative embedding
-         \end{enumerate}
-      \item[b.] Output: Mask
-   \end{itemize}
+\begin{itemize}
+    \item[a.] Inputs:
+          \begin{enumerate}
+              \item[i.] Magnitude Spectrogram
+              \item[ii.] Speaker-discriminative embedding
+          \end{enumerate}
+    \item[b.] Output: Mask
+\end{itemize}
 
 
 \subsubsection{Speaker Encoder}
@@ -34,27 +34,27 @@ The target speaker's audio sample is fed into the speaker encoder, which creates
 A 3-layer LSTM network trained with the generalized end-to-end loss serves as the speaker encoder. It accepts log-mel filterbank energies that are taken out of 1600ms windows as inputs and outputs 256-dimensional speaker embeddings known as $d$-vectors. We use sliding windows with $50\%$ overlap and average the $L_2$-normalized $d$-vectors that are produced on each window in order to compute a $d$-vector on a single utterance.
 
 \subsubsection{VoiceFilter}
-The recent work of Wilson et al. \cite{wilson2018}, created for voice augmentation, serves as the primary foundation for the VoiceFilter System. The target speaker's $d$-vector and a magnitude spectrogram that was calculated from a noisy audio file are the two inputs that the neural network receives. An improved magnitude spectrogram is created by multiplying the soft mask that the network predicts element-wise by the input (noisy) magnitude spectrogram. We immediately blend the noisy audio's phase with the improved magnitude spectrogram to create the enhanced waveform, and then we run an inverse STFT on the output. The goal of the network's training is to reduce the variation between the target magnitude spectrogram, which is calculated using the clean audio, and the masked magnitude spectrogram. Except the final layer, which has a sigmoid activation, the VoiceFilter network is made up of eight convolutional layers, one LSTM layer, and two fully connected layers. All of these levels have ReLU activations. Table \ref{tab:voicefilter-params} presents the values of the parameters. In each time frame, the $d$-vector is concatenated to the output of the final convolutional layer many times. The subsequent LSTM layers receive the concatenated vector as their input. For two reasons, we choose to inject the $d$-vector between the LSTM layer and the convolutional layers rather than before them. Firstly, we don't need to alter the $d$-vector by adding convolutional layers on top of it because it is already a compact and reliable representation of the target speaker. Second, convolutional layers cannot be applied to an input consisting of a magnitude spectrogram and a speaker embedding because they require time and frequency homogeneity. The input audios are split into 3-second parts for training the VoiceFilter system. If needed, they are then transformed to $16$ kHz single channel audios.
+The recent work of Wilson et al. \cite{wilson2018}, created for voice augmentation, serves as the primary foundation for the VoiceFilter System. The target speaker's $d$-vector and a magnitude spectrogram that was calculated from a noisy audio file are the two inputs that the neural network receives. An improved magnitude spectrogram is created by multiplying the soft mask that the network predicts element-wise by the input (noisy) magnitude spectrogram. We immediately blend the noisy audio phase with the improved magnitude spectrogram to create the enhanced waveform, and then we run an inverse STFT on the output. The goal of the network's training is to reduce the variation between the target magnitude spectrogram, which is calculated using the clean audio, and the masked magnitude spectrogram. Except for the final layer, which has a sigmoid activation, the VoiceFilter network is made up of eight convolutional layers, one LSTM layer, and two fully connected layers. All of these levels have ReLU activations. Table \ref{tab:voicefilter-params} presents the values of the parameters. In each time frame, the $d$-vector is concatenated to the output of the final convolutional layer many times. The subsequent LSTM layers receive the concatenated vector as their input. For two reasons, we choose to inject the $d$-vector between the LSTM layer and the convolutional layers rather than before them. Firstly, we don't need to alter the $d$-vector by adding convolutional layers on top of it because it is already a compact and reliable representation of the target speaker. Second, convolutional layers cannot be applied to an input consisting of a magnitude spectrogram and a speaker embedding because they require time and frequency homogeneity. The input audios are split into 3-second parts for training the VoiceFilter system. If needed, they are then transformed to $16$ kHz single-channel audios.
 
 \begin{table}[htbp]
     \centering
     \begin{tabular}{|c|c|c|c|c|c|}
         \hline
-        \multirow{2}{*}{\textbf{Layer}} & \multicolumn{2}{c|}{\textbf{Width}} & \multicolumn{2}{c|}{\textbf{Dilation}} & \multirow{2}{*}{\textbf{Filters / Nodes}} \\
+        \multirow{2}{*}{\textbf{Layer}} & \multicolumn{2}{c|}{\textbf{Width}} & \multicolumn{2}{c|}{\textbf{Dilation}} & \multirow{2}{*}{\textbf{Filters / Nodes}}              \\
         \cline{2-3} \cline{4-5}
-        & time & freq & time & freq & \\
+                                        & time                                & freq                                   & time                                      & freq &     \\
         \hline
-        CNN 1 & 1 & 1 & 7 & 1 & 64 \\
-        CNN 2 & 7 & 1 & 1 & 1 & 64 \\
-        CNN 3 & 5 & 5 & 1 & 1 & 64 \\
-        CNN 4 & 5 & 5 & 2 & 1 & 64 \\
-        CNN 5 & 5 & 5 & 4 & 1 & 64 \\
-        CNN 6 & 5 & 5 & 8 & 1 & 64 \\
-        CNN 7 & 5 & 5 & 16 & 1 & 64 \\
-        CNN 8 & 1 & 1 & 1 & 1 & 8 \\
-        LSTM  & - & - & - & - & 400 \\
-        FC 1  & - & - & - & - & 600 \\
-        FC 2  & - & - & - & - & 600 \\
+        CNN 1                           & 1                                   & 1                                      & 7                                         & 1    & 64  \\
+        CNN 2                           & 7                                   & 1                                      & 1                                         & 1    & 64  \\
+        CNN 3                           & 5                                   & 5                                      & 1                                         & 1    & 64  \\
+        CNN 4                           & 5                                   & 5                                      & 2                                         & 1    & 64  \\
+        CNN 5                           & 5                                   & 5                                      & 4                                         & 1    & 64  \\
+        CNN 6                           & 5                                   & 5                                      & 8                                         & 1    & 64  \\
+        CNN 7                           & 5                                   & 5                                      & 16                                        & 1    & 64  \\
+        CNN 8                           & 1                                   & 1                                      & 1                                         & 1    & 8   \\
+        LSTM                            & -                                   & -                                      & -                                         & -    & 400 \\
+        FC 1                            & -                                   & -                                      & -                                         & -    & 600 \\
+        FC 2                            & -                                   & -                                      & -                                         & -    & 600 \\
         \hline
     \end{tabular}
     \caption{Parameters of the VoiceFilter network.}
@@ -78,14 +78,14 @@ And the data generation flow is shown in Figure \ref{fig:voicefilter-data}.
 To evaluate the performance of different VoiceFilter models, we use two metrics: the speech recognition Word Error Rate (WER) and the Source to Distortion Ratio (SDR).
 
 \paragraph{Word Error Rate (WER)}\mbox{}\\
-Four WER numbers were important to them: 
+Four WER numbers were important to them:
 \begin{itemize}
     \item \textbf{Clean WER:} The WER on the clean audio, without VoiceFilter.
     \item \textbf{Noisy WER:} The WER on the noisy (clean + interference) audio in the absence of VoiceFilter.
     \item \textbf{Clean-enhanced WER:} The WER on the clean audio that the VoiceFilter system processed.
     \item \textbf{Noisy-enhanced WER:} The WER on the loud audio that the VoiceFilter system processed.
 \end{itemize}
-These two characteristics should be present in a decent VoiceFilter model: 
+These two characteristics should be present in a decent VoiceFilter model:
 \begin{itemize}
     \item Since noisy-enhanced WER is much lower than noisy WER, the VoiceFilter is helping with multi-speaker speech recognition.
     \item Clean-enhanced WER is quite close to Clean WER, indicating that in single-speaker circumstances, the VoiceFilter has few adverse effects.
