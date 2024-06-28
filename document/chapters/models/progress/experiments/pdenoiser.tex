@@ -31,6 +31,48 @@ The Adam optimizer was used with a learning rate of $1 \times 10^{-4}$ with Cosi
 We employed a mixture of loss functions, including L1 loss, Multi Resolution STFT loss and TAP loss \cite{zeng2023tap} with weights 1, 0.4 and 0.3 respectively.
 Both speaker embedding module pretrained variation were frozen during the training of the PDenoiser model.
 
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_l1_ecapa.png}
+        \caption{L1 Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_mrstft_ecapa.png}
+        \caption{Multi-Resolution STFT Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_tap_loss_ecapa.png}
+        \caption{TAP Loss}
+    \end{subfigure}
+    \caption{PDenoiser ECAPA-TDNN variation model training loss curves}
+    \label{fig:pdenoiser-ecapa-loss}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_l1_tita.png}
+        \caption{L1 Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_mrstft_tita.png}
+        \caption{Multi-Resolution STFT Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_tap_loss_tita.png}
+        \caption{TAP Loss}
+    \end{subfigure}
+    \caption{PDenoiser TitaNet variation model training loss curves}
+    \label{fig:pdenoiser-titanet-loss}
+\end{figure}
+
 \subsection{Results}
 We tested the model on two test sets: personalized DNS blind test set and the test set of our dataset. Results are show in table \ref{tab:pdenoiser-tita} and \ref{tab:pdenoiser-ecapa}.
 
