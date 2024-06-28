@@ -13,7 +13,7 @@ The architecture has two models built in which are found in Figure \ref{fig:voic
 
 1. Speaker Encoder (Red):
 \begin{itemize}
-    \item[a.] Input: An Utterance (a sound of the speaker we target)
+    \item[a.] Input: An Utterance (a sound of the target speaker)
     \item[b.] Output: Speaker-discriminative embedding
 \end{itemize}
 
@@ -31,10 +31,10 @@ The architecture has two models built in which are found in Figure \ref{fig:voic
 \subsubsection{Speaker Encoder}
 The target speaker's audio sample is fed into the speaker encoder, which creates a speaker embedding. This system is based on recent work by Wan et al. \cite{wan2020generalized}. That delivers excellent results on speech-to-speech translation, multispeaker TTS, speaker diarization, and both text-dependent and text-independent speaker verification tasks.
 
-A 3-layer LSTM network trained with the generalized end-to-end loss serves as the speaker encoder. It accepts log-mel filterbank energies that are taken out of 1600ms windows as inputs and outputs 256-dimensional speaker embeddings known as $d$-vectors. We use sliding windows with $50\%$ overlap and average the $L_2$-normalized $d$-vectors that are produced on each window in order to compute a $d$-vector on a single utterance.
+A 3-layer LSTM network trained with the generalized end-to-end loss serves as the speaker encoder. It accepts log-mel filterbank energies that are taken out of 1600ms windows as inputs and outputs 256-dimensional speaker embeddings known as $d$-vectors. A sliding windows was used with $50\%$ overlap and average the $L_2$-normalized $d$-vectors that are produced on each window in order to compute a $d$-vector on a single utterance.
 
 \subsubsection{VoiceFilter}
-The recent work of Wilson et al. \cite{wilson2018}, created for voice augmentation, serves as the primary foundation for the VoiceFilter System. The target speaker's $d$-vector and a magnitude spectrogram that was calculated from a noisy audio file are the two inputs that the neural network receives. An improved magnitude spectrogram is created by multiplying the soft mask that the network predicts element-wise by the input (noisy) magnitude spectrogram. We immediately blend the noisy audio phase with the improved magnitude spectrogram to create the enhanced waveform, and then we run an inverse STFT on the output. The goal of the network's training is to reduce the variation between the target magnitude spectrogram, which is calculated using the clean audio, and the masked magnitude spectrogram. Except for the final layer, which has a sigmoid activation, the VoiceFilter network is made up of eight convolutional layers, one LSTM layer, and two fully connected layers. All of these levels have ReLU activations. Table \ref{tab:voicefilter-params} presents the values of the parameters. In each time frame, the $d$-vector is concatenated to the output of the final convolutional layer many times. The subsequent LSTM layers receive the concatenated vector as their input. For two reasons, we choose to inject the $d$-vector between the LSTM layer and the convolutional layers rather than before them. Firstly, we don't need to alter the $d$-vector by adding convolutional layers on top of it because it is already a compact and reliable representation of the target speaker. Second, convolutional layers cannot be applied to an input consisting of a magnitude spectrogram and a speaker embedding because they require time and frequency homogeneity. The input audios are split into 3-second parts for training the VoiceFilter system. If needed, they are then transformed to $16$ kHz single-channel audios.
+The recent work of Wilson et al. \cite{wilson2018}, created for voice augmentation, serves as the primary foundation for the VoiceFilter System. The target speaker's $d$-vector and a magnitude spectrogram that was calculated from a noisy audio file are the two inputs that the neural network receives. An improved magnitude spectrogram is created by multiplying the soft mask that the network predicts element-wise by the input (noisy) magnitude spectrogram. The noisy audio is blended phase with the improved magnitude spectrogram to create the enhanced waveform, and then an inverse STFT is run on the output. The goal of the network's training is to reduce the variation between the target magnitude spectrogram, which is calculated using the clean audio, and the masked magnitude spectrogram. Except for the final layer, which has a sigmoid activation, the VoiceFilter network is made up of eight convolutional layers, one LSTM layer, and two fully connected layers. All of these levels have ReLU activations. Table \ref{tab:voicefilter-params} presents the values of the parameters. In each time frame, the $d$-vector is concatenated to the output of the final convolutional layer many times. The subsequent LSTM layers receive the concatenated vector as their input. For two reasons, $d$-vector is injected the  between the LSTM layer and the convolutional layers rather than before them. Firstly, $d$-vector doesn't need to be altered by adding convolutional layers on top of it because it is already a compact and reliable representation of the target speaker. Second, convolutional layers cannot be applied to an input consisting of a magnitude spectrogram and a speaker embedding because they require time and frequency homogeneity. The input audios are split into 3-second parts for training the VoiceFilter system. If needed, they are then transformed to $16$ kHz single-channel audios.
 
 \begin{table}[htbp]
     \centering
@@ -75,7 +75,7 @@ And the data generation flow is shown in Figure \ref{fig:voicefilter-data}.
 \end{figure}
 
 \subsubsection{Evaluation}
-To evaluate the performance of different VoiceFilter models, we use two metrics: the speech recognition Word Error Rate (WER) and the Source to Distortion Ratio (SDR).
+To evaluate the performance of different VoiceFilter models, Two metrics were used : the speech recognition Word Error Rate (WER) and the Source to Distortion Ratio (SDR).
 
 \paragraph{Word Error Rate (WER)}\mbox{}\\
 Four WER numbers were important to them:
