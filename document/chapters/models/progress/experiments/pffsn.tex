@@ -72,14 +72,14 @@ We tested the model on two test sets: a personalized DNS blind test set and the 
     \centering
     \begin{tabular}{ccccccc}
         \hline
-        \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}}                                 \\ \cline{2-6}
+        \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}}                                 \\ %%\cline{2-6}
                                 & 0                                                     & 3                                                                                     & 6     & 10    & 20    &       \\ \hline
         DNSMOS/SIG              & 3.291                                                 & 3.312                                                                                 & 3.362 & 3.533 & 3.781 & 3.524 \\
         DNSMOS/BAK              & 1.848                                                 & 2.004                                                                                 & 2.252 & 2.661 & 3.393 & 2.824 \\
         DNSMOS/OVRL             & 1.963                                                 & 2.080                                                                                 & 2.263 & 2.587 & 3.113 & 2.518 \\
         PESQ nb                & 1.468                                                 & 1.741                                                                                 & 2.075 & 2.512 & 3.253 & -     \\
         PESQ wb                & 1.205                                                 & 1.380                                                                                 & 1.654 & 2.086 & 2.927 & -     \\
-        STOI                    & 0.717                                                 & 0.804                                                                                 & 0.866 & 0.916 & 0.955 & -     \\ \cline{1-6}
+        STOI                    & 0.717                                                 & 0.804                                                                                 & 0.866 & 0.916 & 0.955 & -     \\ \cline{1-7}
     \end{tabular}
     \caption{PFFSN model results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
     \label{tab:pffsn-results}
