@@ -1,0 +1,36 @@
+\section{Model Selection}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|ccc}
+    \hline
+    Model                                       & \begin{tabular}[c]{@{}c@{}}SIG\\ MOS\end{tabular} & \begin{tabular}[c]{@{}c@{}}BAK\\ MOS\end{tabular} & \begin{tabular}[c]{@{}c@{}}OVRL\\ MOS\end{tabular}    \\ \hline
+    Team36\_UnbeatableTencent\_p\_Pref1         & 3.64                                              & 2.92                                              & 2.72                                                  \\
+    Team14\_TencentASSP\_p\_Pref1               & 3.60                                              & 2.84                                              & 2.65                                                  \\
+    Team13\_TSpeech-Al\_Pref1                   & 3.64                                              & 2.88                                              & 2.66                                                  \\
+    Team18\_TencentVPPaaS\_Pref1                & 3.61                                              & 2.86                                              & 2.64                                                  \\
+    Team34\_NAPSE\_p\_Pref1                     & 3.60                                              & 2.78                                              & 2.58                                                  \\
+    \textbf{Personalized Fast FullSubNet}       & \textbf{3.52}                                     & \textbf{2.82}                                     & \textbf{2.52}                                         \\
+    Team9\_NJUAALab2\_nonp\_Pref1               & 3.54                                              & 2.77                                              & 2.54                                                  \\
+    Team40\_SZAudio\_p\_Pref1                   & 3.53                                              & 2.58                                              & 2.39                                                  \\
+    Baseline\_p                                 & 3.22                                              & 2.68                                              & 2.38                                                  \\
+    \textbf{PDenoiser ECAPA-TDNN}               & \textbf{2.85}                                     & \textbf{3.47}                                     & \textbf{2.12}                                         \\
+    \textbf{PDenoiser TitaNet}                  & \textbf{2.55}                                     & \textbf{3.68}                                     & \textbf{1.99}                                         \\
+    Noisy                                       & 3.83                                              & 1.22                                              & 1.24                                                  \\ \hline
+    \end{tabular}
+    \caption{Personalized P.835 MOS results on DNS2023 blind test set. The models started by \textbf{Team} are the top 7 models submitted to the DNS2023 challenge. The \textbf{Baseline} model is the baseline model provided by the challenge organizers. The \textbf{Noisy} row represents the noisy audio clips.}
+    \label{tab:models-dns2023-testset}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|cccccc}
+    \hline
+    Model                        & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ SIG\end{tabular} & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ BAK\end{tabular} & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ OVRL\end{tabular} & \begin{tabular}[c]{@{}c@{}}PESQ\\ nb\end{tabular} & \begin{tabular}[c]{@{}c@{}}PESQ\\ wb\end{tabular} & STOI           \\ \hline
+    Personalized Fast FullSubNet & \textbf{3.362}                                       & 2.252                                                & 2.263                                                 & \textbf{2.075}                                    & \textbf{1.654}                                    & \textbf{0.866} \\
+    PDenoiser ECAPA-TDNN         & 2.858                                                & \textbf{3.318}                                       & \textbf{2.420}                                        & 1.616                                             & 1.446                                             & 0.697          \\
+    PDenoiser TitaNet            & 2.138                                                & 3.279                                                & 1.869                                                 & 1.325                                             & 1.231                                             & 0.538          \\ \hline
+    \end{tabular}
+    \caption{Results of trained models on our collected test set at an SNR of 6.}
+    \label{tab:models-our-testset}
+\end{table}
