@@ -16,7 +16,8 @@ The architecture of the PFFSN model is shown in Figure \ref{fig:pffsn-arch}.
 \end{figure}
 
 \subsection{Speaker Embedding Module}
-The speaker embedding module consists of the encoder and bottleneck layers of FFSN followed by a simple feedforward network.
+The speaker embedding module consists of the encoder and bottleneck layers of FFSN followed by a Gloabl Average Pooling layer to obtain a descriptor 
+for each subband. These descriptors are then fed to a simple feedforward network.
 The encoder and bottleneck layers are responsible for extracting subband features of the speaker given a clean speech signal.
 The feedforward network aims to classify whether the targeted speaker voice resides in a subband or not.
 The feedforward network consists of two fully connected layers with LayerNorms and ReLU activation functions and a sigmoid activation function in the output layer.
