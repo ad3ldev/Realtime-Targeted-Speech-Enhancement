@@ -18,7 +18,7 @@ The architecture of the PDenoiser model is shown in Figure \ref{fig:pdenoiser-ar
 We propose two different variations of the speaker embedding module: a TitaNet-based speaker embedding module and a ECAPA-TDNN-based speaker embedding module.
 Both speaker embedders output a fixed-sized speaker embedding of size 192.
 This speaker embedding is then passed to a repeated 2 times block that consists of: a linear layer followed by a layer normalization and a ReLU activation function.
-The previous block is used to increase the dimensionality of the speaker embedding to 512.
+The previous block is used to increase the dimensionality of the speaker embedding to 768.
 
 \subsection{Denoising Module}
 The denoising module is a regular Denoiser model with the output of last encoder layer scaled by the output of speaker embedding module just before the LSTM.
