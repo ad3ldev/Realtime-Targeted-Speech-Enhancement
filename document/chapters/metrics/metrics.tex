@@ -136,7 +136,7 @@ This work was an extension to the previous metric DNSMOS P.808 \cite{reddy2021dn
     \label{tab:dnnmos-835-architecture}
 \end{table}
 
-Log power spectrogram was used as an input feature extracted over 9 seconds duration as it correlates well with human perception and is proven to work very well for analyzing speech quality.  For spectral features, we used a frame size of 20 ms with a Hamming window and a hop length of 10 ms. The input features are then converted to a dB scale.
+Log power spectrogram was used as an input feature extracted over 9 seconds duration as it correlates well with human perception and is proven to work very well for analyzing speech quality.  For spectral features, they used a frame size of 20 ms with a Hamming window and a hop length of 10 ms. The input features are then converted to a dB scale.
 
 In the training phase, the authors trained two different models with almost the same architecture except for the last layer. One model is trained to predict all 3 outputs (SIG, BAK, OVRL) and the other model is trained to predict only SIG. It was found that the prediction of SIG is a much harder task and is less correlated with BAK and OVRL. The models were trained with a batch size of 32 using the Adam optimizer \cite{kingma2017adam} and MSE loss function until the loss saturated. The authors explored different network architectures and the model in Table \ref{tab:dnnmos-835-architecture} generalized the best and was of the least complexity.
 
