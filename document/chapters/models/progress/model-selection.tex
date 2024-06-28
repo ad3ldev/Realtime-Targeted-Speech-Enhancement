@@ -1,0 +1,46 @@
+\section{Model Selection}
+
+To assess the performance of our models we compared the results of our models against the top 7 models submitted to the DNS2023 challenge and the baseline model provided by the challenge organizers.
+Table \ref{tab:models-dns2023-testset} shows the results of the models on the DNS2023 blind test set and their ranking among other models based on OVRL MOS.
+Despite the limited data that our models were trained on compared to the other models, our models achieved competitive results.
+The Personalized Fast FullSubNet model ranked in the $6^{th} place$. This result shows that our model and dataset are capable to compete with models trained on much larger datasets.
+
+For further evaluation, we compared the results of our models on our collected test set at an SNR of 6. The results are shown in table \ref{tab:models-our-testset}.
+The Personalized Fast FullSubNet model achieved the highest DNSMOS SIG, PESQ nb, PESQ wb and STOI scores among the models. PDenoiser ECAPA-TDNN achieved the highest DNSMOS BAK and OVRL score.
+
+Based on these results we decided to select the Personalized Fast FullSubNet model as our final model for the project. The model will be integrated into the application for a lightweight, personalized and real-time noise suppression solution.
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|ccc}
+    \hline
+    Model                                       & \begin{tabular}[c]{@{}c@{}}SIG\\ MOS\end{tabular} & \begin{tabular}[c]{@{}c@{}}BAK\\ MOS\end{tabular} & \begin{tabular}[c]{@{}c@{}}OVRL\\ MOS\end{tabular}    \\ \hline
+    Team36\_UnbeatableTencent\_p\_Pref1         & 3.64                                              & 2.92                                              & 2.72                                                  \\
+    Team14\_TencentASSP\_p\_Pref1               & 3.60                                              & 2.84                                              & 2.65                                                  \\
+    Team13\_TSpeech-Al\_Pref1                   & 3.64                                              & 2.88                                              & 2.66                                                  \\
+    Team18\_TencentVPPaaS\_Pref1                & 3.61                                              & 2.86                                              & 2.64                                                  \\
+    Team34\_NAPSE\_p\_Pref1                     & 3.60                                              & 2.78                                              & 2.58                                                  \\
+    \textbf{Personalized Fast FullSubNet}       & \textbf{3.52}                                     & \textbf{2.82}                                     & \textbf{2.52}                                         \\
+    Team9\_NJUAALab2\_nonp\_Pref1               & 3.54                                              & 2.77                                              & 2.54                                                  \\
+    Team40\_SZAudio\_p\_Pref1                   & 3.53                                              & 2.58                                              & 2.39                                                  \\
+    Baseline\_p                                 & 3.22                                              & 2.68                                              & 2.38                                                  \\
+    \textbf{PDenoiser ECAPA-TDNN}               & \textbf{2.85}                                     & \textbf{3.47}                                     & \textbf{2.12}                                         \\
+    \textbf{PDenoiser TitaNet}                  & \textbf{2.55}                                     & \textbf{3.68}                                     & \textbf{1.99}                                         \\
+    Noisy                                       & 3.83                                              & 1.22                                              & 1.24                                                  \\ \hline
+    \end{tabular}
+    \caption{Personalized P.835 MOS results on DNS2023 blind test set. The models started by \textbf{Team} are the top 7 models submitted to the DNS2023 challenge. The \textbf{Baseline} model is the baseline model provided by the challenge organizers. The \textbf{Noisy} row represents the noisy audio clips.}
+    \label{tab:models-dns2023-testset}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|cccccc}
+    \hline
+    Model                        & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ SIG\end{tabular} & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ BAK\end{tabular} & \begin{tabular}[c]{@{}c@{}}DNSMOS\\ OVRL\end{tabular} & \begin{tabular}[c]{@{}c@{}}PESQ\\ nb\end{tabular} & \begin{tabular}[c]{@{}c@{}}PESQ\\ wb\end{tabular} & STOI           \\ \hline
+    Personalized Fast FullSubNet & \textbf{3.362}                                       & 2.252                                                & 2.263                                                 & \textbf{2.075}                                    & \textbf{1.654}                                    & \textbf{0.866} \\
+    PDenoiser ECAPA-TDNN         & 2.858                                                & \textbf{3.318}                                       & \textbf{2.420}                                        & 1.616                                             & 1.446                                             & 0.697          \\
+    PDenoiser TitaNet            & 2.138                                                & 3.279                                                & 1.869                                                 & 1.325                                             & 1.231                                             & 0.538          \\ \hline
+    \end{tabular}
+    \caption{Results of trained models on our collected test set at an SNR of 6.}
+    \label{tab:models-our-testset}
+\end{table}
