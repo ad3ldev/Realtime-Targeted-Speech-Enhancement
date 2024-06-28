@@ -32,9 +32,41 @@ We employed a mixture of loss functions, including L1 loss, Multi Resolution STF
 Both speaker embedding module pretrained variation were frozen during the training of the PDenoiser model.
 
 \subsection{Results}
-Waiting for gadwal to add results.
-% We tested the model on two test sets: personalized DNS blind test set and the test set of our dataset. Results are show in table \ref{tab:pffsn-dns} and \ref{tab:pffsn-our}.
+We tested the model on two test sets: personalized DNS blind test set and the test set of our dataset. Results are show in table \ref{tab:pdenoiser-tita} and \ref{tab:pdenoiser-ecapa}.
 
+\begin{table}[]
+    \centering
+    \begin{tabular}{ccccccc}
+    \hline
+    \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}} \\ %\cline{2-6}
+                    & 0     & 3     & 6     & 10    & 20    &       \\ \hline
+                        DNSMOS/SIG       & 2.143 & 2.206 & 2.138 & 2.050 & 2.308 & 2.552 \\ 
+                        DNSMOS/BAK       & 2.958 & 3.086 & 3.279 & 3.579 & 3.983 & 3.682 \\ 
+                        DNSMOS/OVRL      & 1.791 & 1.875 & 1.869 & 1.838 & 1.948 & 1.995 \\ 
+                        PESQ nb         & 1.241 & 1.281 & 1.325 & 1.386 & 1.352 & -     \\ 
+                        PESQ wb         & 1.153 & 1.192 & 1.231 & 1.360 & 1.386 & -     \\ 
+                        STOI             & 0.541 & 0.557 & 0.538 & 0.501 & 0.513 & -     \\ \hline
+    \end{tabular}
+    \caption{PDenoiser model with TitaNet embedding results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
+    \label{tab:pdenoiser-tita}
+\end{table}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{ccccccc}
+    \hline
+    \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}} \\ %\cline{2-6}
+                        & 0     & 3     & 6     & 10    & 20    &       \\ \hline
+    DNSMOS/SIG          & 2.558 & 2.748 & 2.858 & 2.894 & 2.776 & 2.849 \\ 
+    DNSMOS/BAK          & 2.859 & 3.095 & 3.318 & 3.633 & 3.781 & 3.476 \\ 
+    DNSMOS/OVRL         & 2.017 & 2.250 & 2.420 & 2.536 & 2.336 & 2.117 \\ 
+    PESQ nb             & 1.346 & 1.481 & 1.616 & 1.753 & 1.635 & -     \\ 
+    PESQ wb             & 1.219 & 1.322 & 1.446 & 1.603 & 1.575 & -     \\ 
+    STOI                & 0.620 & 0.671 & 0.697 & 0.700 & 0.618 & -     \\ \hline
+    \end{tabular}
+    \caption{PDenoiser model with ECAPA-TDNN embedding results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
+    \label{tab:pdenoiser-ecapa}
+\end{table}
 
 \subsection{Limitations}
 Upon listening to the outputs of the PDenoiser model on our dataset we noticed that it struggles in different scenarios:
