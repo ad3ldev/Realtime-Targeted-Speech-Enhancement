@@ -33,8 +33,8 @@ This process aims to help the decoder focus on enhancing the speaker's voice whi
 We trained the PFFSN model on the training set of our dataset for 43 epochs with a batch size of 16 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
 The noisy audio clips were generated on the fly by mixing speakerA and speakerB clean audio clips. The SNR of the noisy audio clips was randomly selected from values of 0, 3, 6, 10, 20.
 The clean audio clips were cropped to 3 seconds before mixing as an augmentation technique. The audio clips were sampled at 16kHz.
-The Adam optimizer was used with a learning rate of $5 \times 10^{-5}$ with Cosine Annealing and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
-We employed a mixture of loss functions, including L1 loss, Multi-Resolution STFT loss, complex Ration Mask (cRM) loss, and TAP loss with weights 1, 0.5, 1, and 0.3 respectively.
+The Adam\cite{kingma2017adam} optimizer was used with a learning rate of $5 \times 10^{-5}$ with Cosine Annealing\cite{loshchilov2017sgdr} and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
+We employed a mixture of loss functions, including L1 loss, Multi-Resolution STFT loss\cite{defossez2020}, complex Ration Mask (cRM) loss\cite{hao2023fast}, and TAP loss\cite{zeng2023tap} with weights 1, 0.5, 1, and 0.3 respectively.
 The weights of the Speaker Embedding Module and Denoising Module were initialized using weights from an FFSN model trained on DNS 2021 data to overcome limited data availability.
 Figure \ref{fig:pffsn-loss} shows the training loss curve of the PFFSN model.
 
