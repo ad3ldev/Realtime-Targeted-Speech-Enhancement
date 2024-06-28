@@ -36,6 +36,34 @@ The clean audio clips were cropped to 3 seconds before mixing as an augmentation
 The Adam optimizer was used with a learning rate of $5 \times 10^{-5}$ with Cosine Annealing and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
 We employed a mixture of loss functions, including L1 loss, Multi-Resolution STFT loss, complex Ration Mask (cRM) loss, and TAP loss with weights 1, 0.5, 1, and 0.3 respectively.
 The weights of the Speaker Embedding Module and Denoising Module were initialized using weights from an FFSN model trained on DNS 2021 data to overcome limited data availability.
+Figure \ref{fig:pffsn-loss} shows the training loss curve of the PFFSN model.
+
+%% add subfigures for 5 losses curves
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pffsn/train_l1.png}
+        \caption{L1 Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pffsn/train_mrstft.png}
+        \caption{Multi-Resolution STFT Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pffsn/train_cRM.png}
+        \caption{Complex Ratio Mask Loss}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/experiments/pffsn/train_tap_loss.png}
+        \caption{TAP Loss}
+    \end{subfigure}
+    \caption{PFFSN model training loss curves}
+    \label{fig:pffsn-loss}
+\end{figure}
 
 \subsection{Results}
 We tested the model on two test sets: a personalized DNS blind test set and the test set of our dataset. Results are shown in table \ref{tab:pffsn-results}.
@@ -46,16 +74,12 @@ We tested the model on two test sets: a personalized DNS blind test set and the 
         \hline
         \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}}                                 \\ \cline{2-6}
                                 & 0                                                     & 3                                                                                     & 6     & 10    & 20    &       \\ \hline
-        DNSMOS/BAK              & 1.848                                                 & 2.004                                                                                 & 2.252 & 2.661 & 3.393 & 2.824 \\
-        DNSMOS/BAK\_raw         & 1.815                                                 & 1.969                                                                                 & 2.207 & 2.587 & 3.251 & 2.738 \\
-        DNSMOS/OVRL             & 1.963                                                 & 2.080                                                                                 & 2.263 & 2.587 & 3.113 & 2.518 \\
-        DNSMOS/OVRL\_raw        & 1.771                                                 & 1.874                                                                                 & 2.037 & 2.327 & 2.810 & 2.266 \\
-        DNSMOS/P808\_MOS        & 3.148                                                 & 3.222                                                                                 & 3.320 & 3.473 & 3.688 & 2.913 \\
         DNSMOS/SIG              & 3.291                                                 & 3.312                                                                                 & 3.362 & 3.533 & 3.781 & 3.524 \\
-        DNSMOS/SIG\_raw         & 2.991                                                 & 3.011                                                                                 & 3.061 & 3.226 & 3.471 & 3.227 \\
-        pesq\_nb                & 1.468                                                 & 1.741                                                                                 & 2.075 & 2.512 & 3.253 & -     \\
-        pesq\_wb                & 1.205                                                 & 1.380                                                                                 & 1.654 & 2.086 & 2.927 & -     \\
-        stoi                    & 0.717                                                 & 0.804                                                                                 & 0.866 & 0.916 & 0.955 & -     \\ \cline{1-6}
+        DNSMOS/BAK              & 1.848                                                 & 2.004                                                                                 & 2.252 & 2.661 & 3.393 & 2.824 \\
+        DNSMOS/OVRL             & 1.963                                                 & 2.080                                                                                 & 2.263 & 2.587 & 3.113 & 2.518 \\
+        PESQ nb                & 1.468                                                 & 1.741                                                                                 & 2.075 & 2.512 & 3.253 & -     \\
+        PESQ wb                & 1.205                                                 & 1.380                                                                                 & 1.654 & 2.086 & 2.927 & -     \\
+        STOI                    & 0.717                                                 & 0.804                                                                                 & 0.866 & 0.916 & 0.955 & -     \\ \cline{1-6}
     \end{tabular}
     \caption{PFFSN model results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
     \label{tab:pffsn-results}
