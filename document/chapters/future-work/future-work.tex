@@ -2,9 +2,40 @@
 \label{chap:future-work}
 This chapter discusses the potential future work and improvements that can be made to the project.
 
-\begingroup
-\let\clearpage\relax
-
-\input{chapters/future-work/next-steps.tex}
-
-\endgroup
+\begin{enumerate}
+    \item \textbf{Increasing Data Size:} 
+    \begin{itemize}
+        \item Enhance the dataset quality by incorporating additional speakers and a wider range of languages.
+    \end{itemize}
+    
+    \item \textbf{Data Synthesis:} 
+    \begin{itemize}
+        \item Synthesize data with varying noise levels and diverse noise types to increase the model's robustness.
+    \end{itemize}
+    
+    \item \textbf{Handling Noisy Reference Audio:} 
+    \begin{itemize}
+        \item Develop strategies to make the model resilient to noisy reference audio inputs.
+    \end{itemize}
+    
+    % \item \textbf{Modifications for PFFSN:} 
+    % \begin{itemize}
+    %     \item Use a speech embedder, such as ECAPA-TDNN or TitaNet, in place of the initially suggested speech embedding module.
+    % \end{itemize}
+    
+    % \item \textbf{Modifications for PDenoiser:}
+    % \begin{itemize}
+    %     \item \textbf{Modification 1:} Relocate the scaling step from its current position before the LSTM (immediately after the encoder) to after the LSTM.
+    %     \item \textbf{Modification 2:} Concatenate the speaker embedding and replicate it to align with the time dimension of the input.
+    % \end{itemize}
+    
+    % \item \textbf{Model Tuning:} 
+    % \begin{itemize}
+    %     \item Experiment with different loss functions (assigning various weights) and hyperparameters to optimize model performance.
+    % \end{itemize}
+    
+    \item \textbf{Operating System Support:} 
+    \begin{itemize}
+        \item Extend support to include additional operating systems such as Linux.
+    \end{itemize}
+\end{enumerate}
