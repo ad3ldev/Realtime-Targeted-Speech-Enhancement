@@ -1,5 +1,15 @@
 \section{Model Selection}
 
+To assess the performance of our models we compared the results of our models against the top 7 models submitted to the DNS2023 challenge and the baseline model provided by the challenge organizers.
+Table \ref{tab:models-dns2023-testset} shows the results of the models on the DNS2023 blind test set and their ranking among other models based on OVRL MOS.
+Despite the limited data that our models were trained on compared to the other models, our models achieved competitive results.
+The Personalized Fast FullSubNet model ranked in the $6^{th} place$. This result shows that our model and dataset are capable to compete with models trained on much larger datasets.
+
+For further evaluation, we compared the results of our models on our collected test set at an SNR of 6. The results are shown in table \ref{tab:models-our-testset}.
+The Personalized Fast FullSubNet model achieved the highest DNSMOS SIG, PESQ nb, PESQ wb and STOI scores among the models. PDenoiser ECAPA-TDNN achieved the highest DNSMOS BAK and OVRL score.
+
+Based on these results we decided to select the Personalized Fast FullSubNet model as our final model for the project. The model will be integrated into the application for a lightweight, personalized and real-time noise suppression solution.
+
 \begin{table}[]
     \centering
     \begin{tabular}{l|ccc}
