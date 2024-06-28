@@ -23,6 +23,7 @@ net:
     freeze_encoder: false
     freeze_decoder: false
     freeze_lstm: false
+    embedding_weight: 0.001
   speech_embedder:
     _target_: embedders.ECAPATDNN.ECAPATDNN
     
