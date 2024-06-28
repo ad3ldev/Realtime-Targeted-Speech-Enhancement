@@ -1,12 +1,12 @@
-\subsection{Project Stack}
+\section{Project Stack}
 Different tools and libraries were considered for the project. The following is a list of the tools and libraries that were chosen for the project.
 
-\subsubsection{PyTorch}
-PyTorch is an open-source machine learning library based on the Torch library. It's primarily developed by Facebook's artificial intelligence research group and is used for applications such as computer vision and natural language processing.
+\subsection{PyTorch}
+PyTorch is an open-source machine-learning library based on the Torch library. It's primarily developed by Facebook's artificial intelligence research group and is used for applications such as computer vision and natural language processing.
 
 It is a popular choice for deep learning and AI projects due to several reasons:
 \begin{enumerate}
-    \item \textbf{Dynamic Computation Graphs}: Unlike other libraries that have static computation graphs, PyTorch allows you to change the way your graph behaves on-the-fly. This is particularly useful for models where you need to change the structure during training.
+    \item \textbf{Dynamic Computation Graphs}: Unlike other libraries that have static computation graphs, PyTorch allows you to change the way your graph behaves on the fly. This is particularly useful for models where you need to change the structure during training.
     \item \textbf{Pythonic Nature}: PyTorch's design embraces the Python philosophy, making it more intuitive and easier to use for Python developers. It integrates well with the Python data science stack, including libraries like NumPy and Matplotlib.
     \item \textbf{Strong GPU Support}: PyTorch provides seamless CUDA integration for tensor computations, allowing you to easily compute on GPUs.
     \item \textbf{Active Community and Good Documentation}: PyTorch has a very active community that contributes to a rapidly expanding ecosystem of tools and libraries. It also has excellent documentation and tutorials, making it accessible for beginners.
@@ -14,8 +14,8 @@ It is a popular choice for deep learning and AI projects due to several reasons:
     \item \textbf{Debugging}: As PyTorch is deeply integrated into Python, you can use any Python debugger with it. This makes debugging your models and training loops much easier compared to other libraries.
 \end{enumerate}
 
-\subsubsection{PyTorch Lightning}
-PyTorch Lightning is a lightweight PyTorch wrapper for high-performance AI research. It structures your code, so it's decoupled into four sections: Research code (the LightningModule), Engineering code (Trainer), Non-essential research code (callbacks), and Data (DataLoaders). This allows each part to be testable, reusable and scalable independently.
+\subsection{PyTorch Lightning}
+PyTorch Lightning is a lightweight PyTorch wrapper for high-performance AI research. It structures your code, so it's decoupled into four sections: Research code (the LightningModule), Engineering code (Trainer), Non-essential research code (callbacks), and Data (DataLoaders). This allows each part to be testable, reusable, and scalable independently.
 
 It offers some key features:
 \begin{enumerate}
@@ -26,31 +26,31 @@ It offers some key features:
     \item \textbf{Community and Ecosystem}: PyTorch Lightning has a growing community and ecosystem, with a variety of projects, tools, and libraries built around it.
 \end{enumerate}
 
-\subsubsection{Hydra}
+\subsection{Hydra}
 Hydra is an open-source Python framework that simplifies the development of research and complex applications. The key feature of Hydra is the ability to dynamically create a hierarchical configuration by composition and override it through config files and the command line. The name "Hydra" refers to its ability to manage complex, multi-headed systems.
 
 Hydra provides the following features:
 \begin{enumerate}
     \item \textbf{Configuration Composition}: Hydra allows you to combine multiple configuration files, enabling you to easily compose configurations for your different use cases.
     \item \textbf{Configuration Override}: You can override your configuration through the command line, making experimentation easy.
-    \item \textbf{Plug-ability}: Hydra is designed to be easy to extend and to integrate with other systems. You can develop plugins to extend Hydra's capabilities.
+    \item \textbf{Plug-ability}: Hydra is designed to be easy to extend and integrate with other systems. You can develop plugins to extend Hydra's capabilities.
     \item \textbf{Applications}: Hydra can help manage complex applications and systems, making it easier to handle multi-step workflows, manage environments, and more.
 \end{enumerate}
 Hydra is commonly used in machine learning research, where managing complex experiments and workflows is a common task.
 
-\subsubsection{Weights and Biases}
+\subsection{Weights and Biases}
 Weights \& Biases (wandb) is a tool designed to help track experiments in machine learning. It helps to log and visualize metrics from your runs, organize your experiments, and share findings with colleagues.
 
 Wandb is useful in:
 \begin{enumerate}
     \item \textbf{Experiment Tracking}: You can track and visualize all the pieces of your machine learning model — hyperparameters, metrics, model weights, and more.
-    \item \textbf{Reproducibility}: Weights \& Biases helps ensure your models are reproducible by automatically capturing all the relevant information needed to replicate a run.
+    \item \textbf{Reproducibility}: Weights \& Biases help ensure your models are reproducible by automatically capturing all the relevant information needed to replicate a run.
     \item \textbf{Collaboration}: You can share your findings, models, and raw data with your team, enabling better collaboration.
     \item \textbf{Integration}: Weights \& Biases integrates seamlessly with popular machine learning frameworks like TensorFlow, PyTorch, Keras, and others.
     \item \textbf{Dashboard}: It provides a flexible and intuitive dashboard to visualize your metrics, compare different runs, and see your model's performance over time.
 \end{enumerate}
 
-\subsubsection{TensorBoard}
+\subsection{TensorBoard}
 TensorBoard helps in logging and visualizing various types of data, such as scalars, images, audio, histograms, text, and more. This is particularly useful in machine learning experiments where tracking and visualizing metrics, model performance, and other data can help in model development and debugging.
 
 Here's a brief introduction to some key aspects of TensorBoard logging:

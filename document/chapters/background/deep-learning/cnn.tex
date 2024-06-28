@@ -17,7 +17,7 @@ The output of a convolutional layer is influenced by four key parameters:
 \begin{itemize}
     \item \textbf{Kernel Size:} Determines the dimension and shape of the window that the layer "sees" (Figure \ref{fig:cnn-kernel}). Larger kernels capture broader patterns, while smaller kernels focus on finer details.
     \item \textbf{Stride:} Defines how far the kernel moves between adjacent input nodes. Larger strides reduce the output size but may lose information.
-    \item \textbf{Padding:} Controls how the input edges are handled. Padding with zeros or mirrored values maintains the output size while mitigating information loss at the edges (Figure \ref{fig:cnn-padding}).
+    \item \textbf{Padding:} Controls how the input edges are handled. Padding with zeros or mirrored values maintain the output size while mitigating information loss at the edges (Figure \ref{fig:cnn-padding}).
     \item \textbf{Dilation:} Introduces spaces between the input nodes within the kernel's receptive field (Figure \ref{fig:cnn-dilation}). This allows convolutional nodes to perceive larger contexts without increasing kernel size.
 \end{itemize}
 
@@ -38,13 +38,13 @@ The output of a convolutional layer is influenced by four key parameters:
 \begin{figure} [ht]
     \centering
     \includegraphics[width=0.25\linewidth]{images/dl/cnn-dilation.png}
-    \caption{Dilated Convolution with 2D 3x3 filter (kernel) with dilation factor of 1 applied on 7x7 input  and the output is 3x3. \cite{dumoulin2016guide}}
+    \caption{Dilated Convolution with 2D 3x3 filter (kernel) with dilation factor of 1 applied on 7x7 input and the output is 3x3. \cite{dumoulin2016guide}}
     \label{fig:cnn-dilation}
 \end{figure}
 
 Unlike standard convolutional layers that shrink dimensionality, transpose convolutions (also known as deconvolutional layers) upsample the output. This operation is valuable for tasks like image generation and autoencoders.
 
-Pooling layers further reduce the dimensionality of feature maps by applying functions like max-pooling or average-pooling to non-overlapping sections of the input (Figure \ref{fig:max-pool}). This process retains key information while suppressing redundant details, improving computational efficiency and preventing overfitting.
+Pooling layers further reduce the dimensionality of feature maps by applying functions like max-pooling or average-pooling to non-overlapping sections of the input (Figure \ref{fig:max-pool}). This process retains key information while suppressing redundant details, improving computational efficiency, and preventing overfitting.
 
 \begin{figure} [h]
     \centering
@@ -54,4 +54,4 @@ Pooling layers further reduce the dimensionality of feature maps by applying fun
 \end{figure}
 
 \subsubsection{CNNs in Audio Processing}
-While image recognition remains a primary domain for CNNs, their application extends to audio processing tasks. However, audio data poses unique challenges, as unlike images, sound waves are sequential and lack predefined shapes. To utilize CNNs in audio, data slicing and padding may be necessary to conform to the layer expectations. Edge effects can also arise, potentially distorting the predicted waveform. Overlapping windows, similar to Short-Time Fourier Transform (STFT) computations, can alleviate these issues and improve performance.
+While image recognition remains a primary domain for CNNs, their application extends to audio processing tasks. However, audio data poses unique challenges, as unlike images, sound waves are sequential and lack predefined shapes. To utilize CNNs in audio, data slicing, and padding may be necessary to conform to the layer expectations. Edge effects can also arise, potentially distorting the predicted waveform. Overlapping windows, similar to Short-Time Fourier Transform (STFT) computations, can alleviate these issues and improve performance.

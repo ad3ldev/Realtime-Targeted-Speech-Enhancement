@@ -1,12 +1,12 @@
 \section{TitaNet}
 For extracting speaker representations (embeddings), Koluguri et al. \cite{koluguri2021} proposed a novel network architecture called TitaNet.
-TitaNet simply takes a variable length speech signal as input and outputs a fixed length speaker embedding.
-Their architecture achieves state-of-the-art performance on both speaker verfications and speaker diarization tasks.
+TitaNet simply takes a variable-length speech signal as input and outputs a fixed-length speaker embedding.
+Their architecture achieves state-of-the-art performance on both speaker verification and speaker diarization tasks.
 
 
 \subsection{Model Architecture}
-The model is based on encoder and decoder structure. The encoder is used for feature exctraction and then those features are passed to attention pooling layer 
-in order to calculate attention features across channels dimension.
+The model is based on the encoder and decoder structure. The encoder is used for feature extraction and then those features are passed to the attention-pooling layer
+in order to calculate attention features across channel dimensions.
 
 \begin{figure}[ht]
     \centering
@@ -15,7 +15,7 @@ in order to calculate attention features across channels dimension.
     \label{fig:TitaNet}
 \end{figure}
 
-The encoder decoder architecture of TitaNet is shown in Figure \ref{fig:TitaNet}. 
+The encoder-decoder architecture of TitaNet is shown in Figure \ref{fig:TitaNet}.
 
 \subsubsection{Encoder}
 The model encoder is based on ContextNet-$B\times R \times C$ model such that:
@@ -24,15 +24,15 @@ The model encoder is based on ContextNet-$B\times R \times C$ model such that:
     \item $R$: number of sub-blocks per block
     \item $C$: number of filters in the convolution layers of each block
 \end{itemize}
-The encoder starts with prologue block $B_{0}$ followed by $N-2$ mega blocks and finally it ends with epilogue block $B_{N}$.
-Both prologue and epilogue blocks are different from other mega blocks; they have convolution layer followed by batch normalization and ReLU layers but they differ in kernel size 
+The encoder starts with prologue block $B_{0}$ followed by $N-2$ mega blocks and finally, it ends with epilogue block $B_{N}$.
+Both prologue and epilogue blocks are different from other mega blocks; they have a convolution layer followed by batch normalization and ReLU layers but they differ in kernel size
 (3 and 1 for prologue and epilogue respectively).
-As for the mega blocks, they consist of time-channel separable convolution (with stride 1 and dilation 1), followed by batch normalization, ReLU and dropout.
-Those layers are repeated $R$ times to allow varying the depth. For global context, these channels are residually connected with Squeeze and Excitation layer.
+As for the mega blocks, they consist of time-channel separable convolution (with stride 1 and dilation 1), followed by batch normalization, ReLU, and dropout.
+Those layers are repeated $R$ times to allow varying depth. In the global context, these channels are residually connected with the Squeeze and Excitation layer.
 
 \subsubsection{Decoder and Embeddings}
-The high level features computed by the encoder are then passed to decoder to get the speaker embedding.
-Attentive statistics pooling layer is used to get a time-independent feature representation $S$ of size $B \times 3072$.
+The high-level features computed by the encoder are then passed to the decoder to get the speaker embedding.
+The attentive statistics pooling layer is used to get a time-independent feature representation $S$ of size $B \times 3072$.
 These features are then passed to 2 linear layers:
 \begin{itemize}
     \item $l_1$: Output a fixed-size embedding of size 192
@@ -45,16 +45,16 @@ TitaNet uses additive angular margin (AAM) loss. It helps to optimize the cosine
     \text{L} = - \frac{1}{N} \sum_{i=1}^{N} \log \frac{e^{s(\cos(\theta_{y_i} + m))}}{e^{s(\cos(\theta_{y_i} + m))} + \sum_{j=1, j \neq y_i}^{n} e^{s \cos \theta_{j}}}
 \end{equation}
 where $m$ is margin, $s$ is scale and $\theta_j$ is the angle between the final layer weight $W_j$ and incoming feature $x_i$.
-Both $m$ and $s$ are predefined hyper parameters.
+Both $m$ and $s$ are predefined hyperparameters.
 
 \subsection{Experimental Setup}
-Three TitaNet models were designed: TitaNet-S, TitaNet-M and TitaNet-L with 256, 512 and 1024 channels respectively.
-All the mentioned models have the same $R$ as 3 and the same filter sizes as 3, 7, 11 and 15.
+Three TitaNet models were designed: TitaNet-S, TitaNet-M, and TitaNet-L with 256, 512, and 1024 channels respectively.
+All the mentioned models have the same $R$ as 3 and the same filter sizes as 3, 7, 11, and 15.
 \subsubsection{Dataset}
 The authors used VoxCeleb1, VoxCeleb2 dev, LibriSpeech as well as other datasets with a total number of speakers of 16681 and a duration of 3373 hours.
-The training data is also augmented using RIR impulse corpora as well as different speed pertubation (0.95x and 1.05x).
+The training data is also augmented using RIR impulse corpora as well as different speed perturbations (0.95x and 1.05x).
 
 
 \subsection{Conclusion}
-This paper presents TitaNet, a novel model for speaker representation learning that uses global context of SE layers along with channel attentive statistics pooling for the extraction of fixed length speaker embedding.
-All models' implementations and checkpoints are available in NeMo toolkit (provided by NVIDIA).    
+This paper presents TitaNet, a novel model for speaker representation learning that uses the global context of SE layers along with channel attentive statistics pooling for the extraction of fixed-length speaker embedding.
+All model implementations and checkpoints are available in the NeMo toolkit (provided by NVIDIA).
