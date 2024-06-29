@@ -92,7 +92,8 @@ class PDenoiser(nn.Module):
                  sample_rate=16_000,
                  freeze_encoder=False,
                  freeze_decoder=False,
-                 freeze_lstm=False):
+                 freeze_lstm=False,
+                 embedding_weight=0.001):
 
         super().__init__()
         if resample not in [1, 2, 4]:
@@ -109,6 +110,8 @@ class PDenoiser(nn.Module):
         self.resample = resample
         self.normalize = normalize
         self.sample_rate = sample_rate
+        self.embedding_weight = embedding_weight
+        self.enhancing_weight = 1 - embedding_weight
 
         self.encoder = nn.ModuleList()
         self.decoder = nn.ModuleList()
@@ -147,9 +150,11 @@ class PDenoiser(nn.Module):
             nn.Linear(reference_embedding, 512),
             nn.LayerNorm(512),
             nn.ReLU(),
+            nn.Dropout(0.4),
             nn.Linear(512, chin),
             nn.LayerNorm(chin),
-            nn.ReLU())
+            nn.ReLU(),
+            nn.Dropout(0.4))
         
         self.lstm = BLSTM(chin, bi=not causal)
         if freeze_lstm:
@@ -211,7 +216,7 @@ class PDenoiser(nn.Module):
         # print(reference.shape)  
         # print(x.shape)
 
-        x = x * reference
+        x = x * reference * self.embedding_weight + x * self.enhancing_weight
         x = x.permute(2, 0, 1)
 
         x, _ = self.lstm(x)
