@@ -4,9 +4,9 @@ from torch import Tensor, cuda
 import torchaudio
 
 class ECAPATDNN(EmbedderWrapper):
-    def __init__(self):
+    def __init__(self, device = None):
         super(ECAPATDNN, self).__init__()
-        self.device = "cuda" if cuda.is_available() else "cpu"
+        self.device = device if device is not None else "cuda" if cuda.is_available() else "cpu"
         self.model = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", run_opts={"device": self.device})
         self.model.hparams.label_encoder.ignore_len()
         self.sr = 16000
