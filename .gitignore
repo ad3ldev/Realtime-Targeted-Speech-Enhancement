@@ -146,4 +146,9 @@ venv.bak/
 !document/**/*.gif
 !document/**/*.svg
 
-reference_audios.db
+# Application
+**/reference_audios.db
+gui/pretrained_models/**
+
+
+**.pdf
