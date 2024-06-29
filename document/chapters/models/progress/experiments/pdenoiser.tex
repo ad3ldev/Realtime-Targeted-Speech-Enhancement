@@ -28,7 +28,7 @@ The noisy audio clips were generated on the fly by mixing speakerA and speakerB 
 The clean audio clips were cropped to 3 seconds before mixing as an augmentation technique. The audio clips were sampled at 16kHz.
 The Adam optimizer was used with a learning rate of $1 \times 10^{-4}$ with Cosine Annealing \cite{loshchilov2017sgdr} and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
 We employed a mixture of loss functions, including L1 loss, Multi Resolution STFT loss and TAP loss \cite{zeng2023tap} with weights 1, 0.4 and 0.3 respectively.
-Both variations of the speaker embedding module were frozen during the training of the PDenoiser model. 
+TitaNet was frozen during the training of the PDenoiser model.
 For the speaker denoising module, we utilized the pretrained weights from Meta's Denoiser model, specifically the one with 48 hidden channels $H$, pre-trained on the DNS dataset.
 Figure \ref{fig:pdenoiser-loss} illustrates the training loss curves of the PDenoiser model for the two variations.
 
