@@ -1,27 +1,41 @@
 from tkinter import ttk
-import tkinter as tk
 import customtkinter as ctk
 from components import InputDeviceComponent, NoiseSuppressionComponent, ReferenceVoiceComponent
 import config.objects_placement as op
 import config.color_modes as cm
+from gui.components.error_handler import UserAlert
 
 color_mode = "light"
+
+
+def apply_initial_styles(font_size=12):
+    """
+    Apply initial styles to the components with a specified font size.
+    """
+    style = ttk.Style()
+    style.configure("TLabel", font=("Helvetica", font_size))
+    style.configure("TButton", font=("Helvetica", font_size))
+    style.configure("TScale", font=("Helvetica", font_size))
+    style.configure("TCombobox", font=("Helvetica", font_size))
+
 
 class MainApplication:
     resize_after_id = None
 
     def __init__(self, root):
         """
-        Initialize the main application with the root window, set appearance mode, 
+        Initialize the main application with the root window, set appearance mode,
         initialize components, and create the submit button.
         """
+        self.switch = None
         self.root = root
 
         self.root.title("Denoiser")
         self.root.geometry("400x250")
         self.root.minsize(325, 235)
         self.root.maxsize(600, 400)
-    
+
+        self.switch_var = ctk.StringVar(value="off")
         self.root.bind("<Configure>", self.on_resize)
 
         style = ttk.Style()
@@ -38,41 +52,51 @@ class MainApplication:
         self.set_mode(color_mode)
 
         self.get_components_values()
-        self.apply_initial_styles()
+        apply_initial_styles()
 
         # Create the submit button
         self.submit_button = self.create_submit_button()
 
-
     def set_mode(self, mode):
         self.noise_suppression_component.change_color_mode(mode)
         self.reference_voice_component.change_color_mode(mode)
-        
+
         if mode == "light":
             ctk.set_appearance_mode(cm.bg_color_light)
         elif mode == "dark":
             ctk.set_appearance_mode(cm.bg_color_dark)
-            
 
     def create_submit_button(self):
         """
-        Create a button that toggles its state and text when clicked, 
+        Create a button that toggles its state and text when clicked,
         disabling all other components until clicked again.
         """
-        submit_button = ttk.Button(self.root, text="Save", command=self.submit, style="Custom.TButton")
-        submit_button.place(relx=op.submit_button_relx, rely=op.submit_button_rely, anchor=op.submit_button_anchor)
-        return submit_button
+        font = ("Helvetica", 20)
+        self.switch = ctk.CTkSwitch(self.root, text="Cancel Noise", command=self.switch_event,
+                                    variable=self.switch_var, onvalue="on", offvalue="off", font=font)
+        self.switch.place(relx=op.NoiseSuppression_switch_relx, rely=op.NoiseSuppression_switch_rely,
+                          anchor=op.NoiseSuppression_switch_anchor)
+        #
+        return self.switch
 
-    def apply_initial_styles(self, font_size=12):
-        """
-        Apply initial styles to the components with a specified font size.
-        """
-        style = ttk.Style()
-        style.configure("TLabel", font=("Helvetica", font_size))
-        style.configure("TButton", font=("Helvetica", font_size))
-        style.configure("TScale", font=("Helvetica", font_size))
-        style.configure("TCombobox", font=("Helvetica", font_size))
-        self.noise_suppression_component.update_switch_font(font_size)
+    """
+    Switch event replaces the Submit Functionality
+    Need to make sure that fields are set.
+    """
+
+    def switch_event(self):
+        if self.switch_var.get() == "on":
+            values = self.get_components_values()
+            if values.get("reference_audio")[0] == "default":
+                UserAlert.alert_user(self, "Select a username first!")
+                self.switch_var.set("off")
+                return
+            self.disable_components()
+            self.switch_var.set("on")
+            print(self.get_components_values())
+        else:
+            self.enable_components()
+            self.switch_var.set("off")
 
     def adjust_font_size(self, width, height):
         """
@@ -81,7 +105,7 @@ class MainApplication:
         base_font_size = 12
         scaling_factor = min(width / 350, height / 250)
         new_font_size = int(base_font_size * scaling_factor)
-        self.apply_initial_styles(new_font_size)
+        apply_initial_styles(new_font_size)
         self.noise_suppression_component.adjust_component_sizes(width, height)
 
     def on_resize(self, event):
@@ -100,22 +124,6 @@ class MainApplication:
         width = self.root.winfo_width()
         height = self.root.winfo_height()
         self.adjust_font_size(width, height)
-
-    def submit(self):
-        """
-        Toggle the submit button state and disable or enable other components based on the current state.
-        """
-        if self.submit_button.cget("text") == "Save":
-            values = self.get_components_values()
-            if values.get("reference_audio")[0] == "default":
-                print("Please select a username!!")
-                return
-            self.disable_components()
-            self.submit_button.config(text="Edit")
-            print(self.get_components_values())
-        else:
-            self.enable_components()
-            self.submit_button.config(text="Save")
 
     def get_components_values(self):
         """
@@ -143,6 +151,7 @@ class MainApplication:
         self.reference_voice_component.enable_components()
         self.input_device_component.enable_components()
 
+
 def main():
     """
     The main function to initialize and run the application.
@@ -152,31 +161,6 @@ def main():
     app = MainApplication(root)
     root.mainloop()
 
+
 if __name__ == "__main__":
     main()
-
-
-# import customtkinter as ctk
-
-# # Set the appearance mode to "light"
-# ctk.set_appearance_mode("light")  # Other options are "dark" and "system"
-
-# # Create the main window
-# root = ctk.CTk()
-
-# # Set the window title
-# root.title("Light Mode Window")
-
-# # Set the window size
-# root.geometry("400x300")
-
-# # Create a label with some text
-# label = ctk.CTkLabel(root, text="This is a light mode window!", font=("Arial", 20))
-# label.pack(pady=20)
-
-# # Create a button
-# button = ctk.CTkButton(root, text="Click Me")
-# button.pack(pady=10)
-
-# # Run the application
-# root.mainloop()
