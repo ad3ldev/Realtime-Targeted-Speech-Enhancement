@@ -15,84 +15,46 @@ The architecture of the PDenoiser model is shown in Figure \ref{fig:pdenoiser-ar
 \end{figure}
 
 \subsection{Speaker Embedding Module}
-We propose two different variations of the speaker embedding module: a TitaNet-based speaker embedding module and a ECAPA-TDNN-based speaker embedding module.
-Both speaker embedders output a fixed-sized speaker embedding of size 192.
-This speaker embedding is then passed to a repeated 2 times block that consists of: a linear layer followed by a layer normalization and a ReLU activation function.
-The previous block is used to increase the dimensionality of the speaker embedding to 768.
+We primarily utilize TitaNet \cite{koluguri2021} to extract speaker embeddings from input speech signals of size 192.
+These speaker embeddings are then processed through a block, repeated twice, comprising a linear layer, followed by layer normalization, a ReLU activation function, and a dropout layer with a rate of 0.4.
+This block serves to enhance the dimensionality of the speaker embeddings to 768.
 
 \subsection{Denoising Module}
-The denoising module is a regular Denoiser model with the output of last encoder layer scaled by the output of speaker embedding module just before the LSTM.
+The denoising module employs a standard Denoiser model. The output from the last encoder layer is scaled by a factor of $W_enh$  set to 0.999, and then combined with the output from the speaker embedding module, scaled by $W_emb$ which is set to 0.001.
 
 \subsection{Experimental Setup}
-We trained the PDenoiser model on the training set of our dataset for 33 epochs for  with a batch size of 58 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
-The noisy audio clips were generated on the fly by mixing speakerA and speakerB clean audio clips. The SNR of the noisy audio clips was randomly selected from values of 0, 3, 6, 10, 20.
+We trained the PDenoiser model on the training set of our dataset for 12 epochs with a batch size of 32 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
+The noisy audio clips were generated on the fly by mixing speakerA and speakerB clean audio clips. The SNR of the noisy audio clips was randomly selected from values of 0, 3, 6, 10 and 20.
 The clean audio clips were cropped to 3 seconds before mixing as an augmentation technique. The audio clips were sampled at 16kHz.
 The Adam optimizer was used with a learning rate of $1 \times 10^{-4}$ with Cosine Annealing \cite{loshchilov2017sgdr} and beta values of 0.9 and 0.999. Model exponential moving average (EMA) was used with a decay of 0.999.
 We employed a mixture of loss functions, including L1 loss, Multi Resolution STFT loss and TAP loss \cite{zeng2023tap} with weights 1, 0.4 and 0.3 respectively.
 Both variations of the speaker embedding module were frozen during the training of the PDenoiser model. For the speaker denoising module, we utilized the pretrained weights from Meta's Denoiser model.
-Figures \ref{fig:pdenoiser-ecapa-loss} and \ref{fig:pdenoiser-titanet-loss} illustrate the training loss curves of the PDenoiser model for the two variations.
+Figure \ref{fig:pdenoiser-loss} illustrates the training loss curves of the PDenoiser model for the two variations.
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_l1_ecapa.png}
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_l1_loss.png}
         \caption{L1 Loss}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_mrstft_ecapa.png}
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_mrstft_loss.png}
         \caption{Multi-Resolution STFT Loss}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_tap_loss_ecapa.png}
+        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_tap_loss.png}
         \caption{TAP Loss}
     \end{subfigure}
-    \caption{PDenoiser ECAPA-TDNN variation model training loss curves}
-    \label{fig:pdenoiser-ecapa-loss}
+    \caption{PDenoiser model training loss curves}
+    \label{fig:pdenoiser-loss}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_l1_tita.png}
-        \caption{L1 Loss}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_mrstft_tita.png}
-        \caption{Multi-Resolution STFT Loss}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/experiments/pdenoiser/train_tap_loss_tita.png}
-        \caption{TAP Loss}
-    \end{subfigure}
-    \caption{PDenoiser TitaNet variation model training loss curves}
-    \label{fig:pdenoiser-titanet-loss}
-\end{figure}
 
 \subsection{Results}
-We tested the model on two test sets: personalized DNS blind test set and the test set of our dataset. Results are show in table \ref{tab:pdenoiser-tita} and \ref{tab:pdenoiser-ecapa}.
-
-\begin{table}[]
-    \centering
-    \begin{tabular}{ccccccc}
-    \hline
-    \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}} \\ %\cline{2-6}
-                    & 0     & 3     & 6     & 10    & 20    &       \\ \hline
-                        DNSMOS/SIG       & 2.143 & 2.206 & 2.138 & 2.050 & 2.308 & 2.552 \\ 
-                        DNSMOS/BAK       & 2.958 & 3.086 & 3.279 & 3.579 & 3.983 & 3.682 \\ 
-                        DNSMOS/OVRL      & 1.791 & 1.875 & 1.869 & 1.838 & 1.948 & 1.995 \\ 
-                        PESQ nb         & 1.241 & 1.281 & 1.325 & 1.386 & 1.352 & -     \\ 
-                        PESQ wb         & 1.153 & 1.192 & 1.231 & 1.360 & 1.386 & -     \\ 
-                        STOI             & 0.541 & 0.557 & 0.538 & 0.501 & 0.513 & -     \\ \hline
-    \end{tabular}
-    \caption{PDenoiser model with TitaNet embedding results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
-    \label{tab:pdenoiser-tita}
-\end{table}
+We tested the model on two test sets: personalized DNS blind test set and the test set of our dataset. Results are show in table \ref{tab:pdenoiser}.
 
 \begin{table}[]
     \centering
@@ -100,22 +62,16 @@ We tested the model on two test sets: personalized DNS blind test set and the te
     \hline
     \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Collected DataSet (Different SNR)} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Personalized DNS\\ Blind set\end{tabular}} \\ %\cline{2-6}
                         & 0     & 3     & 6     & 10    & 20    &       \\ \hline
-    DNSMOS/SIG          & 2.558 & 2.748 & 2.858 & 2.894 & 2.776 & 2.849 \\ 
-    DNSMOS/BAK          & 2.859 & 3.095 & 3.318 & 3.633 & 3.781 & 3.476 \\ 
-    DNSMOS/OVRL         & 2.017 & 2.250 & 2.420 & 2.536 & 2.336 & 2.117 \\ 
-    PESQ nb             & 1.346 & 1.481 & 1.616 & 1.753 & 1.635 & -     \\ 
-    PESQ wb             & 1.219 & 1.322 & 1.446 & 1.603 & 1.575 & -     \\ 
-    STOI                & 0.620 & 0.671 & 0.697 & 0.700 & 0.618 & -     \\ \hline
+    DNSMOS/SIG          & 4.108 & 3.869 & 3.716 & 3.887 & 4.025 & 3.748 \\ 
+    DNSMOS/BAK          & 1.725 & 2.248 & 3.475 & 3.874 & 3.988 & 2.824 \\ 
+    DNSMOS/OVRL         & 2.183 & 2.458 & 3.086 & 3.413 & 3.575 & 2.711 \\ 
+    PESQ nb             & 1.429 & 1.891 & 2.431 & 2.830 & 3.345 & -     \\ 
+    PESQ wb             & 1.171 & 1.495 & 1.998 & 2.423 & 3.038 & -     \\ 
+    STOI                & 0.690 & 0.849 & 0.913 & 0.941 & 0.962 & -     \\ \hline
     \end{tabular}
-    \caption{PDenoiser model with ECAPA-TDNN embedding results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
-    \label{tab:pdenoiser-ecapa}
+    \caption{PDenoiser model results on the collected dataset test set using different SNR levels and on the personalized DNS blind test set}
+    \label{tab:pdenoiser}
 \end{table}
 
 \subsection{Limitations}
-Upon listening to the outputs of the PDenoiser model on our dataset we noticed that it struggles in different scenarios:
-\begin{itemize}
-    \item When the primary speaker tone changes i.e, when the speaker is angry, happy, sad, etc.
-    \item The interfering speaker when the primary speaker and the interfering speaker are speaking at the same time.
-    \item Both infering and primary speaker have close audio loudness.
-    \item Both infering and primary speaker have close audio frequency.
-\end{itemize}
+Upon listening to the outputs of the PDenoiser model on our dataset we noticed that it struggles when the background speaker(s) noise is loud it fails to fully suppress it. The model size is large compared to Personalized FFSN model.
