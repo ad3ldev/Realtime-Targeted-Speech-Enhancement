@@ -21,4 +21,4 @@ This allows the streaming module to keep up with the real-time audio input and r
 $$ \text{latency} = \text{frame length} + \text{processing time} $$
 This will result in the lowest latency possible, almost the same as processing 1 frame at a time. However, it will require more processing power.
 
-In our experiments, we set the number of frames $n$ to $2$ and the number of threads to $2$. This configuration resulted in a low RTF of $0.21$, which is excellent for real-time applications with low CPU utilization of $4\%$. This experiment was conducted on a laptop with a CPU AMD Ryzen 9 5900HX. We can further reduce the latency and RTF by using GPU acceleration.
+In our experiments, we set the number of frames $n$ to $2$ and the number of threads to $2$. This configuration resulted in a low RTF of $0.21$, which is excellent for real-time applications with low CPU utilization of $20\%$. This experiment was conducted on a laptop with a CPU AMD Ryzen 9 5900HX. We can further reduce the latency and RTF by using GPU acceleration.
