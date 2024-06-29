@@ -1,0 +1,20 @@
+{
+    "app_name": "Realtime Targeted Speech Enhancement",
+    "version": "1.0.0",
+    "settings": {
+        "out_device": "CABLE Input",
+        "theme": "light",
+        "num_threads": 2,
+        "num_frames": 2,
+        "device": "cpu",
+        "dry": 0.05,
+        "sr": 16000,
+        "load_reference_audio": false
+    },
+    "model": {
+        "name": "PDenoiser_TitaNet",
+        "load_reference_audio": false,
+        "speaker_embedder": "ECAPA",
+        "speech_enhancer": "D:/Graduation Project/models/PDenoiser/PDenoiser_raw.model"
+    }
+}
