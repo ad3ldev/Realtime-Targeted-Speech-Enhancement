@@ -147,11 +147,11 @@ class ReferenceVoiceComponent:
         # Button
         if self.bg_color == "dark":
             self.save_user_button = ttk.Button(self.root, text="Create new Account",
-                                               command=lambda: self.create_new_account(cm.bg_color_dark),
+                                               command=lambda: self.create_new_account(),
                                                style="Custom.TButton")
         elif self.bg_color == "light":
             self.save_user_button = ttk.Button(self.root, text="Create new Account",
-                                               command=lambda: self.create_new_account(cm.bg_color_light),
+                                               command=lambda: self.create_new_account(),
                                                style="Custom.TButton")
         self.save_user_button.place(relx=op.ReferenceVoice_SaveUser_Button_relx,
                                     rely=op.ReferenceVoice_SaveUser_Button_rely,
@@ -183,7 +183,7 @@ class ReferenceVoiceComponent:
 
         # self.load_saved_references()
 
-    def create_new_account(self, bg_color=cm.bg_color_dark):  # CHANGE THIS INDEPENDENTLY FOR NEW WINDOW MODE.
+    def create_new_account(self):  # CHANGE THIS INDEPENDENTLY FOR NEW WINDOW MODE.
         """
         Create a new account for a new user: username - audio file.
         """
@@ -191,7 +191,7 @@ class ReferenceVoiceComponent:
         self.newuser_window.title("New User")
         self.newuser_window.geometry("300x130")  # Adjut the secondary window size
         self.newuser_window.resizable(False, False)
-        self.newuser_window.configure(bg=bg_color)
+        self.newuser_window.configure(bg=cm.bg_color_dark if self.bg_color == "dark" else cm.bg_color_light)
 
         # self.newuser_window.configure(bg=bg_color)
         self.last_uploaded_audio = None
@@ -202,13 +202,13 @@ class ReferenceVoiceComponent:
         self.new_username_entry = ttk.Entry(self.newuser_window, textvariable=self.new_username_var)
         self.new_username_entry.pack(fill='x', padx=10, pady=5)
 
-        self.new_user_frame = tk.Frame(self.newuser_window, bg=bg_color)
+        self.new_user_frame = tk.Frame(self.newuser_window, bg=cm.bg_color_dark if self.bg_color == "dark" else cm.bg_color_light)
 
-        self.upload_frame = tk.Frame(self.new_user_frame, bg=bg_color)
+        self.upload_frame = tk.Frame(self.new_user_frame, bg=cm.bg_color_dark if self.bg_color == "dark" else cm.bg_color_light)
         self.upload_frame.columnconfigure(0, weight=4)
         self.upload_frame.columnconfigure(1, weight=8)
 
-        self.submit_frame = tk.Frame(self.new_user_frame, bg=bg_color)
+        self.submit_frame = tk.Frame(self.new_user_frame, bg=cm.bg_color_dark if self.bg_color == "dark" else cm.bg_color_light)
         self.submit_frame.columnconfigure(0, weight=4)
 
         # Upload Audio Button
@@ -338,13 +338,13 @@ class ReferenceVoiceComponent:
 
         self.username_label.configure(style="TLabel")
         self.saved_users_dropdown.configure(style="TCombobox")
-        self.new_username_label.configure(style="TLabel")
+        # self.new_username_label.configure(style="TLabel")
         self.save_user_button.configure(style="Custom.TButton")
         self.reference_voice_label.configure(style="TLabel")
         self.reference_voice_name.configure(style="TLabel")
         self.change_reference_label.configure(style="TLabel")
         self.upload_reference_button.configure(style="Custom.TButton")
-        self.new_username_label.configure(style="TLabel")
+        # self.new_username_label.configure(style="TLabel")
 
     def change_color_mode(self, mode):
         """
@@ -354,6 +354,7 @@ class ReferenceVoiceComponent:
             self.apply_styles(cm.bg_color_dark, cm.fg_color_dark)
         elif mode == "light":
             self.apply_styles(cm.bg_color_light, cm.fg_color_light)
+        self.bg_color = mode
 
     def init_database(self):
         conn = create_connection(self.db_file)

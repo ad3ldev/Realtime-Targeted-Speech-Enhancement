@@ -5,9 +5,6 @@ import config.objects_placement as op
 import config.color_modes as cm
 from gui.components.error_handler import UserAlert
 
-color_mode = "light"
-
-
 def apply_initial_styles(font_size=12):
     """
     Apply initial styles to the components with a specified font size.
@@ -27,6 +24,9 @@ class MainApplication:
         Initialize the main application with the root window, set appearance mode,
         initialize components, and create the submit button.
         """
+        self.color_mode = "light"
+        ctk.set_appearance_mode(self.color_mode)
+
         self.switch = None
         self.root = root
 
@@ -34,6 +34,7 @@ class MainApplication:
         self.root.geometry("400x250")
         self.root.minsize(325, 235)
         self.root.maxsize(600, 400)
+
 
         self.switch_var = ctk.StringVar(value="off")
         self.root.bind("<Configure>", self.on_resize)
@@ -45,19 +46,28 @@ class MainApplication:
         user_id = "default"
 
         # Initialize components
-        self.noise_suppression_component = NoiseSuppressionComponent(root, color_mode)
-        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id, color_mode)
+        self.noise_suppression_component = NoiseSuppressionComponent(root, self.color_mode)
+        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id, self.color_mode)
         self.input_device_component = InputDeviceComponent(root)
 
-        self.set_mode(color_mode)
+        self.set_mode(self.color_mode)
 
         self.get_components_values()
         apply_initial_styles()
 
         # Create the submit button
         self.submit_button = self.create_submit_button()
+        self.root.bind("<Control-m>", self.toggle_mode)
+
+    def toggle_mode(self, event=None):
+        """
+        Toggle between light and dark modes.
+        """
+        new_mode = self.color_mode = "dark" if self.color_mode == "light" else "light"
+        self.set_mode(new_mode)
 
     def set_mode(self, mode):
+        ctk.set_appearance_mode(mode)
         self.noise_suppression_component.change_color_mode(mode)
         self.reference_voice_component.change_color_mode(mode)
 
@@ -152,11 +162,11 @@ class MainApplication:
         self.input_device_component.enable_components()
 
 
+
 def main():
     """
     The main function to initialize and run the application.
     """
-    ctk.set_appearance_mode(color_mode)
     root = ctk.CTk()
     app = MainApplication(root)
     root.mainloop()
