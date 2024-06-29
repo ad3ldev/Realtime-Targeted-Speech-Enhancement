@@ -24,13 +24,13 @@ The app is designed to enhance speech using the user's reference audio. Upon fir
 
 Afterward, the client needs to select the input device for real-time voice enhancement.
 
-Users can activate or deactivate the 'Cancel Noise' switch to start or stop noise cancellation. Additionally, they can adjust the percentage of noise to be removed using the dry/wet slider.
+Additionally, the client can adjust the percentage of noise to be removed using the dry/wet slider.
 
 Our app supports multiple users, each mapped to one reference audio. If a user needs to replace their reference audio, they can upload a new audio file, which will replace the old one.
 
-Once these settings have been configured, the user needs to click 'Save' to start noise cancellation. Clicking 'Save' toggles its text to 'Edit' and disables other components, as the user is not allowed to modify their values while the app is running, except for the 'Cancel Noise' switch button, which remains enabled.
+Once these settings have been configured, the user will be able to activate the 'Cancel Noise' switch to start noise cancellation. Switching on disables other components, as the user is not allowed to modify their values while the app is running.
 
-If the user clicks 'Edit', the components are enabled again, the text toggles back to 'Save', and noise cancellation is halted until the user edits their necessary data and clicks 'Save' again to resume.
+If the user deactivate the 'Cancel Noise' switch, the components are enabled again and noise cancellation is halted until the user edits their necessary data and clicks activate the switch again to resume.
 
 Finally, the app is available in both light and dark modes to suit user preferences.
 
@@ -53,11 +53,10 @@ Finally, the app is available in both light and dark modes to suit user preferen
 Here is a recap of the features or components provided by our GUI:
 \begin{itemize}
 	\item \textbf{Select Input Device}: Dropdown menu that displays current audio inputs from the device.
-	\item \textbf{Cancel Noise}: Switch button that can be toggled on and off.
 	\item \textbf{Select User}: A dropdown menu that displays current saved usernames on the device. Once a user is selected, their reference voice's name appears next to the menu in bold.
 	\item \textbf{Reference Voice}: Label that displays the user's reference audio once a user is chosen from the 'Select User' dropdown.
 	\item \textbf{Create New Account}: Button that leads to another window, allowing the user to provide their name and upload their reference audio for the first time. Once this data is submitted, the user's name and reference audio remain saved in the app.
 	\item \textbf{Upload Audio}: Button that enables a user to change their stored reference audio by uploading a new one.
 	\item \textbf{Dry/Wet Slider}: Controls the amount of noise to keep or remove from the provided audio.
-	\item \textbf{Save}: Button to save the given values and pass them to the model to start working.
+	\item \textbf{Cancel Noise}: Switch button that can be toggled on and off, initial state is 'off' while turning it on passes the given values to the model to start working.
 \end{itemize}
