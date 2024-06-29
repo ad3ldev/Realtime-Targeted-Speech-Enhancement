@@ -11,7 +11,7 @@ NoiseSuppression_switch_relx = 0.95
 NoiseSuppression_switch_rely = 0.05
 NoiseSuppression_switch_anchor = 'ne'
 
-NoiseSuppression_slider_pady = 55
+NoiseSuppression_slider_pady = 4
 
 
 ReferenceVoice_SelectUser_Label_relx = 0.05
@@ -37,6 +37,10 @@ ReferenceVoice_SelectReference_Label_anchor = 'nw'
 ReferenceVoice_ChangeReference_Label_relx = 0.55
 ReferenceVoice_ChangeReference_Label_rely = 0.45
 ReferenceVoice_ChangeReference_Label_anchor = 'nw'
+
+Alerts_Label_relx = 0.05
+Alerts_Label_rely = 0.70
+Alerts_Label_anchor = 'nw'
 
 submit_button_relx = 0.5
 submit_button_rely = 0.93
