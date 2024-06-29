@@ -19,7 +19,7 @@ streaming:
   compressor: True
   device: cpu
 
-speech_embedder:
+speaker_embedder:
   _target_: embedders.TitaNet.TitaNet
 
 defaults:

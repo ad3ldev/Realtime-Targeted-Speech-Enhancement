@@ -190,8 +190,8 @@ def parse_audio_device(device):
     except ValueError:
         return device
     
-def load_speaker_embedder(speech_embedder_cfg):
-    return hydra.utils.instantiate(speech_embedder_cfg)
+def load_speaker_embedder(speaker_embedder_cfg):
+    return hydra.utils.instantiate(speaker_embedder_cfg)
 
 def setup_model(model_cfg) -> torch.nn.Module:
     model = hydra.utils.instantiate(model_cfg)
@@ -204,7 +204,7 @@ def stream_pipeline(cfg):
 
         device = cfg.streaming.device
 
-        speaker_embedder = load_speaker_embedder(cfg.speech_embedder)
+        speaker_embedder = load_speaker_embedder(cfg.speaker_embedder)
         print("Speaker embedder loaded.")
         embedding = speaker_embedder.embed(cfg.streaming.reference_audio).to(device)
         del speaker_embedder

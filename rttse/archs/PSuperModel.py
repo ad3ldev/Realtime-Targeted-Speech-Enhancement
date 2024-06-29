@@ -8,10 +8,10 @@ from embedders.EmbedderWrapper import EmbedderWrapper
 from utils.logger import get_root_logger
 
 class PSuperModel(torch.nn.Module):
-    def __init__(self, speech_enhancer, speech_embedder: EmbedderWrapper, initial_weights=None, strict=True, *args, **kwargs) -> None:
+    def __init__(self, speech_enhancer, speaker_embedder: EmbedderWrapper, initial_weights=None, strict=True, *args, **kwargs) -> None:
         super(PSuperModel, self).__init__(*args, **kwargs)
         self.device = self.detect_device()
-        self.speaker_embedder = speech_embedder
+        self.speaker_embedder = speaker_embedder
         self.speech_enhancer = speech_enhancer
         if initial_weights:
             self.speech_enhancer.load_state_dict(torch.load(initial_weights), strict=strict)

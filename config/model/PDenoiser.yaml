@@ -23,6 +23,6 @@ net:
     freeze_encoder: false
     freeze_decoder: false
     freeze_lstm: false
-  speech_embedder:
+  speaker_embedder:
     _target_: embedders.ECAPATDNN.ECAPATDNN
     
