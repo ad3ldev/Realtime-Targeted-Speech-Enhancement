@@ -17,22 +17,33 @@ def main(cfg):
     
     model: torch.nn.Module = hydra.utils.instantiate(cfg.model)
     
-    # load weights from pytorch lightning checkpoint
-    checkpoint = torch.load(cfg.checkpoint_path)
-    # remove keys starting with 'losses.' and 'metrics.'
-    checkpoint['state_dict'] = {k: v for k, v in checkpoint['state_dict'].items() if not k.startswith('losses.') and not k.startswith('metrics.')}
-    model.load_state_dict(checkpoint['state_dict'])
+    if cfg.checkpoint_path != '':
+        # load weights from pytorch lightning checkpoint
+        checkpoint = torch.load(cfg.checkpoint_path)
+        # remove keys starting with 'losses.' and 'metrics.'
+        checkpoint['state_dict'] = {k: v for k, v in checkpoint['state_dict'].items() if not k.startswith('losses.') and not k.startswith('metrics.')}
+        model.load_state_dict(checkpoint['state_dict'])
     
     # save speaker_embedder
     speaker_embedder = model.net.speaker_embedder
-    with open(f'{output_dir}/{cfg.speaker_embedder_name}.embedder', 'wb') as f:
-        pickle.dump(speaker_embedder, f)
-    print(f'Saved speaker embedder to {output_dir}/{cfg.speaker_embedder_name}.embedder')
+    try:
+        with open(f'{output_dir}/{cfg.speaker_embedder_name}.embedder', 'wb') as f:
+            pickle.dump(speaker_embedder, f)
+        print(f'Saved speaker embedder to {output_dir}/{cfg.speaker_embedder_name}.embedder')
+    except Exception as e:
+        if os.path.exists(f'{output_dir}/{cfg.speaker_embedder_name}.embedder'):
+            os.remove(f'{output_dir}/{cfg.speaker_embedder_name}.embedder')
+        print(f'Failed to save speaker embedder: {e}')
     
     # save model
-    model = model.net.speech_enhancer
-    torch.save(model, f'{output_dir}/{cfg.speech_enhancer_name}.model')
-    print(f'Saved speech enhancer to {output_dir}/{cfg.speech_enhancer_name}.model')
+    try:
+        model = model.net.speech_enhancer
+        torch.save(model, f'{output_dir}/{cfg.speech_enhancer_name}.model')
+        print(f'Saved speech enhancer to {output_dir}/{cfg.speech_enhancer_name}.model')
+    except Exception as e:
+        if os.path.exists(f'{output_dir}/{cfg.speech_enhancer_name}.model'):
+            os.remove(f'{output_dir}/{cfg.speech_enhancer_name}.model')
+        print(f'Failed to save speech enhancer: {e}')
     
 if __name__ == '__main__':
     main()
