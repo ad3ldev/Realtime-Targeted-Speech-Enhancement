@@ -41,6 +41,7 @@ train:
       
 
 val:
+  log_audio_num_samples: 5
   metrics:    
     DNSMOS:
       _target_: metrics.dnsmos_local.DNSMOSScore
