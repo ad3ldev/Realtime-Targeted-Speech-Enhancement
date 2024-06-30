@@ -1,11 +1,8 @@
-from sounddevice import InputStream, OutputStream, query_devices, default
-from threading import Event, Thread
 import torch
 import torchaudio
 import pickle
-
-import sys
-sys.path.append('../rttse')
+from sounddevice import InputStream, OutputStream, query_devices, default
+from threading import Event, Thread
 
 from streaming.streamer import Streamer, PDenoiserStreamer, PFFSNStreamer
 from embedders.TitaNet import TitaNet
@@ -17,7 +14,6 @@ def parse_audio_device(device_name, type):
     """
     devices = query_devices()
     for device in devices:
-        print(device)
         if device_name in device['name'] and device['max_' + type + '_channels'] > 0 and device['hostapi'] == default.hostapi:
             return device['index']
     return None
