@@ -51,7 +51,8 @@ class Streamer:
                  resample=1,
                  normalize=True,
                  floor=1e-3,
-                 device = 'cpu'):
+                 device = 'cpu',
+                 enhance = False):
         # self.demucs = demucs
         self.model = model
         self.embedding = embedding
@@ -59,7 +60,7 @@ class Streamer:
         self.normalize = normalize
         self.floor = floor
         self.device = device
-        self.enhance = True
+        self.enhance = enhance
         
         total_stride = stride ** depth // resample
         self.lstm_state = None
@@ -179,11 +180,11 @@ class PDenoiserStreamer(Streamer):
         super(PDenoiserStreamer, self).__init__(model, embedding, dry, num_frames, resample_lookahead, resample_buffer, chin, depth, kernel_size, stride, resample, normalize, floor, device)
 
     def _separate_frame(self, frame):
-        return self.model(frame, self.embedding)[0]
+        return self.model(frame, self.embedding)[0] if self.enhance else frame
 
 class PFFSNStreamer(Streamer):
     def __init__(self, model, embedding, dry=0.0, num_frames=1, resample_lookahead=64, resample_buffer=256, chin=1, depth=5, kernel_size=8, stride=4, resample=1, normalize=True, floor=1e-3, device = 'cpu'):
         super(PFFSNStreamer, self).__init__(model, embedding, dry, num_frames, resample_lookahead, resample_buffer, chin, depth, kernel_size, stride, resample, normalize, floor, device)
 
     def _separate_frame(self, frame):
-        return self.model({"noisy": frame, "reference_subbands": self.embedding})[0]
+        return self.model({"noisy": frame, "reference_subbands": self.embedding})[0] if self.enhance else frame

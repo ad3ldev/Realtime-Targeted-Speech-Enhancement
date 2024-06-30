@@ -2,3 +2,4 @@
 from .input_device import InputDeviceComponent
 from .noise_suppression import NoiseSuppressionComponent
 from .reference_voice import ReferenceVoiceComponent
+from .splash import Splash

@@ -14,7 +14,7 @@
     "model": {
         "name": "PDenoiser_TitaNet",
         "load_reference_audio": false,
-        "speaker_embedder": "ECAPA",
-        "speech_enhancer": "D:/Graduation Project/models/PDenoiser/PDenoiser_raw.model"
+        "speaker_embedder": "TitaNet",
+        "speech_enhancer": "D:/Graduation Project/models/PDenoiser/001_PDenoiserV2_P_L1mrstftTAPLoss_yt.model"
     }
 }

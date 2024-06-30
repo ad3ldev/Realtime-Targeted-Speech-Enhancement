@@ -7,7 +7,9 @@ import config.color_modes as cm
 from dao.database import create_connection, create_table, select_all_users, save_user, get_path_from_file_name, \
     get_file_name_by_user_id, update_reference, get_file_path_by_user_id
 from tkinter import font
-from gui.components.error_handler import UserAlert
+from components.error_handler import UserAlert
+from streaming.streamer import Streamer
+from streaming.streaming import compute_speaker_embedding
 
 
 class ReferenceVoiceComponent:
@@ -15,10 +17,12 @@ class ReferenceVoiceComponent:
     Class to create a dropdown menu to select the reference voice.
     """
 
-    def __init__(self, root, db_file, user_id, bg_color):
+    def __init__(self, root, db_file, user_id, bg_color, cfg, streamer: Streamer):
         """
         Initialize the Reference Voice Component with the root window, database file, and user id.
         """
+        self.cfg = cfg
+        self.streamer = streamer
         self.ok_button = None
         self.new_reference_name_label = None
         self.upload_button = None
@@ -110,14 +114,17 @@ class ReferenceVoiceComponent:
         path = self.get_path_from_file_name(self.selected_reference)
         self.reference_audio_path.set(path)
 
-    def on_user_selected(self, event):
+    def on_user_selected(self, var, index, mode):
         """
         Get the user id when a user is selected from the dropdown.
         """
         self.user_id = self.saved_users_var.get()
         self.reference_voice_name_var.set(get_file_name_by_user_id(create_connection(self.db_file), self.user_id))
         UserAlert.alert_user(self, "")
-        print(f"Selected user: {self.user_id}")
+        selected_file_path = get_file_path_by_user_id(create_connection(self.db_file), self.user_id)
+        print(f"Selected user: {self.user_id}, File Path: {selected_file_path}")
+        self.cfg["reference_audio_path"] = selected_file_path
+        self.streamer.embedding = compute_speaker_embedding(self.cfg)
 
     def create_users_section(self):
         """
@@ -132,10 +139,11 @@ class ReferenceVoiceComponent:
         # Dropdown
         self.saved_users_var = tk.StringVar()
         self.saved_users_dropdown = ttk.Combobox(self.root, textvariable=self.saved_users_var, state="readonly")
+        self.saved_users_var.trace_add("write", self.on_user_selected)
         self.saved_users_dropdown.place(relx=op.ReferenceVoice_SelectUser_Dropdown_relx,
                                         rely=op.ReferenceVoice_SelectUser_Dropdown_rely,
                                         anchor=op.ReferenceVoice_SelectUser_Dropdown_anchor)
-        self.saved_users_dropdown.bind("<<ComboboxSelected>>", self.on_user_selected)
+        # self.saved_users_dropdown.bind("<<ComboboxSelected>>", self.on_user_selected)
         self.load_saved_users()
 
         # New Username Section
@@ -325,6 +333,7 @@ class ReferenceVoiceComponent:
             users = select_all_users(conn)
         user_names = [user[0] for user in users]
         self.saved_users_dropdown['values'] = user_names
+        self.saved_users_var.set(user_names[0]) if len(user_names) > 0 else None
 
     def apply_styles(self, bg_color=cm.bg_color_light, fg_color=cm.fg_color_light):
         """

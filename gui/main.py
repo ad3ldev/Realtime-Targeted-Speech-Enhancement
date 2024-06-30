@@ -1,9 +1,13 @@
 from tkinter import ttk
 import customtkinter as ctk
-from components import InputDeviceComponent, NoiseSuppressionComponent, ReferenceVoiceComponent
+from components import InputDeviceComponent, NoiseSuppressionComponent, ReferenceVoiceComponent, Splash
 import config.objects_placement as op
 import config.color_modes as cm
-from gui.components.error_handler import UserAlert
+from components.error_handler import UserAlert
+import json
+import threading
+import sys
+from streaming.streaming import initialize_streamer, start_streaming, stop_streaming
 
 color_mode = "light"
 
@@ -22,11 +26,20 @@ def apply_initial_styles(font_size=12):
 class MainApplication:
     resize_after_id = None
 
-    def __init__(self, root):
+    def __init__(self, root, cfg):
         """
         Initialize the main application with the root window, set appearance mode,
         initialize components, and create the submit button.
         """
+        self.cfg = cfg
+        
+        self.streamer = initialize_streamer(cfg)
+        self.stop_streaming_event = threading.Event()
+        self.stop_streaming_event.clear()
+        self.release_resource_event = threading.Event()
+        self.release_resource_event.set()
+        # self.streaming_thread = start_streaming(self.streamer, cfg, self.stop_streaming_event)
+                
         self.switch = None
         self.root = root
 
@@ -34,6 +47,7 @@ class MainApplication:
         self.root.geometry("400x250")
         self.root.minsize(325, 235)
         self.root.maxsize(600, 400)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.switch_var = ctk.StringVar(value="off")
         self.root.bind("<Configure>", self.on_resize)
@@ -43,11 +57,11 @@ class MainApplication:
 
         db_file = "reference_audios.db"
         user_id = "default"
-
+        
         # Initialize components
-        self.noise_suppression_component = NoiseSuppressionComponent(root, color_mode)
-        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id, color_mode)
-        self.input_device_component = InputDeviceComponent(root)
+        self.noise_suppression_component = NoiseSuppressionComponent(root, color_mode, cfg, self.streamer)
+        self.reference_voice_component = ReferenceVoiceComponent(root, db_file, user_id, color_mode, cfg, self.streamer)
+        self.input_device_component = InputDeviceComponent(root, cfg, self.streamer, self.stop_streaming_event, self.release_resource_event)
 
         self.set_mode(color_mode)
 
@@ -56,7 +70,13 @@ class MainApplication:
 
         # Create the submit button
         self.submit_button = self.create_submit_button()
-
+        
+        
+    def on_closing(self):
+        stop_streaming(self.stop_streaming_event, self.release_resource_event)
+        print("App Closed!")
+        self.root.destroy()
+    
     def set_mode(self, mode):
         self.noise_suppression_component.change_color_mode(mode)
         self.reference_voice_component.change_color_mode(mode)
@@ -85,18 +105,8 @@ class MainApplication:
     """
 
     def switch_event(self):
-        if self.switch_var.get() == "on":
-            values = self.get_components_values()
-            if values.get("reference_audio")[0] == "default":
-                UserAlert.alert_user(self, "Select a username first!")
-                self.switch_var.set("off")
-                return
-            self.disable_components()
-            self.switch_var.set("on")
-            print(self.get_components_values())
-        else:
-            self.enable_components()
-            self.switch_var.set("off")
+        self.streamer.enhance = True if self.switch_var.get() == "on" else False
+        print("streamer.enhance: ", self.streamer.enhance)
 
     def adjust_font_size(self, width, height):
         """
@@ -151,15 +161,26 @@ class MainApplication:
         self.reference_voice_component.enable_components()
         self.input_device_component.enable_components()
 
-
 def main():
     """
     The main function to initialize and run the application.
     """
+    config_path = sys.argv[1] if len(sys.argv) > 1 else "config.json"
+    with open(config_path, "r") as f:
+        cfg = json.load(f)
+    # streamer = initialize_streamer(cfg, "D:/Graduation Project/muhammad-embedding-cropped.wav")
+    
+    # stop_event = threading.Event()
+    # stop_event.clear()
+    
+    # streaming_thread = start_streaming(streamer, cfg, stop_event)
+    
     ctk.set_appearance_mode(color_mode)
     root = ctk.CTk()
-    app = MainApplication(root)
+    app = MainApplication(root, cfg)
     root.mainloop()
+    
+    # streaming_thread.join()
 
 
 if __name__ == "__main__":

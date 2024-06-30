@@ -3,6 +3,7 @@ import tkinter as tk
 import customtkinter as ctk
 import config.objects_placement as op
 import config.color_modes as cm
+from streaming.streamer import Streamer
 
 
 def round_to_nearest_multiple_of_step(value, step):
@@ -17,7 +18,9 @@ class NoiseSuppressionComponent:
     Class to create a slider to set the noise suppression level and a switch to enable or disable noise suppression.
     """
 
-    def __init__(self, root, bg_color):
+    def __init__(self, root, bg_color, cfg, streamer: Streamer):
+        self.cfg = cfg
+        self.streamer = streamer
         self.slider = None
         self.left_label = None
         self.right_label = None
@@ -25,8 +28,7 @@ class NoiseSuppressionComponent:
         self.current_value_label = None
         self.root = root
         self.dry_wet_slider_value = tk.DoubleVar()
-        self.dry_wet_slider_old_value = 0
-        self.switch_var = ctk.StringVar(value="on")
+        self.switch_var = ctk.StringVar(value="off")
         # self.create_switch()
         self.create_slider()
         self.apply_styles()
@@ -104,10 +106,13 @@ class NoiseSuppressionComponent:
         """
         Event handler for the slider.
         """
-        new_value = round_to_nearest_multiple_of_step(int(self.get_current_value()[:-1]), 5)
+        new_value = round_to_nearest_multiple_of_step(int(self.get_current_value()[:-1]), 1)
         self.current_value_label.configure(text=str(new_value) + '%')  # change the 5 for different step
         self.dry_wet_slider_value.set(new_value)
-        self.dry_wet_slider_old_value = new_value
+        new_value = new_value / 100
+        print("Slider value: ", new_value)
+        self.cfg["settings"]["dry"] = new_value
+        self.streamer.dry = new_value
 
     def get_current_value(self):
         """
