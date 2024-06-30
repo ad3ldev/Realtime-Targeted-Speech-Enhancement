@@ -20,7 +20,7 @@ These speaker embeddings are then processed through a block, repeated twice, com
 This block serves to enhance the dimensionality of the speaker embeddings to 768.
 
 \subsection{Denoising Module}
-The denoising module employs a standard Denoiser model. The output from the last encoder layer is scaled by a factor of $W_{enh}$  set to 0.999, and then combined with the output from the speaker embedding module, scaled by $W_{emb}$ which is set to 0.001.
+The denoising module employs a standard Denoiser model. The output of encoder is reweighted by embedding module output. To ease gradient flow, a weighted residual connection is added from the encoder output. The weighted residual connection forms a convex linear combination with parameter  $W_{enh}=0.999$.
 
 \subsection{Experimental Setup}
 We trained the PDenoiser model on the training set of our dataset for 12 epochs with a batch size of 32 per GPU. We trained the model using Kaggle's 2 NVIDIA Tesla T4 GPUs.
