@@ -57,7 +57,7 @@ class FullSubNetModel(BaseModel):
 
     def batch_adapter(self, batch):
         if isinstance(batch, dict):
-            return (batch['noisy'].squeeze(1), batch['reference'].squeeze(1), batch['index']), batch['clean'].squeeze(1) if batch['clean'] is not None else None
+            return (batch['noisy'].squeeze(1), batch['reference'].squeeze(1)), batch['noisy_filename'], batch['clean'].squeeze(1) if batch['clean'] is not None else None
         return batch[1:], batch[0]
     
 
@@ -100,7 +100,7 @@ class FullSubNetModel(BaseModel):
             self.log_audio(x, y, y_hat)
     
     def test_step(self,  batch, batch_idx):
-        x, y = self.batch_adapter(batch)
+        x, noisy_filenames, y = self.batch_adapter(batch)
         y_hat, cRM = self.net(x)
 
         metrics_dict = self.calculate_metrics(y_hat, y, 'test')
@@ -109,7 +109,7 @@ class FullSubNetModel(BaseModel):
             metrics_dict = self.calculate_cIRM_metrics(cIRM, cRM, 'test', metrics_dict)
         
         if self.cfg.save_results:
-            torchaudio.save(f"{self.cfg.save_dir}/{batch_idx}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
+            torchaudio.save(f"{self.cfg.save_dir}/{noisy_filenames[0]}.wav", y_hat.squeeze(1).cpu(), self.cfg.sample_rate)
 
         self.log_dict(metrics_dict, sync_dist=True)
 
