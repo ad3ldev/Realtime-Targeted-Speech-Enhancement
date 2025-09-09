@@ -94,11 +94,11 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
         }
 
         self.speaker_embedder = nn.Sequential(
-            nn.Linear(128, 256),
-            nn.LayerNorm(256),
+            nn.Linear(num_mels * 2, num_mels * 4),
+            nn.LayerNorm(num_mels * 4),
             nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.LayerNorm(128),
+            nn.Linear(num_mels * 4, num_mels * 2),
+            nn.LayerNorm(num_mels * 2),
             nn.Sigmoid()
         )
 
@@ -163,16 +163,16 @@ class FastFullSubNetEmbedding(FullSubNetBaseModel):
         """
         # reference = reference.squeeze(1)
         # print("reference shape: ", reference.shape)
-        mix_mag, _, reference_real, reference_imag = stft(reference, **self.stft_args)
+        mix_mag, _, noisy_real, noisy_imag = stft(reference, **self.stft_args)
         mix_mag = mix_mag.unsqueeze(1)
         assert mix_mag.dim() == 4
         mix_mag = functional.pad(mix_mag, [0, self.look_ahead])  # Pad the look ahead
-        batch_size, num_channels, num_freqs, num_frames = mix_mag.size()
+        batch_size, num_channels, _, num_frames = mix_mag.size()
         assert num_channels == 1, f"{self.__class__.__name__} takes a magnitude feature as the input."
 
         # Mel filtering
         mix_mel_mag = self.mel_scale(mix_mag)  # [B, C, F_mel, T]
-        _, _, num_freqs_mel, _ = mix_mel_mag.shape
+        # _, _, num_freqs_mel, _ = mix_mel_mag.shape
 
         # F_l2m
         enc_input = self.norm(mix_mel_mag).reshape(batch_size, -1, num_frames)

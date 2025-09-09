@@ -240,6 +240,8 @@ if __name__ == "__main__":
     import time
     import argparse
     from torchinfo import summary
+
+    print(torch.cuda.is_available())
     
     args = argparse.ArgumentParser()
     args.add_argument("--source", type=str, help='Source wav file path')

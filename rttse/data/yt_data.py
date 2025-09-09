@@ -3,8 +3,8 @@ import os
 import random
 import torch
 import torchaudio
-import torchaudio.functional as F
-import torch.nn.functional as F_
+import torch.nn.functional as F
+import torchaudio.functional as Fa
 import torchaudio.transforms as T
 
 import numpy as np
@@ -25,18 +25,49 @@ class YTCollate:
             "index": index
         }
     
+class TupleTransform:
+    def __init__(self):
+        pass
+
+    def __call__(self, sample, idx):
+        return sample[2], sample[1], sample[0], idx
+    
+class DictTransform:
+    def __init__(self):
+        pass
+
+    def __call__(self, sample, idx):
+        return {
+            "clean": sample[2].unsqueeze(1),
+            "noisy": sample[1].unsqueeze(1),
+            "reference_path": sample[3],
+            "reference": sample[0],
+            "index": idx
+        }
+    
 def pad_to_length(audio, length):
     if len(audio) < length:
-        return F_.pad(audio, (0, length - len(audio)))
+        return F.pad(audio, (0, length - len(audio)))
 
 class YTData(torch.utils.data.Dataset):
-    def __init__(self, data_manifest, data_root, sr=16000, length_sec=None, reference_length_sec=10, mix_levels=(0.667, 0.444, 0.296, 0.1), take=None):
+    def __init__(self, 
+                 data_manifest, 
+                 data_root, 
+                 output_mapper, 
+                 sr=16000, 
+                 length_sec=None, 
+                 reference_length_sec=10, 
+                 snrs_db=(20, 15, 10, 6, 3, 0),
+                 pitch_shifts=None,
+                 take=None):
         self.data = data_manifest
         self.data_root = data_root
         self.sr = sr
         self.length_sec = length_sec
         self.reference_length_sec = reference_length_sec
-        self.mix_levels = mix_levels
+        self.snrs_db = snrs_db
+        self.output_mapper = output_mapper
+        self.pitch_shifts = pitch_shifts
 
         with open(data_manifest, "r") as f:
             self.data = json.load(f)
@@ -52,7 +83,6 @@ class YTData(torch.utils.data.Dataset):
         audio = audio.squeeze()
         if sr != self.sr:
             audio = T.Resample(sr, self.sr, dtype=audio.dtype)(audio)
-            # audio = F.resample(audio, sr, self.sr, dtype=audio.dtype)
         
         if length_sec is not None:
             crop_length = int(length_sec * self.sr)
@@ -69,38 +99,36 @@ class YTData(torch.utils.data.Dataset):
         return audio
 
     def generate_sample(self, data_record):
-        ## load the 3 audio sample
-        ## mix AClean, BClean with one of 3 ratios (0.667, 0.444, 0.296)
-        ## return ARef, mixed, AClean
-        aRef   = self.load_audio(data_record['speakerAReference'], length_sec=self.reference_length_sec)
+        aRef   = self.load_audio(data_record['speakerAReference'], length_sec=self.reference_length_sec).unsqueeze(0)
+        
+        bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec).unsqueeze(0)
 
-        bClean = self.load_audio(data_record['speakerBClean'], length_sec=self.length_sec)
+        a_shift = None
+
+        if self.pitch_shifts is not None:
+            a_shift = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])
+            aRef = a_shift(aRef)
+            bClean = T.PitchShift(self.sr, random.choices(self.pitch_shifts, k=1)[0])(bClean)
+        
+        mix_level = random.choices(self.snrs_db, k=1)
 
         if data_record['speakerAClean'].endswith('.wav'):
-            aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec)
+            aClean = self.load_audio(data_record['speakerAClean'], length_sec=self.length_sec).unsqueeze(0)
+            if a_shift is not None:
+                aClean = a_shift(aClean)
+            mixed = Fa.add_noise(aClean, bClean, snr=torch.Tensor(mix_level))
         else:
             aClean = 0 * bClean
+            mixed = T.Vol(gain= -mix_level[0] - T.Loudness(sample_rate=self.sr)(bClean.unsqueeze(0)), gain_type="db")(bClean)
+            
 
-
-        mix_level = random.choices(self.mix_levels, k=1)[0]
-
-        mixed = aClean + mix_level * bClean
-        
-        # print(mixed.shape)
-
-        return aRef, mixed, aClean
+        return aRef.squeeze(0), mixed.squeeze(0), aClean.squeeze(0), self.get_data_path(data_record['speakerAReference'])
 
     
     def __getitem__(self, idx):
         sample = self.generate_sample(self.data[idx])
-        # data = {
-        #     "clean": sample[2],
-        #     "noisy": sample[1],
-        #     "reference": sample[0],
-        #     "index": idx
-        # }
-        # print("sample shape:", sample[0].shape, sample[1].shape, sample[2].shape)
-        return sample[2], sample[1], sample[0], idx
+        return self.output_mapper(sample, idx)
 
     def __len__(self):
         return len(self.data)
+    
